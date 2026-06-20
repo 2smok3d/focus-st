@@ -12,13 +12,9 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:#0d0d0d;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
-
-/* ── Screens ─────────────────────────────────────── */
 .screen{display:none;position:fixed;inset:0;flex-direction:column;background:#0d0d0d}
 .screen.active{display:flex;animation:fadeIn .15s ease}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-
-/* ── Header ──────────────────────────────────────── */
 header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
   padding:max(env(safe-area-inset-top,10px),10px) 18px 10px;min-height:52px}
 .logo{font-size:19px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
@@ -26,59 +22,41 @@ header{flex-shrink:0;display:flex;align-items:center;justify-content:space-betwe
 .offline-pill{font-size:10px;font-weight:700;background:rgba(245,158,11,.1);color:#f59e0b;
   border:1px solid rgba(245,158,11,.25);border-radius:5px;padding:2px 7px;display:none;letter-spacing:.3px}
 body.offline .offline-pill{display:block}
-.icon-btn{background:none;border:none;color:#484848;cursor:pointer;padding:8px;border-radius:9px;line-height:0;
-  flex-shrink:0;transition:color .12s,background .12s;-webkit-appearance:none}
+.icon-btn{background:none;border:none;color:#484848;cursor:pointer;padding:8px;border-radius:9px;
+  line-height:0;flex-shrink:0;transition:color .12s,background .12s;-webkit-appearance:none}
 .icon-btn:active{background:#161616;color:#ccc}
-
-/* ── Tab content ─────────────────────────────────── */
 .tab-content{flex:1;position:relative;overflow:hidden}
 .pane{position:absolute;inset:0;display:flex;flex-direction:column}
 .pane.hidden{display:none}
 
-/* ── Add pane scroll area ────────────────────────── */
-.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  padding:8px 18px 4px;overscroll-behavior:contain}
-
-/* ── Form fields ─────────────────────────────────── */
+/* ── Add pane */
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 18px 4px;overscroll-behavior:contain}
 .field{margin-bottom:16px}
-label{display:block;font-size:10px;font-weight:700;letter-spacing:.9px;
-  text-transform:uppercase;color:#3e3e3e;margin-bottom:6px}
-input,textarea{
-  width:100%;background:#111;border:1.5px solid #1c1c1c;color:#e8e8e8;
-  border-radius:11px;padding:12px 14px;font-size:16px;font-family:inherit;
-  outline:none;-webkit-appearance:none;appearance:none;
+label{display:block;font-size:10px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:#3e3e3e;margin-bottom:6px}
+input,textarea{width:100%;background:#111;border:1.5px solid #1c1c1c;color:#e8e8e8;border-radius:11px;
+  padding:12px 14px;font-size:16px;font-family:inherit;outline:none;-webkit-appearance:none;appearance:none;
   transition:border-color .15s,background .15s}
 input:focus,textarea:focus{border-color:#e8000d;background:#131313}
 ::placeholder{color:#272727}
 #name{font-size:18px;font-weight:500;padding:13px 14px}
-
-/* ── Category & subcategory strips ──────────────── */
-.strip{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;
-  scrollbar-width:none;padding-bottom:1px}
+.strip{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:1px}
 .strip::-webkit-scrollbar{display:none}
 .sub-strip{transition:opacity .14s}
 .sub-strip.fading{opacity:0}
-.cat-pill,.sub-pill{
-  flex-shrink:0;background:#111;border:1.5px solid #1c1c1c;color:#3e3e3e;
-  border-radius:9px;padding:8px 14px;font-size:13px;font-weight:600;
-  cursor:pointer;font-family:inherit;white-space:nowrap;
+.cat-pill,.sub-pill{flex-shrink:0;background:#111;border:1.5px solid #1c1c1c;color:#3e3e3e;border-radius:9px;
+  padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;
   -webkit-appearance:none;transition:border-color .12s,color .12s,background .12s;min-height:38px}
 .cat-pill:active,.sub-pill:active{opacity:.7}
 .cat-pill.sel{background:rgba(232,0,13,.1);border-color:#e8000d;color:#e8e8e8;font-weight:700}
 .sub-pill.sel{background:rgba(232,0,13,.06);border-color:rgba(232,0,13,.45);color:#c8c8c8}
-
-/* ── Notes ───────────────────────────────────────── */
-.notes-toggle{display:flex;align-items:center;gap:5px;background:none;border:none;
-  color:#3e3e3e;font-size:13px;font-family:inherit;cursor:pointer;padding:2px 0 10px;
-  -webkit-appearance:none;transition:color .12s}
+.notes-toggle{display:flex;align-items:center;gap:5px;background:none;border:none;color:#3e3e3e;
+  font-size:13px;font-family:inherit;cursor:pointer;padding:2px 0 10px;-webkit-appearance:none;transition:color .12s}
 .notes-toggle.open{color:#666}
 .notes-toggle svg{flex-shrink:0;transition:transform .2s}
 .notes-toggle.open svg{transform:rotate(45deg)}
 .notes-area{overflow:hidden;max-height:0;opacity:0;transition:max-height .22s ease,opacity .18s}
 .notes-area.open{max-height:110px;opacity:1}
 textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
-
-/* ── Recent history ──────────────────────────────── */
 .recent{margin-top:10px}
 .recent-hdr{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#252525;margin-bottom:8px}
 .ritem{padding:8px 0;border-bottom:1px solid #111;display:flex;align-items:center;gap:10px;overflow:hidden}
@@ -86,28 +64,20 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 .rcat{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#2e2e2e;flex-shrink:0;min-width:52px}
 .rname{font-size:13px;color:#404040;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 .rname a{color:#404040;text-decoration:none}
-
-/* ── Action bar (Add button wrapper) ─────────────── */
-.action-bar{flex-shrink:0;padding:6px 18px;
-  background:linear-gradient(to top,#0d0d0d 55%,transparent)}
-
-/* ── Buttons ─────────────────────────────────────── */
-.btn{
-  width:100%;padding:14px;background:#e8000d;color:#fff;
-  border:none;border-radius:13px;font-size:17px;font-weight:700;
-  cursor:pointer;font-family:inherit;letter-spacing:-.1px;
-  display:flex;align-items:center;justify-content:center;gap:9px;
-  transition:opacity .12s,transform .1s;-webkit-appearance:none;min-height:52px}
+.action-bar{flex-shrink:0;padding:6px 18px;background:linear-gradient(to top,#0d0d0d 55%,transparent)}
+.btn{width:100%;padding:14px;background:#e8000d;color:#fff;border:none;border-radius:13px;font-size:17px;
+  font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:-.1px;display:flex;align-items:center;
+  justify-content:center;gap:9px;transition:opacity .12s,transform .1s;-webkit-appearance:none;min-height:52px}
 .btn:active:not(:disabled){transform:scale(.98);opacity:.85}
 .btn:disabled{opacity:.35;cursor:not-allowed}
-.btn.ghost{background:#111;color:#555;border:1.5px solid #1c1c1c;font-size:15px;
-  font-weight:500;margin-top:10px;min-height:48px;letter-spacing:0}
+.btn.ghost{background:#111;color:#555;border:1.5px solid #1c1c1c;font-size:15px;font-weight:500;
+  margin-top:10px;min-height:48px;letter-spacing:0}
 .btn.ghost:active:not(:disabled){background:#161616}
-.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.2);
-  border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
+.spinner{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.2);border-top-color:#fff;
+  border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── Tab bar ─────────────────────────────────────── */
+/* ── Tab bar */
 .tab-bar{flex-shrink:0;display:flex;border-top:1px solid #171717;background:#0d0d0d;
   padding-bottom:env(safe-area-inset-bottom,0)}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
@@ -117,62 +87,108 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 .tab.sel{color:#e8000d}
 .tab svg{flex-shrink:0}
 
-/* ── List pane ───────────────────────────────────── */
-.list-topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+/* ── Garage pane */
+.g-topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
   padding:8px 18px 6px;border-bottom:1px solid #161616}
-.list-stats{font-size:11px;color:#323232;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.refresh-btn{background:none;border:none;color:#3a3a3a;cursor:pointer;padding:6px;
-  border-radius:7px;line-height:0;-webkit-appearance:none;transition:color .12s}
+.g-stats{font-size:11px;color:#323232;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.refresh-btn{background:none;border:none;color:#3a3a3a;cursor:pointer;padding:6px;border-radius:7px;
+  line-height:0;-webkit-appearance:none;transition:color .12s}
 .refresh-btn:active{color:#888}
 .refresh-btn.spinning svg{animation:spin .8s linear infinite}
+.garage-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.g-section{border-bottom:1px solid #151515}
+.g-section-hdr{display:flex;align-items:center;padding:14px 18px;cursor:pointer;gap:10px;transition:background .1s}
+.g-section-hdr:active{background:#0f0f0f}
+.g-section-name{flex:1;font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:#404040}
+.g-chevron{transition:transform .2s;color:#282828;flex-shrink:0}
+.g-section.open .g-chevron{transform:rotate(90deg)}
+.g-slots{display:none}
+.g-section.open .g-slots{display:block}
+.g-slot{display:flex;align-items:center;padding:11px 18px 11px 26px;border-top:1px solid #111;
+  cursor:pointer;gap:8px;transition:background .1s}
+.g-slot:active{background:#0f0f0f}
+.g-slot-name{font-size:13px;color:#666;font-weight:500;flex-shrink:0;white-space:nowrap;max-width:45%}
+.g-slot-installed{flex:1;font-size:11px;color:#303030;overflow:hidden;text-overflow:ellipsis;
+  white-space:nowrap;text-align:right;padding:0 6px}
+.g-slot-cond{font-size:12px;flex-shrink:0}
+.g-slot-arr{color:#252525;flex-shrink:0}
+.g-loading{padding:40px 18px;display:flex;justify-content:center}
+.g-spinner{border:2.5px solid rgba(255,255,255,.06);border-top-color:#2a2a2a;width:22px;height:22px;
+  border-radius:50%;animation:spin .8s linear infinite}
+.g-error{padding:32px 18px;text-align:center;color:#323232;font-size:14px;line-height:1.6}
 
-.filter-bar{flex-shrink:0;display:flex;gap:6px;padding:8px 18px;border-bottom:1px solid #161616;
-  overflow-x:auto;scrollbar-width:none}
-.filter-bar::-webkit-scrollbar{display:none}
-.fpill{flex-shrink:0;background:#111;border:1.5px solid #1c1c1c;color:#3a3a3a;
-  border-radius:7px;padding:6px 13px;font-size:12px;font-weight:700;letter-spacing:.2px;
-  cursor:pointer;font-family:inherit;-webkit-appearance:none;transition:all .12s;min-height:34px}
-.fpill.sel{background:rgba(232,0,13,.08);border-color:rgba(232,0,13,.6);color:#ddd}
+/* ── Mods pane */
+.mods-topbar{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:8px 18px 6px;border-bottom:1px solid #161616}
+.mods-stats{font-size:11px;color:#323232;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.mods-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.mod-sec-hdr{padding:14px 18px 5px;font-size:10px;font-weight:700;letter-spacing:.7px;
+  text-transform:uppercase;color:#2e2e2e}
+.mod-item{padding:11px 18px;border-bottom:1px solid #111}
+.mod-slot-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
+  color:#333;margin-bottom:5px}
+.mod-stock{font-size:11px;color:#2a2a2a;margin-bottom:4px}
+.mod-row{display:flex;align-items:center;gap:8px}
+.mod-installed{font-size:14px;color:#c0c0c0;font-weight:500;flex:1;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.mod-link{color:#333;text-decoration:none;padding:5px;line-height:0;flex-shrink:0;transition:color .12s}
+.mod-link:active{color:#888}
+.mods-empty{padding:52px 18px;text-align:center;color:#323232;font-size:14px;line-height:1.6}
 
-.list-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.cat-group{margin-bottom:2px}
-.cat-group-hdr{padding:12px 18px 5px;font-size:10px;font-weight:700;letter-spacing:.7px;
-  text-transform:uppercase;color:#303030;display:flex;align-items:center;gap:6px}
-.cat-group-hdr .cnt{background:#161616;color:#3e3e3e;border-radius:4px;padding:1px 6px;font-size:10px;font-weight:700}
-.part-item{display:flex;align-items:center;gap:11px;padding:11px 18px;
-  border-bottom:1px solid #111;transition:background .1s}
-.part-item:active{background:#0f0f0f}
-.part-item:last-child{border-bottom:none}
-.sdot{width:26px;height:26px;border-radius:50%;flex-shrink:0;cursor:pointer;
-  background:none;padding:0;border:none;font-family:inherit;-webkit-appearance:none;
-  display:flex;align-items:center;justify-content:center;transition:transform .1s;position:relative}
-.sdot:active:not(:disabled){transform:scale(1.35)}
-.sdot:disabled{opacity:.4;cursor:default}
-.sdot::after{content:'';width:9px;height:9px;border-radius:50%;display:block;transition:all .15s}
-.sdot.want::after{border:2px solid #2e2e2e}
-.sdot.ordered::after{background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,.4)}
-.sdot.done::after{background:#4caf50;box-shadow:0 0 6px rgba(76,175,80,.35)}
-.part-body{flex:1;overflow:hidden;min-width:0}
-.part-name{font-size:14px;color:#c0c0c0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-.part-meta{display:flex;align-items:center;gap:6px;margin-top:3px;overflow:hidden}
-.sub-badge{font-size:10px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:#2e2e2e;flex-shrink:0}
-.part-notes{font-size:11px;color:#303030;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.part-link{flex-shrink:0;color:#303030;font-size:14px;text-decoration:none;padding:5px 2px;transition:color .12s;line-height:1}
-.part-link:active{color:#888}
-.list-empty{padding:52px 18px;text-align:center;color:#323232;font-size:14px;line-height:1.6}
-.list-loading{padding:40px 18px;display:flex;justify-content:center}
-.list-loading .spinner{border-color:rgba(255,255,255,.08);border-top-color:#2e2e2e;width:22px;height:22px}
+/* ── Upgrade sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:150;
+  opacity:0;pointer-events:none;transition:opacity .22s}
+.sheet-bg.open{opacity:1;pointer-events:all}
+.upg-sheet{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;
+  z-index:151;display:flex;flex-direction:column;max-height:80vh;transform:translateY(100%);
+  transition:transform .3s cubic-bezier(.34,1.1,.64,1);padding-bottom:env(safe-area-inset-bottom,0)}
+.upg-sheet.open{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:#1e1e1e;border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.sheet-hdr{flex-shrink:0;display:flex;align-items:flex-start;padding:14px 18px 10px;gap:12px;
+  border-bottom:1px solid #181818}
+.sheet-title{flex:1;min-width:0}
+.sheet-slot-name{font-size:16px;font-weight:700;color:#ddd}
+.sheet-cur{font-size:12px;color:#383838;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sheet-x{background:none;border:none;color:#333;cursor:pointer;padding:4px;line-height:0;
+  -webkit-appearance:none;transition:color .12s;flex-shrink:0}
+.sheet-x:active{color:#888}
+.sheet-rows{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sheet-row{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid #181818;
+  cursor:pointer;gap:10px;transition:background .1s}
+.sheet-row:active,.sheet-row.sel{background:#151515}
+.sheet-row.sel .srow-name{color:#e8e8e8}
+.srow-tier{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  color:#2e2e2e;width:60px;flex-shrink:0}
+.srow-info{flex:1;min-width:0}
+.srow-name{font-size:14px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .12s}
+.srow-sub{font-size:11px;color:#333;margin-top:2px}
+.srow-price{font-size:12px;color:#383838;flex-shrink:0}
+.srow-link{flex-shrink:0;color:#272727;text-decoration:none;padding:6px 3px;line-height:0;transition:color .12s}
+.srow-link:active{color:#888}
+.sheet-confirm{flex-shrink:0;border-top:1px solid #1a1a1a;padding:10px 14px;
+  align-items:center;gap:8px;background:#0d0d0d;display:none}
+.confirm-txt{flex:1;font-size:13px;color:#888;font-weight:500;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.confirm-cancel{background:none;border:1.5px solid #1e1e1e;color:#444;border-radius:9px;
+  padding:8px 13px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  -webkit-appearance:none;white-space:nowrap;flex-shrink:0}
+.confirm-cancel:active{background:#181818}
+.confirm-install{background:#e8000d;color:#fff;border:none;border-radius:9px;padding:8px 14px;
+  font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;-webkit-appearance:none;
+  white-space:nowrap;display:flex;align-items:center;gap:6px;min-height:36px;flex-shrink:0}
+.confirm-install:active{opacity:.8}
+.confirm-install:disabled{opacity:.4}
 
-/* ── Config screen ───────────────────────────────── */
+/* ── Config */
 .cfg-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 28px}
 .cfg-sub{font-size:14px;color:#454545;margin-bottom:20px;line-height:1.65;padding-top:2px}
 .hint{font-size:12px;color:#383838;margin-top:7px;line-height:1.55}
 .hint a{color:#e8000d;text-decoration:none}
 .hint b{color:#555;font-weight:500}
 
-/* ── Success overlay ─────────────────────────────── */
-.success-overlay{position:fixed;inset:0;background:#0d0d0d;z-index:200;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+/* ── Success overlay */
+.success-overlay{position:fixed;inset:0;background:#0d0d0d;z-index:200;display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:12px;
   opacity:0;pointer-events:none;transition:opacity .2s}
 .success-overlay.show{opacity:1;pointer-events:all}
 .success-check{width:62px;height:62px;background:rgba(76,175,80,.1);border-radius:50%;
@@ -180,12 +196,12 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 .success-name{font-size:16px;font-weight:600;text-align:center;padding:0 32px;max-width:320px}
 .success-cat{font-size:13px;color:#454545}
 
-/* ── Toast ───────────────────────────────────────── */
+/* ── Toast */
 .toast{position:fixed;bottom:max(16px,env(safe-area-inset-bottom,16px));left:14px;right:14px;
   max-width:440px;margin:0 auto;background:#161616;border:1px solid #222;padding:12px 14px;
   border-radius:12px;display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;
   transform:translateY(115px);opacity:0;transition:transform .28s cubic-bezier(.34,1.45,.64,1),opacity .18s;
-  pointer-events:none;z-index:100}
+  pointer-events:none;z-index:300}
 .toast.show{transform:translateY(0);opacity:1;pointer-events:all}
 .toast.ok .tmsg{color:#4caf50}
 .toast.err .tmsg{color:#f44336}
@@ -195,9 +211,7 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════
-     Main screen
-══════════════════════════════════════════════════════ -->
+<!-- ── Main screen ──────────────────────────────────────────── -->
 <div class="screen" id="s-main">
   <header>
     <div class="logo">Focus <em>ST</em> <span class="offline-pill">Offline</span></div>
@@ -211,7 +225,7 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 
   <div class="tab-content">
 
-    <!-- ─ Add pane ──────────────────────────────────── -->
+    <!-- Add pane -->
     <div class="pane" id="pane-add">
       <div class="scroll-area">
         <div class="field">
@@ -219,23 +233,19 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
           <input type="text" id="name" placeholder="e.g. Mountune MP215 upgrade"
                  autocorrect="off" autocapitalize="words" enterkeyhint="go">
         </div>
-
         <div class="field">
           <label>Category</label>
           <div class="strip" id="cat-strip" role="group"></div>
         </div>
-
         <div class="field">
           <label>Subcategory</label>
           <div class="strip sub-strip" id="sub-strip" role="group"></div>
         </div>
-
         <div class="field">
           <label>URL</label>
-          <input type="url" id="url" placeholder="https://&#x2026;" inputmode="url"
+          <input type="url" id="url" placeholder="https://…" inputmode="url"
                  autocomplete="off" autocorrect="off" enterkeyhint="next">
         </div>
-
         <button type="button" class="notes-toggle" id="notes-toggle">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
@@ -243,9 +253,8 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
           Add notes
         </button>
         <div class="notes-area" id="notes-area">
-          <textarea id="notes" placeholder="Price, fitment, priority&#x2026;" enterkeyhint="go"></textarea>
+          <textarea id="notes" placeholder="Price, fitment, priority…" enterkeyhint="go"></textarea>
         </div>
-
         <div id="recent" class="recent" style="display:none">
           <div class="recent-hdr">Recent</div>
           <div id="recent-list"></div>
@@ -253,31 +262,34 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
       </div>
     </div>
 
-    <!-- ─ List pane ─────────────────────────────────── -->
-    <div class="pane hidden" id="pane-list">
-      <div class="list-topbar">
-        <span class="list-stats" id="list-stats">Parts</span>
-        <button class="refresh-btn" id="refresh-btn" aria-label="Refresh list">
+    <!-- Garage pane -->
+    <div class="pane hidden" id="pane-garage">
+      <div class="g-topbar">
+        <span class="g-stats" id="g-stats">Catalog</span>
+        <button class="refresh-btn" id="g-refresh" aria-label="Refresh">
           <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path d="M23 4v6h-6M1 20v-6h6" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
-      <div class="filter-bar" id="filter-bar">
-        <button class="fpill sel" data-f="">All</button>
-        <button class="fpill" data-f="want">Want</button>
-        <button class="fpill" data-f="ordered">Ordered</button>
-        <button class="fpill" data-f="done">Installed</button>
+      <div class="garage-scroll" id="garage-scroll">
+        <div class="g-loading"><div class="g-spinner"></div></div>
       </div>
-      <div class="list-scroll" id="list-scroll">
-        <div class="list-loading"><div class="spinner"></div></div>
+    </div>
+
+    <!-- Mods pane -->
+    <div class="pane hidden" id="pane-mods">
+      <div class="mods-topbar">
+        <span class="mods-stats" id="mods-stats">Changes from stock</span>
+      </div>
+      <div class="mods-scroll" id="mods-scroll">
+        <div class="g-loading"><div class="g-spinner"></div></div>
       </div>
     </div>
 
   </div>
 
-  <!-- Add button shown only on Add tab -->
   <div class="action-bar" id="action-bar">
     <button class="btn" id="btn-add">Add to list</button>
   </div>
@@ -285,24 +297,27 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
   <nav class="tab-bar">
     <button class="tab sel" id="tab-add-btn">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9"/>
-        <path d="M12 8v8M8 12h8" stroke-linecap="round"/>
+        <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke-linecap="round"/>
       </svg>
       Add
     </button>
-    <button class="tab" id="tab-list-btn">
+    <button class="tab" id="tab-garage-btn">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M9 12h6M9 16h4" stroke-linecap="round"/>
+        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
-      My List
+      Garage
+    </button>
+    <button class="tab" id="tab-mods-btn">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="17 6 23 6 23 12" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Mods
     </button>
   </nav>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     Config screen
-══════════════════════════════════════════════════════ -->
+<!-- ── Config screen ─────────────────────────────────────────── -->
 <div class="screen" id="s-cfg">
   <header>
     <div class="logo">Focus <em>ST</em></div>
@@ -326,18 +341,39 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
     </div>
     <div class="field">
       <label>Personal access token</label>
-      <input type="password" id="cfg-token" placeholder="ghp_&#x2026;"
+      <input type="password" id="cfg-token" placeholder="ghp_…"
              autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
-      <div class="hint">Needs <b>Contents: read &amp; write</b>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create token &#x2192;</a></div>
+      <div class="hint">Needs <b>Contents: read &amp; write</b>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create token →</a></div>
     </div>
     <button class="btn" id="btn-save">Save</button>
     <button class="btn ghost" id="btn-test">Test connection</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     Success overlay (share flow auto-close)
-══════════════════════════════════════════════════════ -->
+<!-- ── Upgrade sheet ─────────────────────────────────────────── -->
+<div class="sheet-bg" id="sheet-bg"></div>
+<div class="upg-sheet" id="upg-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-hdr">
+    <div class="sheet-title">
+      <div class="sheet-slot-name" id="sheet-slot-name"></div>
+      <div class="sheet-cur" id="sheet-cur"></div>
+    </div>
+    <button class="sheet-x" id="sheet-x" aria-label="Close">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="sheet-rows" id="sheet-rows"></div>
+  <div class="sheet-confirm" id="sheet-confirm">
+    <span class="confirm-txt" id="confirm-txt"></span>
+    <button class="confirm-cancel" id="confirm-cancel">Cancel</button>
+    <button class="confirm-install" id="confirm-install">Install ✓</button>
+  </div>
+</div>
+
+<!-- ── Success overlay ───────────────────────────────────────── -->
 <div class="success-overlay" id="success-overlay">
   <div class="success-check">
     <svg width="26" height="26" fill="none" stroke="#4caf50" stroke-width="2.5" viewBox="0 0 24 24">
@@ -354,107 +390,106 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 </div>
 
 <script>
-// ── Category data ────────────────────────────────────────────────
+// ── Category data ────────────────────────────────────────────
 const CATS = [
   { val:'Performance', label:'Performance', subs:[
-    {val:'Engine / Intake', label:'Engine'}, {val:'Exhaust',     label:'Exhaust'},
-    {val:'Suspension',      label:'Suspension'},{val:'Brakes',   label:'Brakes'},
-    {val:'Cooling',         label:'Cooling'}, {val:'Drivetrain', label:'Drivetrain'},
-    {val:'Tune / ECU',      label:'Tune'}
+    {val:'Engine / Intake',label:'Engine'},{val:'Exhaust',label:'Exhaust'},
+    {val:'Suspension',label:'Suspension'},{val:'Brakes',label:'Brakes'},
+    {val:'Cooling',label:'Cooling'},{val:'Drivetrain',label:'Drivetrain'},
+    {val:'Tune / ECU',label:'Tune'}
   ]},
   { val:'Exterior', label:'Exterior', subs:[
-    {val:'Wheels & Tires', label:'Wheels'}, {val:'Body / Aero',   label:'Body & Aero'},
-    {val:'Lighting',       label:'Lighting'},{val:'Wraps & Paint',label:'Wraps'}
+    {val:'Wheels & Tires',label:'Wheels'},{val:'Body / Aero',label:'Body & Aero'},
+    {val:'Lighting',label:'Lighting'},{val:'Wraps & Paint',label:'Wraps'}
   ]},
   { val:'Interior', label:'Interior', subs:[
-    {val:'Seats / Harness',    label:'Seats'},  {val:'Gauges & Displays',label:'Gauges'},
-    {val:'Audio',              label:'Audio'},  {val:'Pedals & Steering',label:'Pedals'},
-    {val:'Other Interior',     label:'Other'}
+    {val:'Seats / Harness',label:'Seats'},{val:'Gauges & Displays',label:'Gauges'},
+    {val:'Audio',label:'Audio'},{val:'Pedals & Steering',label:'Pedals'},
+    {val:'Other Interior',label:'Other'}
   ]},
   { val:'Maintenance & Consumables', label:'Maintenance', subs:[
-    {val:'Fluids & Filters', label:'Fluids'}, {val:'Wear Items',label:'Wear Items'},
-    {val:'Tools',            label:'Tools'}
+    {val:'Fluids & Filters',label:'Fluids'},{val:'Wear Items',label:'Wear Items'},
+    {val:'Tools',label:'Tools'}
   ]}
 ];
 
-// ── Storage ──────────────────────────────────────────────────────
-const K = { cfg:'fst_v1', cache:'fst_cache', hist:'fst_hist', cat:'fst_cat', sub:'fst_sub' };
-const getCfg    = () => { try { return JSON.parse(localStorage.getItem(K.cfg)); } catch { return null; } };
-const saveCfg   = c => localStorage.setItem(K.cfg, JSON.stringify(c));
-const getCache  = () => { try { const c=JSON.parse(localStorage.getItem(K.cache)); return c&&Date.now()-c.ts<3e5?c:null; } catch { return null; } };
-const setCache  = (sha,c) => localStorage.setItem(K.cache, JSON.stringify({sha,content:c,ts:Date.now()}));
-const clearCache= () => localStorage.removeItem(K.cache);
-const getHist   = () => { try { return JSON.parse(localStorage.getItem(K.hist))||[]; } catch { return []; } };
-const pushHist  = i => { const h=getHist(); h.unshift(i); localStorage.setItem(K.hist, JSON.stringify(h.slice(0,8))); };
-const getSubs   = () => { try { return JSON.parse(localStorage.getItem(K.sub))||{}; } catch { return {}; } };
-const saveSubs  = s => localStorage.setItem(K.sub, JSON.stringify(s));
-const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// ── Storage ──────────────────────────────────────────────────
+const K={cfg:'fst_v1',cache:'fst_cache',hist:'fst_hist',cat:'fst_cat',sub:'fst_sub'};
+const getCfg   =()=>{try{return JSON.parse(localStorage.getItem(K.cfg));}catch{return null;}};
+const saveCfg  =c=>localStorage.setItem(K.cfg,JSON.stringify(c));
+const getCache =()=>{try{const c=JSON.parse(localStorage.getItem(K.cache));return c&&Date.now()-c.ts<3e5?c:null;}catch{return null;}};
+const setCache =(sha,c)=>localStorage.setItem(K.cache,JSON.stringify({sha,content:c,ts:Date.now()}));
+const clearCache=()=>localStorage.removeItem(K.cache);
+const getHist  =()=>{try{return JSON.parse(localStorage.getItem(K.hist))||[];}catch{return[];}};
+const pushHist =i=>{const h=getHist();h.unshift(i);localStorage.setItem(K.hist,JSON.stringify(h.slice(0,8)));};
+const getSubs  =()=>{try{return JSON.parse(localStorage.getItem(K.sub))||{};}catch{return{};}};
+const saveSubs =s=>localStorage.setItem(K.sub,JSON.stringify(s));
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-// ── Toast ────────────────────────────────────────────────────────
+// ── Toast ────────────────────────────────────────────────────
 let _tt;
-const toast = (msg, type='ok') => {
+const toast=(msg,type='ok')=>{
   const el=document.getElementById('toast');
   document.getElementById('tmsg').textContent=msg;
   el.className='toast show '+type;
-  clearTimeout(_tt); _tt=setTimeout(()=>el.className='toast', type==='err'?4500:2600);
+  clearTimeout(_tt);_tt=setTimeout(()=>el.className='toast',type==='err'?4500:2600);
 };
-document.querySelector('.tdis').onclick = () => document.getElementById('toast').className='toast';
+document.querySelector('.tdis').onclick=()=>document.getElementById('toast').className='toast';
 
-// ── Screens ──────────────────────────────────────────────────────
-const showScreen = id => {
-  document.querySelectorAll('.screen').forEach(s => {
-    const on=s.id===id; s.classList.toggle('active',on); s.style.display=on?'flex':'none';
+// ── Screens ──────────────────────────────────────────────────
+const showScreen=id=>{
+  document.querySelectorAll('.screen').forEach(s=>{
+    const on=s.id===id;s.classList.toggle('active',on);s.style.display=on?'flex':'none';
   });
 };
 
-// ── Tabs ─────────────────────────────────────────────────────────
-let activeTab='add', listEverLoaded=false;
-const switchTab = tab => {
+// ── Tabs ─────────────────────────────────────────────────────
+let activeTab='add', catalogLoaded=false;
+const switchTab=tab=>{
   activeTab=tab;
-  document.getElementById('pane-add').classList.toggle('hidden', tab!=='add');
-  document.getElementById('pane-list').classList.toggle('hidden', tab!=='list');
-  document.getElementById('action-bar').style.display = tab==='add' ? '' : 'none';
-  document.getElementById('tab-add-btn').classList.toggle('sel', tab==='add');
-  document.getElementById('tab-list-btn').classList.toggle('sel', tab==='list');
-  if (tab==='list' && !listEverLoaded) { listEverLoaded=true; loadList(); }
+  ['add','garage','mods'].forEach(t=>{
+    document.getElementById('pane-'+t).classList.toggle('hidden',t!==tab);
+    document.getElementById('tab-'+t+'-btn').classList.toggle('sel',t===tab);
+  });
+  document.getElementById('action-bar').style.display=tab==='add'?'':'none';
+  if((tab==='garage'||tab==='mods')&&!catalogLoaded){catalogLoaded=true;loadCatalog();}
 };
-document.getElementById('tab-add-btn').onclick = () => switchTab('add');
-document.getElementById('tab-list-btn').onclick = () => switchTab('list');
+document.getElementById('tab-add-btn').onclick   =()=>switchTab('add');
+document.getElementById('tab-garage-btn').onclick=()=>switchTab('garage');
+document.getElementById('tab-mods-btn').onclick  =()=>switchTab('mods');
 
-// ── Category / subcategory ────────────────────────────────────────
-let activeCat = localStorage.getItem(K.cat) || 'Performance';
-let activeSubs = getSubs();
-const catData  = v => CATS.find(c=>c.val===v);
-const curSub   = () => activeSubs[activeCat] || catData(activeCat)?.subs[0]?.val || '';
-const subLabel = (cat,sub) => { const c=CATS.find(x=>x.val===cat); return c?.subs.find(s=>s.val===sub)?.label||sub||cat; };
+// ── Category / subcategory ────────────────────────────────────
+let activeCat=localStorage.getItem(K.cat)||'Performance';
+let activeSubs=getSubs();
+const catData =v=>CATS.find(c=>c.val===v);
+const curSub  =()=>activeSubs[activeCat]||catData(activeCat)?.subs[0]?.val||'';
+const subLabel=(cat,sub)=>{const c=CATS.find(x=>x.val===cat);return c?.subs.find(s=>s.val===sub)?.label||sub||cat;};
 
-const renderCats = () => {
+const renderCats=()=>{
   const strip=document.getElementById('cat-strip');
   strip.innerHTML=CATS.map(c=>`<button type="button" class="cat-pill${c.val===activeCat?' sel':''}" data-val="${esc(c.val)}">${esc(c.label)}</button>`).join('');
   strip.querySelectorAll('.cat-pill').forEach(p=>p.addEventListener('click',()=>{
-    if(p.dataset.val===activeCat) return;
-    activeCat=p.dataset.val; localStorage.setItem(K.cat,activeCat);
-    renderCats(); renderSubs(true);
+    if(p.dataset.val===activeCat)return;
+    activeCat=p.dataset.val;localStorage.setItem(K.cat,activeCat);
+    renderCats();renderSubs(true);
   }));
 };
-
-const renderSubs = animate => {
+const renderSubs=animate=>{
   const strip=document.getElementById('sub-strip');
-  const cat=catData(activeCat); if(!cat) return;
+  const cat=catData(activeCat);if(!cat)return;
   const cs=curSub();
-  const doRender = () => {
+  const doRender=()=>{
     strip.innerHTML=cat.subs.map(s=>`<button type="button" class="sub-pill${s.val===cs?' sel':''}" data-val="${esc(s.val)}">${esc(s.label)}</button>`).join('');
     strip.querySelectorAll('.sub-pill').forEach(p=>p.addEventListener('click',()=>{
-      const subs=getSubs(); subs[activeCat]=p.dataset.val; saveSubs(subs); activeSubs=subs;
-      strip.querySelectorAll('.sub-pill').forEach(x=>x.classList.toggle('sel', x.dataset.val===p.dataset.val));
+      const subs=getSubs();subs[activeCat]=p.dataset.val;saveSubs(subs);activeSubs=subs;
+      strip.querySelectorAll('.sub-pill').forEach(x=>x.classList.toggle('sel',x.dataset.val===p.dataset.val));
     }));
-    strip.classList.remove('fading'); strip.scrollLeft=0;
+    strip.classList.remove('fading');strip.scrollLeft=0;
   };
-  if(animate){ strip.classList.add('fading'); setTimeout(doRender,140); }
-  else doRender();
+  if(animate){strip.classList.add('fading');setTimeout(doRender,140);}else doRender();
 };
 
-// ── Notes toggle ─────────────────────────────────────────────────
+// ── Notes ────────────────────────────────────────────────────
 let notesOpen=false;
 const notesToggle=document.getElementById('notes-toggle');
 const notesArea=document.getElementById('notes-area');
@@ -462,13 +497,13 @@ notesToggle.addEventListener('click',()=>{
   notesOpen=!notesOpen;
   notesArea.classList.toggle('open',notesOpen);
   notesToggle.classList.toggle('open',notesOpen);
-  if(notesOpen) setTimeout(()=>document.getElementById('notes').focus(),220);
+  if(notesOpen)setTimeout(()=>document.getElementById('notes').focus(),220);
 });
 
-// ── Recent ────────────────────────────────────────────────────────
-const renderHist = () => {
-  const h=getHist(), wrap=document.getElementById('recent');
-  if(!h.length){ wrap.style.display='none'; return; }
+// ── Recent history ────────────────────────────────────────────
+const renderHist=()=>{
+  const h=getHist(),wrap=document.getElementById('recent');
+  if(!h.length){wrap.style.display='none';return;}
   wrap.style.display='block';
   document.getElementById('recent-list').innerHTML=h.map(i=>
     `<div class="ritem"><span class="rcat">${esc(subLabel(i.cat,i.sub))}</span>`+
@@ -476,236 +511,367 @@ const renderHist = () => {
   ).join('');
 };
 
-// ── Title cleaner ─────────────────────────────────────────────────
-const cleanTitle = t => !t?'':t
+// ── Title cleaner ─────────────────────────────────────────────
+const cleanTitle=t=>!t?'':t
   .replace(/^Amazon\.com\s*[:·]\s*/i,'')
   .replace(/\s*[-–—|·]\s*(Amazon\.com|eBay|Walmart|CARiD|RockAuto|AutoZone|O'Reilly|JEGS|Summit Racing|Holley|AmericanMuscle|TireRack|Advance Auto).*/i,'')
   .replace(/ \| [^|]{1,50}$/,'').trim().slice(0,100);
 
-// ── GitHub API ────────────────────────────────────────────────────
-const ghHdrs = tok => ({Authorization:'token '+tok, Accept:'application/vnd.github.v3+json'});
-const ghUrl  = (c,p) => `https://api.github.com/repos/${c.owner}/${c.repo}/contents/${p}`;
-const decode = b64 => decodeURIComponent(escape(atob(b64.replace(/\n/g,''))));
+// ── GitHub API ────────────────────────────────────────────────
+const ghHdrs=tok=>({Authorization:'token '+tok,Accept:'application/vnd.github.v3+json'});
+const ghUrl =(c,p)=>`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${p}`;
+const decode=b64=>decodeURIComponent(escape(atob(b64.replace(/\n/g,''))));
+const encode=s=>btoa(unescape(encodeURIComponent(s)));
 
-const ghGet = async (c,p) => {
+const ghGet=async(c,p)=>{
   const r=await fetch(ghUrl(c,p),{headers:ghHdrs(c.token)});
-  if(!r.ok){ if(r.status===401)throw new Error('Bad token — check settings');
-    if(r.status===404)throw new Error('Repo or file not found'); throw new Error('GitHub '+r.status); }
+  if(!r.ok){if(r.status===401)throw new Error('Bad token — check settings');
+    if(r.status===404)throw new Error('File not found: '+p);throw new Error('GitHub '+r.status);}
   return r.json();
 };
-const ghPut = async (c,p,content,sha,msg) => {
+const ghPut=async(c,p,content,sha,msg)=>{
+  const body={message:msg,content:encode(content)};
+  if(sha)body.sha=sha;
   const r=await fetch(ghUrl(c,p),{method:'PUT',
     headers:Object.assign({'Content-Type':'application/json'},ghHdrs(c.token)),
-    body:JSON.stringify({message:msg, content:btoa(unescape(encodeURIComponent(content))), sha})});
-  if(!r.ok){ const e=await r.json().catch(()=>({})); const err=new Error(e.message||'GitHub '+r.status);
-    if(r.status===409) err.conflict=true; throw err; }
+    body:JSON.stringify(body)});
+  if(!r.ok){const e=await r.json().catch(()=>({}));const err=new Error(e.message||'GitHub '+r.status);
+    if(r.status===409)err.conflict=true;throw err;}
   return r.json();
 };
 
-// ── Inject under ## Category > ### Subcategory ────────────────────
-const injectLine = (md, cat, sub, line) => {
+// ── parseCatalog ──────────────────────────────────────────────
+const parseCatalog=md=>{
   const lines=md.split('\n');
-  const catHdr='## '+cat;
-  const catI=lines.findIndex(l=>l.trim()===catHdr);
+  const sections=[];
+  let sec=null,slot=null,inUpg=false,upgRows=[];
 
-  if(catI===-1){
-    const doneI=lines.findIndex(l=>l.trim()==='## Done');
-    lines.splice(doneI!==-1?doneI:lines.length, 0, '', catHdr, '', '### '+sub, line, '');
-    return lines.join('\n');
-  }
+  const finalizeSlot=()=>{
+    if(slot){slot.upgrades=[...upgRows];upgRows=[];}
+    slot=null;inUpg=false;
+  };
 
-  let catEnd=lines.length;
-  for(let i=catI+1;i<lines.length;i++){ if(/^## /.test(lines[i])){ catEnd=i; break; } }
+  for(const line of lines){
+    const sm=line.match(/<summary><b>([^<]+)<\/b><\/summary>/);
+    if(sm){finalizeSlot();sec={name:sm[1],slots:[]};sections.push(sec);continue;}
 
-  const subHdr='### '+sub;
-  const relSubI=lines.slice(catI+1,catEnd).findIndex(l=>l.trim()===subHdr);
+    const pm=line.match(/^#### (.+)/);
+    if(pm&&sec){
+      finalizeSlot();
+      slot={name:pm[1],installed:'',installedUrl:'',condition:'⚠️',isMod:false,upgrades:[]};
+      sec.slots.push(slot);continue;
+    }
 
-  if(relSubI===-1){
-    let at=catEnd;
-    for(let i=catEnd-1;i>catI;i--){ if(lines[i].trim()==='---'){ at=i; break; } }
-    lines.splice(at, 0, '', subHdr, line);
-    return lines.join('\n');
-  }
+    if(line.startsWith('**Installed:**')&&slot){
+      const raw=line.slice('**Installed:**'.length).trim();
+      slot.isMod=raw.includes('<!-- MOD -->');
+      const clean=raw.replace(/<!--.*?-->/g,'').trim();
+      const lm=clean.match(/^\[([^\]]+)\]\(([^)]+)\)/);
+      if(lm){slot.installed=lm[1];slot.installedUrl=lm[2];}
+      else{slot.installed=clean.replace(/\s*[·—].*$/,'').trim()||clean;}
+      slot.condition=clean.includes('✅')?'✅':clean.includes('🔧')?'🔧':'⚠️';
+      continue;
+    }
 
-  const subI=catI+1+relSubI;
-  let subEnd=catEnd;
-  for(let i=subI+1;i<catEnd;i++){ if(/^##/.test(lines[i])){ subEnd=i; break; } }
+    if(line.includes('<summary>')&&!line.includes('<b>')&&slot){inUpg=true;upgRows=[];continue;}
 
-  let at=subEnd;
-  for(let i=subEnd-1;i>subI;i--){ const t=lines[i].trim(); if(t&&t!=='---'){ at=i+1; break; } }
-  lines.splice(at, 0, line);
-  return lines.join('\n');
-};
+    if(line==='</details>'&&inUpg){if(slot)slot.upgrades=[...upgRows];inUpg=false;continue;}
 
-// ── Parse PARTS.md for list view ──────────────────────────────────
-const parseList = md => {
-  const cats=[]; let cat=null,sub=null;
-  for(const line of md.split('\n')){
-    const m2=line.match(/^## (.+)/), m3=line.match(/^### (.+)/), mi=line.match(/^- \[(.?)\] (.+)/);
-    if(m2){ if(m2[1].trim()==='Done'){cat=null;continue;} cat={name:m2[1].trim(),items:[]}; cats.push(cat); sub=null; }
-    else if(m3&&cat){ sub=m3[1].trim(); }
-    else if(mi&&cat){
-      const ch=mi[1], raw=mi[2].trim();
-      const status=ch==='x'?'done':ch==='~'?'ordered':'want';
-      const lm=raw.match(/^\[([^\]]+)\]\(([^)]*)\)(.*)/);
-      cat.items.push({
-        name:  lm?lm[1]:raw.replace(/\s*—.*/,'').trim(),
-        url:   lm?lm[2]:'',
-        notes: lm?lm[3].replace(/^\s*—\s*/,'').trim():raw.includes(' — ')?raw.split(' — ').slice(1).join(' — ').trim():'',
-        status, sub
-      });
+    if(inUpg&&line.startsWith('|')&&!line.startsWith('|---')){
+      const cols=line.split('|').slice(1,-1).map(c=>c.trim());
+      if(cols.length>=2&&cols[0]&&cols[0]!=='Tier'&&cols[0]!=='Tool'&&cols[0]!=='Item'){
+        const lm=cols[1]?.match(/^\[([^\]]+)\]\(([^)]+)\)/);
+        upgRows.push({tier:cols[0],name:lm?lm[1]:(cols[1]||''),url:lm?lm[2]:'',
+          partNum:cols[2]||'',price:cols[3]||'',notes:cols[4]||''});
+      }
     }
   }
-  return cats.filter(c=>c.items.length);
+  finalizeSlot();
+  return sections;
 };
 
-// ── List rendering ────────────────────────────────────────────────
-let allParts=[], activeFilter='';
-
-const renderList = content => { allParts=parseList(content); applyFilter(activeFilter); };
-
-const applyFilter = f => {
-  activeFilter=f;
-  document.querySelectorAll('.fpill').forEach(p=>p.classList.toggle('sel', p.dataset.f===f));
-  const scroll=document.getElementById('list-scroll');
-  const visible=allParts.map(c=>({name:c.name,items:c.items.filter(i=>!f||i.status===f)})).filter(c=>c.items.length);
-  if(!visible.length){
-    scroll.innerHTML=`<div class="list-empty">${allParts.length?'No parts match this filter':'Nothing added yet — use the Add tab!'}</div>`;
-    document.getElementById('list-stats').textContent='0 parts'; return;
+// ── updateInstallInMd ─────────────────────────────────────────
+const updateInstallInMd=(md,slotName,partName,partUrl)=>{
+  const lines=md.split('\n');
+  const base=slotName.split(' *(')[0];
+  let inSlot=false;
+  for(let i=0;i<lines.length;i++){
+    if(lines[i].startsWith('#### ')){
+      const h=lines[i].slice(5).trim();
+      inSlot=(h===slotName||h.startsWith(base));
+      continue;
+    }
+    if(inSlot&&lines[i].startsWith('**Installed:**')){
+      const p=partUrl?`[${partName}](${partUrl})`:partName;
+      lines[i]=`**Installed:** ${p} — ✅ installed <!-- MOD -->`;
+      return lines.join('\n');
+    }
+    if(inSlot&&(lines[i].startsWith('#### ')||lines[i].includes('<summary><b>'))){inSlot=false;}
   }
-  const total=visible.reduce((n,c)=>n+c.items.length,0);
-  document.getElementById('list-stats').textContent=`${total} part${total!==1?'s':''}`;
-  scroll.innerHTML=visible.map(cat=>`<div class="cat-group">
-    <div class="cat-group-hdr">${esc(cat.name)} <span class="cnt">${cat.items.length}</span></div>
-    ${cat.items.map(i=>`<div class="part-item">
-      <button class="sdot ${i.status}" data-name="${esc(i.name)}" data-url="${esc(i.url||'')}" data-status="${i.status}" aria-label="Cycle status"></button>
-      <div class="part-body">
-        <div class="part-name">${i.url?`<a href="${esc(i.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(i.name)}</a>`:esc(i.name)}</div>
-        <div class="part-meta">${i.sub?`<span class="sub-badge">${esc(i.sub)}</span>`:''} ${i.notes?`<span class="part-notes">${esc(i.notes)}</span>`:''}</div>
-      </div>
-      ${i.url?`<a class="part-link" href="${esc(i.url)}" target="_blank" rel="noopener">&#x2197;</a>`:''}</div>`).join('')}
-    </div>`).join('');
+  throw new Error(`Slot "${slotName}" not found in PARTS.md`);
 };
 
-// ── Load list ─────────────────────────────────────────────────────
-const loadList = async () => {
-  const c=getCfg(); if(!c) return;
+// ── generateModsMd ────────────────────────────────────────────
+const generateModsMd=catalog=>{
+  const out=['# Focus ST — Changes from OEM','','*Auto-generated from PARTS.md*','','---',''];
+  let any=false;
+  for(const sec of catalog){
+    const mods=sec.slots.filter(s=>s.isMod);
+    if(!mods.length)continue;
+    any=true;
+    out.push('## '+sec.name,'');
+    for(const s of mods){
+      out.push('**'+s.name.split(' *(')[0]+'**');
+      const oem=s.upgrades.find(u=>/^oem$/i.test(u.tier));
+      if(oem)out.push('Stock: '+oem.name+(oem.partNum&&oem.partNum!=='—'?' · '+oem.partNum:''));
+      const inst=s.installedUrl?`[${s.installed}](${s.installedUrl})`:s.installed;
+      out.push('Installed: '+inst+' ✅','');
+    }
+    out.push('---','');
+  }
+  if(!any)out.push('*No modifications from stock yet.*','');
+  return out.join('\n');
+};
+
+// ── Catalog loading / rendering ───────────────────────────────
+let catalogData=null;
+
+const buildViews=content=>{
+  catalogData=parseCatalog(content);
+  renderGarage(catalogData);
+  renderMods(catalogData);
+};
+
+const loadCatalog=async(force=false)=>{
+  const c=getCfg();if(!c)return;
+  if(force)clearCache();
   const cached=getCache();
-  if(cached){ renderList(cached.content); return; }
-  document.getElementById('list-scroll').innerHTML='<div class="list-loading"><div class="spinner"></div></div>';
-  try {
+  if(cached){buildViews(cached.content);return;}
+  document.getElementById('garage-scroll').innerHTML='<div class="g-loading"><div class="g-spinner"></div></div>';
+  document.getElementById('mods-scroll').innerHTML='<div class="g-loading"><div class="g-spinner"></div></div>';
+  try{
     const data=await ghGet(c,'PARTS.md');
     const content=decode(data.content);
     setCache(data.sha,content);
-    renderList(content);
-  } catch(e){ document.getElementById('list-scroll').innerHTML=`<div class="list-empty">${esc(e.message)}</div>`; }
+    buildViews(content);
+  }catch(e){
+    document.getElementById('garage-scroll').innerHTML=`<div class="g-error">${esc(e.message)}</div>`;
+    document.getElementById('mods-scroll').innerHTML=`<div class="mods-empty">${esc(e.message)}</div>`;
+  }
 };
 
-document.getElementById('refresh-btn').addEventListener('click', async () => {
-  const btn=document.getElementById('refresh-btn');
-  btn.classList.add('spinning'); clearCache(); listEverLoaded=false;
-  await loadList(); listEverLoaded=true; btn.classList.remove('spinning');
+document.getElementById('g-refresh').addEventListener('click',async()=>{
+  const btn=document.getElementById('g-refresh');
+  btn.classList.add('spinning');catalogLoaded=true;
+  await loadCatalog(true);btn.classList.remove('spinning');
 });
 
-document.getElementById('filter-bar').addEventListener('click', e => {
-  const p=e.target.closest('.fpill'); if(p) applyFilter(p.dataset.f);
+// ── renderGarage ──────────────────────────────────────────────
+const chevSvg=`<svg class="g-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const arrSvg=`<svg class="g-slot-arr" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const extSvg=`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke-linecap="round" stroke-linejoin="round"/><polyline points="15 3 21 3 21 9" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="14" x2="21" y2="3" stroke-linecap="round"/></svg>`;
+
+const renderGarage=sections=>{
+  const total=sections.reduce((n,s)=>n+s.slots.length,0);
+  document.getElementById('g-stats').textContent=`${sections.length} sections · ${total} slots`;
+
+  const scroll=document.getElementById('garage-scroll');
+  scroll.innerHTML=sections.map((sec,si)=>`
+    <div class="g-section" id="gsec-${si}">
+      <div class="g-section-hdr" data-si="${si}">
+        <span class="g-section-name">${esc(sec.name)}</span>${chevSvg}
+      </div>
+      <div class="g-slots">${sec.slots.map((slot,gi)=>`
+        <div class="g-slot" data-si="${si}" data-gi="${gi}">
+          <span class="g-slot-name">${esc(slot.name.split(' *(')[0])}</span>
+          <span class="g-slot-installed">${esc(slot.installed||'—')}</span>
+          <span class="g-slot-cond">${slot.condition}</span>${arrSvg}
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  scroll.querySelectorAll('.g-section-hdr').forEach(hdr=>hdr.addEventListener('click',()=>{
+    document.getElementById('gsec-'+hdr.dataset.si).classList.toggle('open');
+  }));
+
+  scroll.querySelectorAll('.g-slot').forEach(row=>row.addEventListener('click',()=>{
+    const sec=catalogData[+row.dataset.si];
+    const slot=sec?.slots[+row.dataset.gi];
+    if(slot)openSheet(slot);
+  }));
+};
+
+// ── renderMods ────────────────────────────────────────────────
+const renderMods=sections=>{
+  const groups=sections.map(s=>({name:s.name,items:s.slots.filter(x=>x.isMod)})).filter(s=>s.items.length);
+  const scroll=document.getElementById('mods-scroll');
+  if(!groups.length){
+    document.getElementById('mods-stats').textContent='All stock';
+    scroll.innerHTML='<div class="mods-empty">No changes from OEM yet.<br>Open Garage → tap a slot → Install an upgrade.</div>';
+    return;
+  }
+  const total=groups.reduce((n,s)=>n+s.items.length,0);
+  document.getElementById('mods-stats').textContent=`${total} change${total!==1?'s':''} from stock`;
+  scroll.innerHTML=groups.map(sec=>`
+    <div class="mod-sec-hdr">${esc(sec.name)}</div>
+    ${sec.items.map(slot=>{
+      const oem=slot.upgrades.find(u=>/^oem$/i.test(u.tier));
+      return `<div class="mod-item">
+        <div class="mod-slot-name">${esc(slot.name.split(' *(')[0])}</div>
+        ${oem?`<div class="mod-stock">Stock: ${esc(oem.name)}${oem.partNum&&oem.partNum!=='—'?' · '+esc(oem.partNum):''}</div>`:''}
+        <div class="mod-row">
+          <span class="mod-installed">${esc(slot.installed)}</span>
+          ${slot.installedUrl?`<a class="mod-link" href="${esc(slot.installedUrl)}" target="_blank" rel="noopener">${extSvg}</a>`:''}
+        </div>
+      </div>`;
+    }).join('')}`).join('');
+};
+
+// ── Upgrade sheet ─────────────────────────────────────────────
+let sheetSlot=null, selectedUpg=null;
+
+const openSheet=slot=>{
+  sheetSlot=slot;selectedUpg=null;
+  document.getElementById('sheet-slot-name').textContent=slot.name.split(' *(')[0];
+  document.getElementById('sheet-cur').textContent='Currently: '+slot.installed+' '+slot.condition;
+  document.getElementById('sheet-confirm').style.display='none';
+
+  const rows=document.getElementById('sheet-rows');
+  if(!slot.upgrades.length){
+    rows.innerHTML='<div style="padding:24px 18px;text-align:center;color:#333;font-size:14px">No options defined for this slot</div>';
+  }else{
+    rows.innerHTML=slot.upgrades.map((u,i)=>`
+      <div class="sheet-row" data-i="${i}">
+        <span class="srow-tier">${esc(u.tier)}</span>
+        <div class="srow-info">
+          <div class="srow-name">${esc(u.name)}</div>
+          <div class="srow-sub">${[u.partNum&&u.partNum!=='—'?esc(u.partNum):'',u.notes?esc(u.notes):''].filter(Boolean).join(' · ')}</div>
+        </div>
+        <span class="srow-price">${esc(u.price)}</span>
+        ${u.url?`<a class="srow-link" href="${esc(u.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${extSvg}</a>`:''}
+      </div>`).join('');
+
+    rows.querySelectorAll('.sheet-row').forEach(row=>row.addEventListener('click',()=>{
+      const i=+row.dataset.i;
+      selectedUpg=slot.upgrades[i];
+      rows.querySelectorAll('.sheet-row').forEach(r=>r.classList.remove('sel'));
+      row.classList.add('sel');
+      const n=selectedUpg.name;
+      document.getElementById('confirm-txt').textContent='Install '+(n.length>30?n.slice(0,30)+'…':n)+'?';
+      const conf=document.getElementById('sheet-confirm');
+      conf.style.display='flex';
+    }));
+  }
+
+  document.getElementById('sheet-bg').classList.add('open');
+  document.getElementById('upg-sheet').classList.add('open');
+};
+
+const closeSheet=()=>{
+  document.getElementById('sheet-bg').classList.remove('open');
+  document.getElementById('upg-sheet').classList.remove('open');
+  sheetSlot=null;selectedUpg=null;
+};
+
+document.getElementById('sheet-bg').addEventListener('click',closeSheet);
+document.getElementById('sheet-x').addEventListener('click',closeSheet);
+document.getElementById('confirm-cancel').addEventListener('click',()=>{
+  selectedUpg=null;
+  document.getElementById('sheet-confirm').style.display='none';
+  document.getElementById('sheet-rows').querySelectorAll('.sheet-row').forEach(r=>r.classList.remove('sel'));
 });
 
-document.getElementById('list-scroll').addEventListener('click', async e => {
-  const dot=e.target.closest('.sdot'); if(!dot||dot.disabled) return;
-  const c=getCfg(); if(!c) return;
-  const item={name:dot.dataset.name, url:dot.dataset.url};
-  const oldStatus=dot.dataset.status;
-  const newStatus=nextStatus(oldStatus);
-  dot.classList.replace(oldStatus,newStatus);
-  dot.dataset.status=newStatus;
-  dot.disabled=true;
-  try {
-    await doUpdateStatus(c,item,newStatus);
-    navigator.vibrate?.(20);
-    toast(statusLabel(newStatus));
-  } catch(e) {
-    dot.classList.replace(newStatus,oldStatus);
-    dot.dataset.status=oldStatus;
+// ── doInstallPart ─────────────────────────────────────────────
+const doInstallPart=async(c,slotName,partName,partUrl)=>{
+  const run=async(sha,content)=>{
+    const updated=updateInstallInMd(content,slotName,partName,partUrl);
+    const newCat=parseCatalog(updated);
+    const modsContent=generateModsMd(newCat);
+    const res=await ghPut(c,'PARTS.md',updated,sha,'install: '+partName);
+    setCache(res.content.sha,updated);
+    try{
+      const md=await ghGet(c,'MODS.md').catch(()=>null);
+      await ghPut(c,'MODS.md',modsContent,md?.sha,'update mods log');
+    }catch(e){console.warn('MODS.md:',e.message);}
+    buildViews(updated);
+  };
+  const cached=getCache();
+  if(cached){try{await run(cached.sha,cached.content);return;}catch(e){if(!e.conflict)throw e;clearCache();}}
+  const raw=await ghGet(c,'PARTS.md');
+  const content=decode(raw.content);
+  setCache(raw.sha,content);
+  await run(raw.sha,content);
+};
+
+document.getElementById('confirm-install').addEventListener('click',async()=>{
+  const c=getCfg();if(!c||!sheetSlot||!selectedUpg)return;
+  if(!navigator.onLine){toast('No internet connection','err');return;}
+  const btn=document.getElementById('confirm-install');
+  btn.disabled=true;btn.innerHTML='<div class="spinner" style="border-top-color:#fff"></div>';
+  try{
+    await doInstallPart(c,sheetSlot.name,selectedUpg.name,selectedUpg.url);
+    navigator.vibrate?.(30);
+    closeSheet();
+    toast('Installed: '+selectedUpg.name);
+  }catch(e){
     navigator.vibrate?.([40,20,40]);
     toast(e.message,'err');
-  } finally { dot.disabled=false; }
+  }finally{
+    btn.disabled=false;btn.innerHTML='Install ✓';
+  }
 });
 
-// ── Status cycling (tap dot on list) ────────────────────────────────
-const nextStatus  = s => s==='want'?'ordered':s==='ordered'?'done':'want';
-const statusChar  = s => s==='done'?'x':s==='ordered'?'~':' ';
-const statusLabel = s => ({ordered:'Ordered',done:'Installed ✓',want:'Reset to wishlist'})[s];
-
-const updateStatusInMd = (md, item, newStatus) => {
-  const char = statusChar(newStatus);
-  const lines = md.split('\n');
-  const idx = lines.findIndex(l => {
-    if (!/^- \[.?\] /.test(l)) return false;
-    if (item.url) return l.includes(']('+item.url+')');
-    const namePart = l.replace(/^- \[.?\] /,'').replace(/^\[([^\]]+)\].*/,'$1').replace(/\s*—.*/,'').trim();
-    return namePart === item.name;
-  });
-  if (idx === -1) throw new Error('Item not found in PARTS.md');
-  lines[idx] = lines[idx].replace(/^(- \[)./, '$1'+char);
+// ── injectLine (Add tab → Wishlist section) ───────────────────
+const injectLine=(md,_cat,_sub,line)=>{
+  const lines=md.split('\n');
+  const wi=lines.findIndex(l=>l.trim()==='## Wishlist');
+  if(wi!==-1){
+    let end=lines.length;
+    for(let i=wi+1;i<lines.length;i++){if(/^## /.test(lines[i])){end=i;break;}}
+    let at=end;
+    for(let i=end-1;i>wi;i--){if(lines[i].trim()){at=i+1;break;}}
+    lines.splice(at,0,line);
+    return lines.join('\n');
+  }
+  lines.push('','---','','## Wishlist','',line,'');
   return lines.join('\n');
 };
 
-const doUpdateStatus = async (c, item, newStatus) => {
-  const action = newStatus==='done'?'Install':newStatus==='ordered'?'Order':'Reset';
-  const commit = async (sha, current) => {
-    const updated = updateStatusInMd(current, item, newStatus);
-    const res = await ghPut(c,'PARTS.md',updated,sha,action+': '+item.name);
-    setCache(res.content.sha, updated);
-    listEverLoaded = false;
-  };
-  const cached = getCache();
-  if (cached) { try { await commit(cached.sha,cached.content); return; } catch(e){ if(!e.conflict)throw e; clearCache(); } }
-  const raw = await ghGet(c,'PARTS.md');
-  const content = decode(raw.content);
-  setCache(raw.sha, content);
-  await commit(raw.sha, content);
-};
-
-// ── doAdd: SHA cache + 409 conflict retry ─────────────────────────
-const doAdd = async (c, name, url, cat, sub, notes) => {
+// ── doAdd ─────────────────────────────────────────────────────
+const doAdd=async(c,name,url,cat,sub,notes)=>{
   const link=url?'['+name+']('+url+')':name;
   const newLine='- [ ] '+link+(notes?' — '+notes:'');
-
-  const commit = async (sha, current) => {
-    const updated=injectLine(current, cat, sub, newLine);
-    const res=await ghPut(c,'PARTS.md',updated,sha,'Add part: '+name);
-    setCache(res.content.sha, updated);
-    listEverLoaded=false;
+  const commit=async(sha,current)=>{
+    const updated=injectLine(current,cat,sub,newLine);
+    const res=await ghPut(c,'PARTS.md',updated,sha,'add: '+name);
+    setCache(res.content.sha,updated);
+    if(catalogLoaded)buildViews(updated);
   };
-
   const cached=getCache();
-  if(cached){ try{ await commit(cached.sha,cached.content); return; }
-    catch(e){ if(!e.conflict)throw e; clearCache(); } }
+  if(cached){try{await commit(cached.sha,cached.content);return;}catch(e){if(!e.conflict)throw e;clearCache();}}
   const raw=await ghGet(c,'PARTS.md');
   const current=decode(raw.content);
   setCache(raw.sha,current);
   await commit(raw.sha,current);
 };
 
-// ── Share params ──────────────────────────────────────────────────
+// ── Share params ──────────────────────────────────────────────
 const sp=new URLSearchParams(location.search);
 const sharedUrl=sp.get('url')||sp.get('text')||'';
 const sharedTitle=cleanTitle(sp.get('title')||'');
 const fromShare=!!sharedUrl;
 
-// ── Init ──────────────────────────────────────────────────────────
-renderCats(); renderSubs(false); renderHist();
-if(sharedUrl)   document.getElementById('url').value=sharedUrl;
-if(sharedTitle) document.getElementById('name').value=sharedTitle;
-showScreen(getCfg() ? 's-main' : 's-cfg');
-if(fromShare) setTimeout(()=>document.getElementById('name').focus(), 300);
+// ── Init ──────────────────────────────────────────────────────
+renderCats();renderSubs(false);renderHist();
+if(sharedUrl)document.getElementById('url').value=sharedUrl;
+if(sharedTitle)document.getElementById('name').value=sharedTitle;
+showScreen(getCfg()?'s-main':'s-cfg');
+if(fromShare)setTimeout(()=>document.getElementById('name').focus(),300);
 
-// ── Online state ──────────────────────────────────────────────────
 const syncOnline=()=>document.body.classList.toggle('offline',!navigator.onLine);
-window.addEventListener('online',syncOnline); window.addEventListener('offline',syncOnline); syncOnline();
+window.addEventListener('online',syncOnline);window.addEventListener('offline',syncOnline);syncOnline();
 
-// ── Settings ──────────────────────────────────────────────────────
+// ── Settings ──────────────────────────────────────────────────
 document.getElementById('btn-cfg').addEventListener('click',()=>{
   const c=getCfg()||{};
   document.getElementById('cfg-owner').value=c.owner||'';
@@ -713,69 +879,61 @@ document.getElementById('btn-cfg').addEventListener('click',()=>{
   document.getElementById('cfg-token').value=c.token||'';
   showScreen('s-cfg');
 });
-document.getElementById('btn-back').addEventListener('click',()=>{ if(getCfg()) showScreen('s-main'); });
+document.getElementById('btn-back').addEventListener('click',()=>{if(getCfg())showScreen('s-main');});
 document.getElementById('btn-save').addEventListener('click',()=>{
   const c={owner:document.getElementById('cfg-owner').value.trim(),
            repo:document.getElementById('cfg-repo').value.trim(),
            token:document.getElementById('cfg-token').value.trim()};
-  if(!c.owner||!c.repo||!c.token){ toast('Fill in all three fields','err'); return; }
-  saveCfg(c); clearCache(); toast('Saved'); showScreen('s-main');
+  if(!c.owner||!c.repo||!c.token){toast('Fill in all three fields','err');return;}
+  saveCfg(c);clearCache();catalogLoaded=false;toast('Saved');showScreen('s-main');
 });
 document.getElementById('btn-test').addEventListener('click',async()=>{
   const btn=document.getElementById('btn-test');
-  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Testing…';
+  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Testing…';
   const c={owner:document.getElementById('cfg-owner').value.trim(),
             repo:document.getElementById('cfg-repo').value.trim(),
             token:document.getElementById('cfg-token').value.trim()};
-  try {
+  try{
     const data=await ghGet(c,'PARTS.md');
-    const n=decode(data.content).split('\n').filter(l=>/^- \[.?\]/.test(l)).length;
-    toast('Connected — '+n+' part'+(n!==1?'s':'')+' tracked');
-  } catch(e){ toast(e.message,'err'); }
-  finally{ btn.disabled=false; btn.textContent='Test connection'; }
+    const n=decode(data.content).split('\n').filter(l=>l.startsWith('**Installed:**')).length;
+    toast('Connected — '+n+' part slot'+(n!==1?'s':'')+' tracked');
+  }catch(e){toast(e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='Test connection';}
 });
 
-// ── Add ───────────────────────────────────────────────────────────
+// ── Add ───────────────────────────────────────────────────────
 const addBtn=document.getElementById('btn-add');
-const handleAdd = async () => {
+const handleAdd=async()=>{
   const name=document.getElementById('name').value.trim();
   const url=document.getElementById('url').value.trim();
   const notes=document.getElementById('notes').value.trim();
-  const sub=curSub();
-  if(!name){ document.getElementById('name').focus(); toast('Part name is required','err'); return; }
-  const c=getCfg(); if(!c){ showScreen('s-cfg'); return; }
-  if(!navigator.onLine){ toast('No internet connection','err'); return; }
-
-  addBtn.disabled=true; addBtn.innerHTML='<div class="spinner"></div> Adding…';
-  try {
-    await doAdd(c, name, url, activeCat, sub, notes);
+  if(!name){document.getElementById('name').focus();toast('Part name is required','err');return;}
+  const c=getCfg();if(!c){showScreen('s-cfg');return;}
+  if(!navigator.onLine){toast('No internet connection','err');return;}
+  addBtn.disabled=true;addBtn.innerHTML='<div class="spinner"></div> Adding…';
+  try{
+    await doAdd(c,name,url,activeCat,curSub(),notes);
     navigator.vibrate?.(30);
-    pushHist({name,url,cat:activeCat,sub});
-    renderHist();
-
+    pushHist({name,url,cat:activeCat,sub:curSub()});renderHist();
     if(fromShare){
       document.getElementById('success-name').textContent=name;
-      document.getElementById('success-cat').textContent='Added to '+sub;
+      document.getElementById('success-cat').textContent='Added to Wishlist';
       document.getElementById('success-overlay').classList.add('show');
-      setTimeout(()=>history.back(), 1500);
-    } else {
-      toast('Added to '+sub);
+      setTimeout(()=>history.back(),1500);
+    }else{
+      toast('Added to Wishlist');
       document.getElementById('url').value='';
       document.getElementById('name').value='';
       document.getElementById('notes').value='';
-      notesOpen=false; notesArea.classList.remove('open'); notesToggle.classList.remove('open');
+      notesOpen=false;notesArea.classList.remove('open');notesToggle.classList.remove('open');
       document.getElementById('name').focus();
     }
-  } catch(e){
-    navigator.vibrate?.([60,40,60]);
-    toast(e.message,'err');
-  } finally {
-    addBtn.disabled=false; addBtn.textContent='Add to list';
-  }
+  }catch(e){navigator.vibrate?.([60,40,60]);toast(e.message,'err');}
+  finally{addBtn.disabled=false;addBtn.textContent='Add to list';}
 };
-addBtn.addEventListener('click', handleAdd);
-document.getElementById('url').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); document.getElementById('name').focus(); } });
-['name','notes'].forEach(id=>document.getElementById(id).addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); handleAdd(); } }));
+addBtn.addEventListener('click',handleAdd);
+document.getElementById('url').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('name').focus();}});
+['name','notes'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleAdd();}}));
 </script>
 </body>
 </html>
