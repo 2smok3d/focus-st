@@ -10,11 +10,15 @@
 
 ### Exhaust
 
-### Suspension / Handling
+### Suspension
 
 ### Brakes
 
-### Tune
+### Cooling
+
+### Drivetrain
+
+### Tune / ECU
 
 ---
 
@@ -26,21 +30,31 @@
 
 ### Lighting
 
+### Wraps & Paint
+
 ---
 
 ## Interior
 
 ### Seats / Harness
 
-### Gauges / Displays
+### Gauges & Displays
 
 ### Audio
+
+### Pedals & Steering
 
 ### Other Interior
 
 ---
 
 ## Maintenance & Consumables
+
+### Fluids & Filters
+
+### Wear Items
+
+### Tools
 
 ---
 
