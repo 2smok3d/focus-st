@@ -2,48 +2,113 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d0d0d">
 <title>Focus ST Parts</title>
 <link rel="manifest" href="manifest.json">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#0d0d0d;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh}
-.screen{display:none;padding:24px 20px 40px;max-width:480px;margin:0 auto}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{background:#0d0d0d;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+
+.screen{display:none;padding:24px 20px 52px;max-width:480px;margin:0 auto;transition:opacity .15s ease}
 .screen.active{display:block}
-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-top:8px}
-.logo{font-size:20px;font-weight:700;letter-spacing:-.5px}
-.logo span{color:#e8000d}
-.icon-btn{background:none;border:none;color:#666;cursor:pointer;padding:8px;border-radius:8px;line-height:0}
-.icon-btn:active{background:#1a1a1a}
-.field{margin-bottom:20px}
-label{display:block;font-size:11px;font-weight:600;letter-spacing:.6px;text-transform:uppercase;color:#666;margin-bottom:8px}
-input,select,textarea{width:100%;background:#1a1a1a;border:1.5px solid #252525;color:#e8e8e8;border-radius:10px;padding:14px 16px;font-size:16px;font-family:inherit;outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none}
-input:focus,select:focus,textarea:focus{border-color:#e8000d}
-textarea{resize:none;height:80px;line-height:1.5}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px;cursor:pointer}
-.hint{font-size:12px;color:#555;margin-top:6px;line-height:1.5}
+
+header{display:flex;align-items:center;justify-content:space-between;padding-top:env(safe-area-inset-top,8px);margin-bottom:28px}
+.logo{font-size:21px;font-weight:700;letter-spacing:-.5px;display:flex;align-items:center;gap:10px}
+.logo em{color:#e8000d;font-style:normal}
+.offline-pill{font-size:10px;font-weight:600;letter-spacing:.4px;background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.22);border-radius:5px;padding:2px 7px;display:none}
+body.offline .offline-pill{display:block}
+
+.icon-btn{background:none;border:none;color:#555;cursor:pointer;padding:8px;border-radius:8px;line-height:0;transition:color .15s,background .15s}
+.icon-btn:active{background:#181818;color:#e8e8e8}
+
+.field{margin-bottom:18px}
+label{display:block;font-size:11px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:#505050;margin-bottom:8px}
+
+input,textarea{
+  width:100%;background:#131313;border:1.5px solid #1e1e1e;
+  color:#e8e8e8;border-radius:10px;padding:13px 15px;
+  font-size:16px;font-family:inherit;outline:none;
+  -webkit-appearance:none;appearance:none;
+  transition:border-color .15s,background .15s;
+}
+input:focus,textarea:focus{border-color:#e8000d;background:#161616}
+::placeholder{color:#333}
+textarea{resize:none;height:74px;line-height:1.5}
+
+/* Category pills — 2×2 grid, much better on mobile than a dropdown */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cat-pill{
+  background:#131313;border:1.5px solid #1e1e1e;color:#505050;
+  border-radius:10px;padding:13px 8px;font-size:13px;font-weight:500;
+  cursor:pointer;font-family:inherit;text-align:center;
+  -webkit-appearance:none;transition:all .12s;
+}
+.cat-pill:active{transform:scale(.96)}
+.cat-pill.sel{background:rgba(232,0,13,.09);border-color:#e8000d;color:#e8e8e8}
+
+/* Primary button */
+.btn{
+  width:100%;padding:15px;background:#e8000d;color:#fff;
+  border:none;border-radius:12px;font-size:17px;font-weight:600;
+  cursor:pointer;font-family:inherit;margin-top:6px;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:opacity .15s,transform .1s;-webkit-appearance:none;
+}
+.btn:active:not(:disabled){transform:scale(.98);opacity:.88}
+.btn:disabled{opacity:.38;cursor:not-allowed}
+.btn.ghost{background:#131313;color:#666;border:1.5px solid #1e1e1e;font-size:15px;font-weight:500;margin-top:10px}
+.btn.ghost:active:not(:disabled){background:#181818}
+
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Toast — spring slide-up */
+.toast{
+  position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));
+  left:16px;right:16px;max-width:448px;margin:0 auto;
+  background:#191919;border:1px solid #272727;
+  padding:13px 16px;border-radius:12px;
+  display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;
+  transform:translateY(110px);opacity:0;
+  transition:transform .3s cubic-bezier(.34,1.45,.64,1),opacity .2s;
+  pointer-events:none;z-index:99;
+}
+.toast.show{transform:translateY(0);opacity:1;pointer-events:all}
+.toast.ok{border-color:#1a3520}.toast.ok .tmsg{color:#4caf50}
+.toast.err{border-color:#351a1a}.toast.err .tmsg{color:#f44336}
+.tmsg{flex:1}
+.tdis{background:none;border:none;color:#444;cursor:pointer;font-size:22px;padding:0;line-height:1;flex-shrink:0}
+.tdis:active{color:#888}
+
+/* Recent adds */
+.recent{margin-top:30px}
+.recent-hdr{font-size:11px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:#363636;margin-bottom:10px}
+.ritem{padding:9px 0;border-bottom:1px solid #131313;display:flex;align-items:baseline;gap:8px;overflow:hidden}
+.ritem:last-child{border-bottom:none}
+.rcat{font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:#363636;flex-shrink:0;width:56px}
+.rname{font-size:13px;color:#606060;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rname a{color:#606060;text-decoration:none}
+.rname a:active{color:#888}
+
+/* Config */
+.cfg-sub{font-size:14px;color:#555;margin-bottom:26px;line-height:1.65}
+.hint{font-size:12px;color:#444;margin-top:7px;line-height:1.5}
 .hint a{color:#e8000d;text-decoration:none}
-.btn{width:100%;padding:16px;background:#e8000d;color:#fff;border:none;border-radius:12px;font-size:17px;font-weight:600;cursor:pointer;margin-top:4px;transition:opacity .15s;-webkit-appearance:none}
-.btn:active{opacity:.8}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.ghost{background:#1a1a1a;color:#aaa;border:1.5px solid #252525;font-size:15px;font-weight:500;margin-top:12px}
-.config-sub{font-size:14px;color:#777;margin-bottom:28px;line-height:1.6}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#1c1c1c;border:1px solid #2a2a2a;padding:13px 20px;border-radius:12px;font-size:14px;font-weight:500;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none;z-index:99}
-.toast.show{opacity:1}
-.toast.ok{border-color:#1e4d2b;color:#4caf50}
-.toast.err{border-color:#4d1e1e;color:#f44336}
+.hint b{color:#777;font-weight:500}
 </style>
 </head>
 <body>
 
+<!-- Add screen -->
 <div class="screen" id="s-add">
   <header>
-    <div class="logo">Focus <span>ST</span></div>
+    <div class="logo">Focus <em>ST</em><span class="offline-pill">Offline</span></div>
     <button class="icon-btn" id="btn-cfg" aria-label="Settings">
-      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
@@ -51,40 +116,47 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   </header>
 
   <div class="field">
-    <label>Part URL</label>
-    <input type="url" id="url" placeholder="https://..." inputmode="url" autocomplete="off">
+    <label>URL</label>
+    <input type="url" id="url" placeholder="https://..." inputmode="url" autocomplete="off" autocorrect="off">
   </div>
   <div class="field">
     <label>Part name *</label>
-    <input type="text" id="name" placeholder="e.g. Mountune MP215 upgrade">
+    <input type="text" id="name" placeholder="e.g. Mountune MP215 upgrade" autocorrect="off">
   </div>
   <div class="field">
     <label>Category</label>
-    <select id="cat">
-      <option value="Performance">Performance</option>
-      <option value="Exterior">Exterior</option>
-      <option value="Interior">Interior</option>
-      <option value="Maintenance &amp; Consumables">Maintenance &amp; Consumables</option>
-    </select>
+    <div class="cat-grid">
+      <button type="button" class="cat-pill" data-val="Performance">Performance</button>
+      <button type="button" class="cat-pill" data-val="Exterior">Exterior</button>
+      <button type="button" class="cat-pill" data-val="Interior">Interior</button>
+      <button type="button" class="cat-pill" data-val="Maintenance &amp; Consumables">Maintenance</button>
+    </div>
   </div>
   <div class="field">
     <label>Notes</label>
     <textarea id="notes" placeholder="Price, fitment notes, priority..."></textarea>
   </div>
+
   <button class="btn" id="btn-add">Add to list</button>
+
+  <div id="recent" class="recent" style="display:none">
+    <div class="recent-hdr">Recent</div>
+    <div id="recent-list"></div>
+  </div>
 </div>
 
+<!-- Config screen -->
 <div class="screen" id="s-cfg">
   <header>
-    <div class="logo">Focus <span>ST</span></div>
+    <div class="logo">Focus <em>ST</em></div>
     <button class="icon-btn" id="btn-back" aria-label="Back">
-      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
   </header>
 
-  <div class="config-sub">Enter your GitHub details once — they're saved on this device only, never sent anywhere except GitHub's API.</div>
+  <div class="cfg-sub">Enter your GitHub details once — saved to this device only, never sent anywhere except GitHub's API.</div>
 
   <div class="field">
     <label>GitHub username</label>
@@ -97,161 +169,251 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="field">
     <label>Personal access token</label>
     <input type="password" id="cfg-token" placeholder="ghp_..." autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false">
-    <div class="hint">Needs <strong style="color:#e8e8e8">Contents: read &amp; write</strong>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create a fine-grained token →</a></div>
+    <div class="hint">Needs <b>Contents: read &amp; write</b>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create fine-grained token →</a></div>
   </div>
 
   <button class="btn" id="btn-save">Save</button>
   <button class="btn ghost" id="btn-test">Test connection</button>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">
+  <span class="tmsg" id="tmsg"></span>
+  <button class="tdis" id="tdis" aria-label="Dismiss">×</button>
+</div>
 
 <script>
-const KEY = 'focusst_v1';
+// ── Keys ──────────────────────────────────────────────────
+const K = { cfg:'fst_v1', cache:'fst_cache', hist:'fst_hist', cat:'fst_cat' };
 
-function cfg() { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } }
-function saveCfg(c) { localStorage.setItem(KEY, JSON.stringify(c)); }
+// ── Config ────────────────────────────────────────────────
+const getCfg   = () => { try { return JSON.parse(localStorage.getItem(K.cfg)); } catch { return null; } };
+const saveCfg  = c  => localStorage.setItem(K.cfg, JSON.stringify(c));
 
-function toast(msg, type) {
+// ── File cache — skips GET on repeat adds (5 min TTL) ─────
+const getCache   = () => { try { const c = JSON.parse(localStorage.getItem(K.cache)); return c && Date.now()-c.ts < 3e5 ? c : null; } catch { return null; } };
+const setCache   = (sha, content) => localStorage.setItem(K.cache, JSON.stringify({ sha, content, ts: Date.now() }));
+const clearCache = () => localStorage.removeItem(K.cache);
+
+// ── History (last 8 adds) ─────────────────────────────────
+const getHist  = () => { try { return JSON.parse(localStorage.getItem(K.hist)) || []; } catch { return []; } };
+const pushHist = item => { const h = getHist(); h.unshift(item); localStorage.setItem(K.hist, JSON.stringify(h.slice(0,8))); };
+
+// ── Toast ─────────────────────────────────────────────────
+let _tt;
+const toast = (msg, type = 'ok') => {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show ' + (type || 'ok');
-  clearTimeout(el._t);
-  el._t = setTimeout(() => el.className = 'toast', 2600);
-}
+  document.getElementById('tmsg').textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(_tt);
+  _tt = setTimeout(() => el.className = 'toast', type === 'err' ? 4500 : 2800);
+};
+document.getElementById('tdis').onclick = () => document.getElementById('toast').className = 'toast';
 
-function show(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+// ── Screen fade transitions ───────────────────────────────
+const show = id => {
+  const prev = document.querySelector('.screen.active');
+  const next = document.getElementById(id);
+  if (prev?.id === id) return;
+  if (prev) {
+    prev.style.opacity = '0';
+    prev.classList.remove('active');
+    setTimeout(() => { prev.style.display = 'none'; prev.style.opacity = ''; }, 160);
+  }
+  next.style.display = 'block';
+  next.style.opacity = '0';
+  requestAnimationFrame(() => requestAnimationFrame(() => { next.style.opacity = '1'; next.classList.add('active'); }));
+};
 
-function apiHeaders(token) {
-  return { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' };
-}
+// ── Category pills ────────────────────────────────────────
+let activeCat = localStorage.getItem(K.cat) || 'Performance';
+const pills = document.querySelectorAll('.cat-pill');
+const setPill = val => { pills.forEach(p => p.classList.toggle('sel', p.dataset.val === val)); activeCat = val; localStorage.setItem(K.cat, val); };
+setPill(activeCat);
+pills.forEach(p => p.addEventListener('click', () => setPill(p.dataset.val)));
 
-async function getFile(c, path) {
-  const r = await fetch('https://api.github.com/repos/' + c.owner + '/' + c.repo + '/contents/' + path, { headers: apiHeaders(c.token) });
-  if (!r.ok) throw new Error('GitHub ' + r.status + (r.status === 401 ? ' — check your token' : r.status === 404 ? ' — repo or file not found' : ''));
+// ── Render recent adds ────────────────────────────────────
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const renderHist = () => {
+  const h = getHist();
+  const wrap = document.getElementById('recent');
+  if (!h.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  document.getElementById('recent-list').innerHTML = h.map(i =>
+    '<div class="ritem">' +
+    '<span class="rcat">' + esc(i.cat.replace(' & Consumables','')) + '</span>' +
+    '<span class="rname">' + (i.url ? '<a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.name)+'</a>' : esc(i.name)) + '</span>' +
+    '</div>'
+  ).join('');
+};
+
+// ── Title cleaner — strips e-commerce site suffixes ───────
+const cleanTitle = t => {
+  if (!t) return '';
+  return t
+    .replace(/^Amazon\.com\s*[:·]\s*/i, '')
+    .replace(/\s*[-–—|·]\s*(Amazon\.com|eBay|Walmart|CARiD|RockAuto|AutoZone|O'Reilly|JEGS|Summit Racing|Holley|AmericanMuscle|TireRack|Advance Auto).*/i, '')
+    .replace(/ \| [^|]{1,50}$/, '')
+    .trim().slice(0, 100);
+};
+
+// ── GitHub API ────────────────────────────────────────────
+const ghHdrs = tok => ({ Authorization: 'token ' + tok, Accept: 'application/vnd.github.v3+json' });
+const ghUrl  = (c, path) => 'https://api.github.com/repos/' + c.owner + '/' + c.repo + '/contents/' + path;
+
+const ghGet = async (c, path) => {
+  const r = await fetch(ghUrl(c, path), { headers: ghHdrs(c.token) });
+  if (!r.ok) {
+    if (r.status === 401) throw new Error('Bad token — check settings');
+    if (r.status === 404) throw new Error('Repo or file not found');
+    throw new Error('GitHub ' + r.status);
+  }
   return r.json();
-}
+};
 
-async function putFile(c, path, content, sha, message) {
-  const encoded = btoa(unescape(encodeURIComponent(content)));
-  const r = await fetch('https://api.github.com/repos/' + c.owner + '/' + c.repo + '/contents/' + path, {
+const ghPut = async (c, path, content, sha, msg) => {
+  const r = await fetch(ghUrl(c, path), {
     method: 'PUT',
-    headers: Object.assign({ 'Content-Type': 'application/json' }, apiHeaders(c.token)),
-    body: JSON.stringify({ message, content: encoded, sha })
+    headers: Object.assign({ 'Content-Type': 'application/json' }, ghHdrs(c.token)),
+    body: JSON.stringify({ message: msg, content: btoa(unescape(encodeURIComponent(content))), sha })
   });
-  if (!r.ok) { const e = await r.json(); throw new Error(e.message || r.status); }
+  if (!r.ok) {
+    const e = await r.json().catch(() => ({}));
+    const err = new Error(e.message || 'GitHub ' + r.status);
+    if (r.status === 409) err.conflict = true;
+    throw err;
+  }
   return r.json();
-}
+};
 
-function inject(md, section, line) {
+// ── Markdown section injection ────────────────────────────
+const injectLine = (md, section, line) => {
   const lines = md.split('\n');
-  const header = '## ' + section;
-  const idx = lines.findIndex(l => l.trim() === header);
-
+  const hdr = '## ' + section;
+  const idx = lines.findIndex(l => l.trim() === hdr);
   if (idx === -1) {
-    const doneIdx = lines.findIndex(l => l.trim() === '## Done');
-    const at = doneIdx !== -1 ? doneIdx : lines.length;
-    lines.splice(at, 0, '', header, line, '');
+    const done = lines.findIndex(l => l.trim() === '## Done');
+    lines.splice(done !== -1 ? done : lines.length, 0, '', hdr, line, '');
     return lines.join('\n');
   }
-
   let end = lines.length;
-  for (let i = idx + 1; i < lines.length; i++) {
-    if (/^## /.test(lines[i])) { end = i; break; }
-  }
-
-  let insertAt = end;
-  for (let i = end - 1; i > idx; i--) {
-    const t = lines[i].trim();
-    if (t && t !== '---') { insertAt = i + 1; break; }
-  }
-
-  lines.splice(insertAt, 0, line);
+  for (let i = idx+1; i < lines.length; i++) { if (/^## /.test(lines[i])) { end = i; break; } }
+  let at = end;
+  for (let i = end-1; i > idx; i--) { const t = lines[i].trim(); if (t && t !== '---') { at = i+1; break; } }
+  lines.splice(at, 0, line);
   return lines.join('\n');
-}
+};
 
-// Pre-fill from share target params
-const p = new URLSearchParams(location.search);
-const sharedUrl = p.get('url') || p.get('text') || '';
-const sharedTitle = p.get('title') || p.get('name') || '';
-if (sharedUrl) document.getElementById('url').value = sharedUrl;
+// ── Core add — cached SHA, auto-retry on 409 conflict ─────
+const doAdd = async (c, name, url, cat, notes) => {
+  const decode = b64 => decodeURIComponent(escape(atob(b64.replace(/\n/g,''))));
+  const link   = url ? '['+name+']('+url+')' : name;
+  const newLine = '- [ ] ' + link + (notes ? ' — '+notes : '');
+
+  const run = async (sha, current) => {
+    const res = await ghPut(c, 'PARTS.md', injectLine(current, cat, newLine), sha, 'Add part: '+name);
+    setCache(res.content.sha, injectLine(current, cat, newLine));
+  };
+
+  const cached = getCache();
+  if (cached) {
+    try { await run(cached.sha, cached.content); return; }
+    catch (e) { if (!e.conflict) throw e; clearCache(); }
+  }
+
+  // Fresh fetch (first add, or after cache miss / conflict)
+  const raw = await ghGet(c, 'PARTS.md');
+  const current = decode(raw.content);
+  setCache(raw.sha, current);
+  await run(raw.sha, current);
+};
+
+// ── Pre-fill from Android share target ───────────────────
+const sp = new URLSearchParams(location.search);
+const sharedUrl   = sp.get('url') || sp.get('text') || '';
+const sharedTitle = cleanTitle(sp.get('title') || '');
+if (sharedUrl)   document.getElementById('url').value = sharedUrl;
 if (sharedTitle) document.getElementById('name').value = sharedTitle;
 
-// Route to correct screen
-cfg() ? show('s-add') : show('s-cfg');
+// ── Init ──────────────────────────────────────────────────
+getCfg() ? show('s-add') : show('s-cfg');
+renderHist();
+if (sharedUrl) setTimeout(() => document.getElementById('name').focus(), 300);
 
-// Settings gear
+// ── Offline indicator ─────────────────────────────────────
+const syncOnline = () => document.body.classList.toggle('offline', !navigator.onLine);
+window.addEventListener('online', syncOnline);
+window.addEventListener('offline', syncOnline);
+syncOnline();
+
+// ── Settings ──────────────────────────────────────────────
 document.getElementById('btn-cfg').addEventListener('click', () => {
-  const c = cfg() || {};
+  const c = getCfg() || {};
   document.getElementById('cfg-owner').value = c.owner || '';
-  document.getElementById('cfg-repo').value = c.repo || '';
+  document.getElementById('cfg-repo').value  = c.repo  || '';
   document.getElementById('cfg-token').value = c.token || '';
   show('s-cfg');
 });
-
-document.getElementById('btn-back').addEventListener('click', () => { if (cfg()) show('s-add'); });
+document.getElementById('btn-back').addEventListener('click', () => { if (getCfg()) show('s-add'); });
 
 document.getElementById('btn-save').addEventListener('click', () => {
-  const c = {
-    owner: document.getElementById('cfg-owner').value.trim(),
-    repo: document.getElementById('cfg-repo').value.trim(),
-    token: document.getElementById('cfg-token').value.trim()
-  };
+  const c = { owner: document.getElementById('cfg-owner').value.trim(), repo: document.getElementById('cfg-repo').value.trim(), token: document.getElementById('cfg-token').value.trim() };
   if (!c.owner || !c.repo || !c.token) { toast('Fill in all three fields', 'err'); return; }
-  saveCfg(c);
-  toast('Saved');
-  show('s-add');
+  saveCfg(c); clearCache(); toast('Saved'); show('s-add');
 });
 
 document.getElementById('btn-test').addEventListener('click', async () => {
   const btn = document.getElementById('btn-test');
-  btn.disabled = true; btn.textContent = 'Testing...';
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Testing…';
   const c = { owner: document.getElementById('cfg-owner').value.trim(), repo: document.getElementById('cfg-repo').value.trim(), token: document.getElementById('cfg-token').value.trim() };
   try {
-    await getFile(c, 'PARTS.md');
-    toast('Connected — PARTS.md found');
-  } catch(e) {
-    toast(e.message, 'err');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Test connection';
-  }
+    const data = await ghGet(c, 'PARTS.md');
+    const n = decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))).split('\n').filter(l => /^- \[.?\]/.test(l)).length;
+    toast('Connected — ' + n + ' part' + (n !== 1 ? 's' : '') + ' tracked');
+  } catch(e) { toast(e.message, 'err'); }
+  finally { btn.disabled = false; btn.textContent = 'Test connection'; }
 });
 
-document.getElementById('btn-add').addEventListener('click', async () => {
-  const btn = document.getElementById('btn-add');
-  const name = document.getElementById('name').value.trim();
-  const url = document.getElementById('url').value.trim();
-  const cat = document.getElementById('cat').value;
+// ── Add part ──────────────────────────────────────────────
+const addBtn = document.getElementById('btn-add');
+
+const handleAdd = async () => {
+  const name  = document.getElementById('name').value.trim();
+  const url   = document.getElementById('url').value.trim();
   const notes = document.getElementById('notes').value.trim();
 
-  if (!name) { toast('Part name is required', 'err'); document.getElementById('name').focus(); return; }
+  if (!name) { document.getElementById('name').focus(); toast('Part name is required', 'err'); return; }
+  const c = getCfg(); if (!c) { show('s-cfg'); return; }
+  if (!navigator.onLine) { toast('No internet connection', 'err'); return; }
 
-  const c = cfg();
-  if (!c) { show('s-cfg'); return; }
-
-  btn.disabled = true; btn.textContent = 'Adding...';
+  addBtn.disabled = true;
+  addBtn.innerHTML = '<div class="spinner"></div> Adding…';
 
   try {
-    const data = await getFile(c, 'PARTS.md');
-    const current = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-    const link = url ? '[' + name + '](' + url + ')' : name;
-    const newLine = '- [ ] ' + link + (notes ? ' — ' + notes : '');
-    const updated = inject(current, cat, newLine);
-    await putFile(c, 'PARTS.md', updated, data.sha, 'Add part: ' + name);
-
-    toast('Added to ' + cat + '!');
-    document.getElementById('url').value = '';
-    document.getElementById('name').value = '';
+    await doAdd(c, name, url, activeCat, notes);
+    navigator.vibrate?.(30);
+    pushHist({ name, url, cat: activeCat });
+    renderHist();
+    toast('Added to ' + activeCat.replace(' & Consumables', ''));
+    document.getElementById('url').value   = '';
+    document.getElementById('name').value  = '';
     document.getElementById('notes').value = '';
+    document.getElementById('url').focus();
   } catch(e) {
+    navigator.vibrate?.([60, 40, 60]);
     toast(e.message, 'err');
   } finally {
-    btn.disabled = false; btn.textContent = 'Add to list';
+    addBtn.disabled = false;
+    addBtn.textContent = 'Add to list';
   }
-});
+};
+
+addBtn.addEventListener('click', handleAdd);
+['url','name','notes'].forEach(id =>
+  document.getElementById(id).addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAdd(); }
+  })
+);
 </script>
 </body>
 </html>
