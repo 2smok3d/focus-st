@@ -143,10 +143,15 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
   border-bottom:1px solid #111;transition:background .1s}
 .part-item:active{background:#0f0f0f}
 .part-item:last-child{border-bottom:none}
-.sdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.sdot.want{border:2px solid #2e2e2e}
-.sdot.ordered{background:#f59e0b;box-shadow:0 0 5px rgba(245,158,11,.35)}
-.sdot.done{background:#4caf50;box-shadow:0 0 5px rgba(76,175,80,.3)}
+.sdot{width:26px;height:26px;border-radius:50%;flex-shrink:0;cursor:pointer;
+  background:none;padding:0;border:none;font-family:inherit;-webkit-appearance:none;
+  display:flex;align-items:center;justify-content:center;transition:transform .1s;position:relative}
+.sdot:active:not(:disabled){transform:scale(1.35)}
+.sdot:disabled{opacity:.4;cursor:default}
+.sdot::after{content:'';width:9px;height:9px;border-radius:50%;display:block;transition:all .15s}
+.sdot.want::after{border:2px solid #2e2e2e}
+.sdot.ordered::after{background:#f59e0b;box-shadow:0 0 6px rgba(245,158,11,.4)}
+.sdot.done::after{background:#4caf50;box-shadow:0 0 6px rgba(76,175,80,.35)}
 .part-body{flex:1;overflow:hidden;min-width:0}
 .part-name{font-size:14px;color:#c0c0c0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .part-meta{display:flex;align-items:center;gap:6px;margin-top:3px;overflow:hidden}
@@ -573,7 +578,7 @@ const applyFilter = f => {
   scroll.innerHTML=visible.map(cat=>`<div class="cat-group">
     <div class="cat-group-hdr">${esc(cat.name)} <span class="cnt">${cat.items.length}</span></div>
     ${cat.items.map(i=>`<div class="part-item">
-      <div class="sdot ${i.status}"></div>
+      <button class="sdot ${i.status}" data-name="${esc(i.name)}" data-url="${esc(i.url||'')}" data-status="${i.status}" aria-label="Cycle status"></button>
       <div class="part-body">
         <div class="part-name">${i.url?`<a href="${esc(i.url)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(i.name)}</a>`:esc(i.name)}</div>
         <div class="part-meta">${i.sub?`<span class="sub-badge">${esc(i.sub)}</span>`:''} ${i.notes?`<span class="part-notes">${esc(i.notes)}</span>`:''}</div>
@@ -605,6 +610,62 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
 document.getElementById('filter-bar').addEventListener('click', e => {
   const p=e.target.closest('.fpill'); if(p) applyFilter(p.dataset.f);
 });
+
+document.getElementById('list-scroll').addEventListener('click', async e => {
+  const dot=e.target.closest('.sdot'); if(!dot||dot.disabled) return;
+  const c=getCfg(); if(!c) return;
+  const item={name:dot.dataset.name, url:dot.dataset.url};
+  const oldStatus=dot.dataset.status;
+  const newStatus=nextStatus(oldStatus);
+  dot.classList.replace(oldStatus,newStatus);
+  dot.dataset.status=newStatus;
+  dot.disabled=true;
+  try {
+    await doUpdateStatus(c,item,newStatus);
+    navigator.vibrate?.(20);
+    toast(statusLabel(newStatus));
+  } catch(e) {
+    dot.classList.replace(newStatus,oldStatus);
+    dot.dataset.status=oldStatus;
+    navigator.vibrate?.([40,20,40]);
+    toast(e.message,'err');
+  } finally { dot.disabled=false; }
+});
+
+// ── Status cycling (tap dot on list) ────────────────────────────────
+const nextStatus  = s => s==='want'?'ordered':s==='ordered'?'done':'want';
+const statusChar  = s => s==='done'?'x':s==='ordered'?'~':' ';
+const statusLabel = s => ({ordered:'Ordered',done:'Installed ✓',want:'Reset to wishlist'})[s];
+
+const updateStatusInMd = (md, item, newStatus) => {
+  const char = statusChar(newStatus);
+  const lines = md.split('\n');
+  const idx = lines.findIndex(l => {
+    if (!/^- \[.?\] /.test(l)) return false;
+    if (item.url) return l.includes(']('+item.url+')');
+    const namePart = l.replace(/^- \[.?\] /,'').replace(/^\[([^\]]+)\].*/,'$1').replace(/\s*—.*/,'').trim();
+    return namePart === item.name;
+  });
+  if (idx === -1) throw new Error('Item not found in PARTS.md');
+  lines[idx] = lines[idx].replace(/^(- \[)./, '$1'+char);
+  return lines.join('\n');
+};
+
+const doUpdateStatus = async (c, item, newStatus) => {
+  const action = newStatus==='done'?'Install':newStatus==='ordered'?'Order':'Reset';
+  const commit = async (sha, current) => {
+    const updated = updateStatusInMd(current, item, newStatus);
+    const res = await ghPut(c,'PARTS.md',updated,sha,action+': '+item.name);
+    setCache(res.content.sha, updated);
+    listEverLoaded = false;
+  };
+  const cached = getCache();
+  if (cached) { try { await commit(cached.sha,cached.content); return; } catch(e){ if(!e.conflict)throw e; clearCache(); } }
+  const raw = await ghGet(c,'PARTS.md');
+  const content = decode(raw.content);
+  setCache(raw.sha, content);
+  await commit(raw.sha, content);
+};
 
 // ── doAdd: SHA cache + 409 conflict retry ─────────────────────────
 const doAdd = async (c, name, url, cat, sub, notes) => {
