@@ -1,243 +1,949 @@
-# Ford Focus ST — Parts & Mods
+# Ford Focus ST — Parts Tracker
 
-> **Status:** `[ ]` want · `[~]` ordered · `[x]` installed  
-> **Car:** 2017 Ford Focus ST — 2.0L EcoBoost, MT82 6-speed, push-to-start
-
----
-
-## Performance
-
-### Engine / Intake
-
-> **Stock:** IHI turbo, top-mount intercooler (TMIC), 365cc injectors, ~14–17 psi boost, plastic airbox + paper filter
-
-- [ ] [Cobb SF Intake](https://www.cobbtuning.com/products/ford-focus-st-short-ram-intake-system) — easy bolt-on, +8hp
-- [ ] [Mountune High Flow Air Box](https://mountuneusa.com/collections/focus-st/products/high-flow-airbox) — OEM+ intake, warranty-friendly
-- [ ] [K&N Drop-in Filter](https://www.knfilters.com) — part# 33-2435, replaces OEM FA-1802 paper filter
-- [ ] [Mishimoto FMIC Kit](https://www.mishimoto.com/ford-focus-st-front-mount-intercooler-kit.html) — biggest bang for buck, eliminates heat soak from TMIC
-- [ ] [Forge Motorsport Recirculation Valve](https://www.forge-motorsport.com) — OEM BOV replacement, better boost hold
-- [ ] [Cobb Charge Pipe Kit](https://www.cobbtuning.com) — replaces OEM plastic boost pipes, reduces boost leaks
-
-### Exhaust
-
-> **Stock:** single 3" downpipe with cat, resonated mid-pipe, single exit tip
-
-- [ ] [Borla ATAK Cat-Back](https://www.borla.com/ford-focus-st-catback-exhaust) — aggressive tone, polished tips
-- [ ] [Mountune Cat-Back](https://mountuneusa.com/collections/focus-st) — refined, OEM quality
-- [ ] [Milltek Non-Resonated Cat-Back](https://www.millteksport.com) — louder, raspy
-- [ ] [Cobb 3" Catted Downpipe](https://www.cobbtuning.com) — high-flow cat, emissions compliant
-- [ ] Resonator Delete Pipe — cheap first mod, noticeable tone change
-
-### Suspension
-
-> **Stock:** MacPherson front / Control Blade semi-independent rear · 22mm front sway bar · 21.7mm rear sway bar · ~350 lbs/in front spring rate
-
-- [ ] [KW Variant 3 Coilovers](https://www.kwsuspension.com) — independently adjustable compression + rebound, best quality
-- [ ] [Fortune Auto 500 Coilovers](https://www.fortuneauto.com) — great value, built to order
-- [ ] [Eibach Pro-Kit Springs](https://www.eibach.com) — 25mm drop, retains OEM dampers
-- [ ] [Whiteline 27mm Front Sway Bar](https://www.whiteline.com.au) — up from 22mm stock, reduces understeer
-- [ ] [Whiteline 22mm Rear Sway Bar](https://www.whiteline.com.au) — pairs with front bar
-- [ ] Whiteline End Links — required with upgraded sway bars
-- [ ] Rear Trailing Arm Bushings — polyurethane, corrects rear camber slop
-- [ ] Front Strut Tower Brace — reduces chassis flex
-
-### Brakes
-
-> **Stock:** 320×25mm vented front rotors · 302×10mm solid rear rotors · single-piston sliding calipers front & rear · Motorcraft BR-1308A front pads · Motorcraft BR-1303A rear pads
-
-- [ ] [Hawk HPS Brake Pads — Front](https://www.hawkperformance.com) — HB432F.661, daily upgrade over OEM, low dust
-- [ ] [Hawk HPS Brake Pads — Rear](https://www.hawkperformance.com) — HB533F.668
-- [ ] [EBC Redstuff Pads — Front](https://www.ebcbrakes.com) — DP31573C, ceramic, very low dust
-- [ ] [Stoptech Sport Drilled/Slotted Rotors — Front](https://www.stoptech.com) — 320mm
-- [ ] [Stoptech Sport Drilled/Slotted Rotors — Rear](https://www.stoptech.com) — 302mm
-- [ ] [Goodridge Stainless Brake Lines](https://www.goodridge.com) — sharper pedal feel
-- [ ] [Motul RBF600 Brake Fluid](https://www.motul.com) — 312°C dry boiling point vs ~205°C OEM DOT 4 LV
-
-### Cooling
-
-> **Stock:** plastic radiator, no oil cooler from factory
-
-- [ ] [Mishimoto Aluminum Radiator](https://www.mishimoto.com/ford-focus-st-aluminum-radiator.html) — direct fit, better thermal capacity
-- [ ] [Setrab Oil Cooler Kit](https://www.setrab.com) — essential for track use, prevents oil breakdown
-- [ ] [Forge Motorsport Oil Cooler](https://www.forge-motorsport.com) — FMOC001, bolt-on
-
-### Drivetrain
-
-> **Stock:** open diff, MT82 6-speed (notorious for cold weather crunch — fix with Motorcraft XTM5-QS fluid)
-
-- [ ] [Quaife ATB Differential](https://www.quaife.co.uk/products/ford-focus-st-atb-differential) — eliminates torque steer, single best handling mod ~$1,100
-- [ ] [Cobb Short Throw Shifter](https://www.cobbtuning.com) — reduces throw ~25%
-- [ ] [Whiteline Shifter Bushing Kit](https://www.whiteline.com.au) — KIT008, removes shifter slop
-- [ ] [Mountune Motor Mount Inserts](https://mountuneusa.com) — reduces engine movement under power
-- [ ] [Exedy Stage 1 Clutch Kit](https://www.exedyclutch.com) — holds 350ft-lb, good daily option for tuned cars
-
-### Tune / ECU
-
-- [ ] [Cobb AccessPort V3](https://www.cobbtuning.com/products/ford-focus-st-accessport) — must-have, datalogging + OTS maps, $649
-- [ ] [Mountune MP215 Package](https://mountuneusa.com/collections/focus-st/products/mp215-performance-upgrade) — intake + tune, +28hp, OEM warranty-safe, ~$800
-- [ ] [Mountune MP235 Package](https://mountuneusa.com/collections/focus-st/products/mp235-performance-upgrade) — FMIC + intake + tune, +37hp, ~$1,200
-- [ ] EcoBoost Flex Fuel Kit — ethanol sensor + E30/E85 tune, requires AccessPort
+> 2017 · 2.0L EcoBoost · MT82 6-speed · Push-to-Start  
+> ✅ good · ⚠️ unknown · 🔧 needs attention
 
 ---
 
-## Exterior
+<details>
+<summary><b>ENGINE</b></summary>
+<br>
 
-### Wheels & Tires
+#### Air Filter
+**Installed:** [Motorcraft FA-1802](https://www.amazon.com/s?k=Motorcraft+FA-1802) — OEM · BM5Z-9601-A · ⚠️ unknown
 
-> **Stock:** 18×7.5" 5-spoke alloy · ET52.5 · 5×108mm bolt pattern · 63.3mm hub bore · 235/40R18 Goodyear Eagle F1 Asymmetric 2 · lug torque 100 ft-lb
+<details>
+<summary>Replace / Upgrade</summary>
 
-- [ ] [Enkei RPF1 17×8 +45](https://www.enkei.com) — 225/45R17, 16.2lb, classic track wheel
-- [ ] [Konig Hypergram 17×8 +45](https://www.konigwheels.com) — budget-friendly lightweight
-- [ ] [Michelin Pilot Sport 4S 235/40R18](https://www.michelin.com) — best daily/track tire in OE size
-- [ ] [Continental ExtremeContact Sport 235/40R18](https://www.continentaltire.com) — great value performance
-- [ ] [Falken Azenis RT660 235/40R18](https://www.falkentire.com) — track day / autocross
-- [ ] Wheel Spacers 5×108 — 15mm front, 10mm rear for flush fitment (use hubcentric)
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft FA-1802](https://www.amazon.com/s?k=Motorcraft+FA-1802) | FA-1802 | ~$15 | replace every 15–30k mi |
+| Performance | [K&N 33-2435](https://www.amazon.com/s?k=K%26N+33-2435) | 33-2435 | ~$55 | washable/reusable, +flow |
+| Performance | [aFe Magnum Flow Panel](https://www.amazon.com/s?k=aFe+focus+st+panel+filter) | — | ~$60 | oiled panel filter |
 
-### Body / Aero
-
-- [ ] [Mountune Front Splitter](https://mountuneusa.com) — subtle aero, OEM look
-- [ ] Anderson Composites Carbon Fiber Hood — weight reduction
-- [ ] OEM ST200 Side Skirts — JDM-spec extensions
-- [ ] [Rear Diffuser](https://www.ebay.com) — improves rear aero balance
-- [ ] Focus RS Front Bumper Conversion — dramatic look, requires cutting
-- [ ] Tow Hook — front + rear, required for track days
-
-### Lighting
-
-> **Stock:** halogen projector headlights · H16 fog lights · incandescent interior
-
-- [ ] [Morimoto XB LED Headlights](https://www.theretrofitsource.com) — plug and play, huge upgrade over OEM halogens
-- [ ] [Diode Dynamics H16 LED Fog Lights](https://www.diodedynamics.com) — SL1 or SLF, direct fit
-- [ ] [Diode Dynamics Interior LED Kit](https://www.diodedynamics.com) — full interior, warm white
-- [ ] [Spyder LED Tail Lights](https://www.spyder-auto.com) — blacked out option
-- [ ] Puddle Lights — Focus logo projection, door mirrors
-
-### Wraps & Paint
-
-- [ ] Roof Vinyl Wrap — satin black or gloss
-- [ ] Mirror Cap Wraps — contrast color
-- [ ] [Carbon Fiber Mirror Caps](https://www.ebay.com) — OEM replacement caps
-- [ ] Hood Vinyl Wrap — racing stripe or full hood
-- [ ] Plasti-Dip Grille Badge — blackout treatment
+</details>
 
 ---
 
-## Interior
+#### Spark Plugs *(4 required — gap 0.028")*
+**Installed:** [Motorcraft SP-537](https://www.amazon.com/s?k=Motorcraft+SP-537) — OEM · AGSF32PM · ⚠️ unknown
 
-### Seats / Harness
+<details>
+<summary>Replace / Upgrade</summary>
 
-- [ ] [Recaro Sportster CS](https://www.recaro-automotive.com) — bolstered, OEM fitment brackets available
-- [ ] [Corbeau GTS II Seats](https://www.corbeau.com) — affordable, good support
-- [ ] [Takata 4-Point Harness](https://www.takata.com) — 2" shoulder straps, requires harness bar
-- [ ] Harness Bar — bolt-in 49" bar for harness mounting
-- [ ] Seat Heater Delete Switches — cleaner console if removing OEM heated seats
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft SP-537](https://www.amazon.com/s?k=Motorcraft+SP-537) | SP-537 | ~$8 ea | AGSF32PM · gap 0.028" |
+| OEM | [NGK ILZFR6D11](https://www.amazon.com/s?k=NGK+ILZFR6D11) | ILZFR6D11 | ~$10 ea | iridium OEM equivalent |
+| Tuned | [NGK ILZFR6D11 (tight gap)](https://www.amazon.com/s?k=NGK+ILZFR6D11) | ILZFR6D11 | ~$10 ea | close to 0.022" for high boost |
 
-### Gauges & Displays
-
-- [ ] [Cobb AccessPort V3 A-Pillar Mount](https://www.cobbtuning.com) — mounts AP where you can see it
-- [ ] [AEM X-Series Boost/Vacuum Gauge](https://www.aemelectronics.com) — 30-0301, -30 to 35 psi
-- [ ] [PLX DM-6 OBD2 Multi-Gauge](https://www.plxdevices.com) — shows boost, AFR, temps via OBD2
-- [ ] [Innovate LC-2 Wideband AFR](https://www.innovatemotorsports.com) — proper wideband for tuning
-- [ ] Dual A-Pillar Pod — custom fab or 3D printed for two gauges
-
-### Audio
-
-> **Stock:** Sony 9-speaker system (if equipped) or base 6-speaker · no CarPlay/Android Auto from factory
-
-- [ ] [Pioneer DMH-W4660NEX](https://www.pioneerelectronics.com) — wireless CarPlay/Android Auto, floating 7"
-- [ ] [Kenwood DMX7709S](https://www.kenwood.com) — wireless CarPlay, clean interface
-- [ ] [Focal Integration IS 165TOE](https://www.focal.com) — OEM connector front speakers, no cutting
-- [ ] [Dynamat Xtreme Door Kit](https://www.dynamat.com) — doors + trunk, major audio improvement
-- [ ] [Kicker CompR 10" Sub + Amp](https://www.kicker.com) — fits hatchback floor area
-
-### Pedals & Steering
-
-- [ ] [Mountune Aluminum Pedal Set](https://mountuneusa.com) — throttle, brake, clutch, direct fit
-- [ ] [Agency Power Short Throw Shifter](https://www.agencypower.com) — AP-FFS-150
-- [ ] [NRG Short Hub Adapter](https://www.nrginnovations.com) — SRK-170H for Focus
-- [ ] [NRG Quick Release Gen 2.5](https://www.nrginnovations.com) — for aftermarket wheel
-- [ ] [Momo Prototipo Steering Wheel](https://www.momo.it) — classic look, 350mm
-
-### Other Interior
-
-- [ ] [Weathertech Floor Mats](https://www.weathertech.com) — laser measured, full coverage
-- [ ] [Cobb SF Shift Knob](https://www.cobbtuning.com) — weighted, better feel
-- [ ] Window Tint — 35% front, 20% rear
-- [ ] Sound Deadening — Kilmat or Dynamat full car treatment
-- [ ] [Footwell LED Lighting Kit](https://www.amazon.com) — ambient strips
+</details>
 
 ---
 
-## Maintenance & Consumables
+#### Coil Packs *(4 required)*
+**Installed:** [Motorcraft DG-565](https://www.amazon.com/s?k=Motorcraft+DG-565) — OEM · ⚠️ unknown
 
-### Fluids & Filters
+<details>
+<summary>Replace / Upgrade</summary>
 
-| Item | OEM Part # | Spec / Notes |
-|------|-----------|-------------|
-| Engine Oil | — | 5W-30 Full Synthetic, **5.7 qt** capacity |
-| Oil Filter | Motorcraft **FL-910S** | Replace every oil change |
-| Spark Plugs | Motorcraft **SP-537** (AGSF32PM) | Pre-gapped **0.028"**, 4 needed, replace every 30k mi |
-| Air Filter | Motorcraft **FA-1802** | Ford BM5Z-9601-A, replace 15–30k mi |
-| Cabin Air Filter | Motorcraft **FP-67** | Ford DG9Z-19N619-A, replace annually |
-| Coolant | Motorcraft **VC-3-B** | Orange, 50/50 premix, ~2.5 qt top-up |
-| Brake Fluid | — | DOT 4 LV (Ford spec WSS-M6C65-A2) |
-| MT82 Gearbox Fluid | Motorcraft **XTM5-QS** | Full Synthetic MTF, **1.8 qt** fill — fixes cold crunch |
-| Power Steering Fluid | — | Electric steering (EPAS), no fluid |
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft DG-565](https://www.amazon.com/s?k=Motorcraft+DG-565) | DG-565 | ~$25 ea | replace as set with plugs |
+| OEM | [Motorcraft DG-568](https://www.amazon.com/s?k=Motorcraft+DG-568) | DG-568 | ~$28 ea | updated revision |
 
-- [ ] Motorcraft SP-537 Spark Plugs — 4-pack, gap 0.028"
-- [ ] Motorcraft FL-910S Oil Filter
-- [ ] Motorcraft 5W-30 Full Synthetic — 6qt for safety margin on 5.7qt capacity
-- [ ] Motorcraft FA-1802 Air Filter — or K&N 33-2435 for reusable
-- [ ] Motorcraft FP-67 Cabin Air Filter
-- [ ] Motorcraft VC-3-B Orange Coolant — 50/50 premix
-- [ ] DOT 4 LV Brake Fluid — ATE SL.6 or Motul RBF600
-- [ ] Motorcraft XTM5-QS MT82 Fluid — 2 qts, helps cold-weather shifting significantly
-- [ ] Motul 8100 X-clean+ 5W-30 — popular OEM+ oil alternative
-
-### Wear Items
-
-| Item | OEM Part # | Spec / Interval |
-|------|-----------|----------------|
-| Intelligent Access Key | **M3N5WY8609** | Push-to-start, Keyless2Go or Strattec brand recommended |
-| IA Key Battery | **CR2032** | Inside fob, replace if range drops |
-| Front Brake Pads | Motorcraft **BR-1308A** | 320mm front, ~30k mi street |
-| Rear Brake Pads | Motorcraft **BR-1303A** | 302mm rear |
-| Front Rotors | — | 320×25mm vented |
-| Rear Rotors | — | 302×10mm solid |
-| Coil Packs | Motorcraft **DG-565** | 4 needed, replace with plugs if misfiring |
-| Serpentine Belt | Ford **6PK1763** | Gates K060695 equivalent, inspect 60k, replace 100k |
-| Battery | **Group 96R** | ~590 CCA minimum, Motorcraft BXT-96R or equivalent |
-| Thermostat | Motorcraft **RT-1274** | 78°C, common EcoBoost weak point — replace if running warm |
-| PCV Valve | — | Inspect at 60k, clogging causes oil leaks and smoke |
-| Wiper Blades | — | **26"** driver / **16"** passenger — Bosch Icon fit well |
-| Clutch Kit | — | Stock holds ~280 ft-lb, upgrade if running more power |
-
-- [ ] M3N5WY8609 Intelligent Access Key — Keyless2Go or Strattec brand, ~$30 aftermarket
-- [ ] Spare IA Key (×2 total) — program via FORScan PATS after MyKey reset
-- [ ] IA Key CR2032 Battery — replace before assuming fob is dead
-- [ ] Motorcraft BR-1308A Front Brake Pads — OEM replacement
-- [ ] Motorcraft BR-1303A Rear Brake Pads — OEM replacement
-- [ ] Motorcraft DG-565 Coil Packs — set of 4, replace at 60k+ or with spark plugs
-- [ ] Ford 6PK1763 Serpentine Belt — or Gates K060695
-- [ ] Group 96R Battery — Motorcraft BXT-96R or Interstate MTZ-96R
-- [ ] Motorcraft RT-1274 Thermostat — replace proactively at 80–100k
-- [ ] Bosch Icon Wiper Blades — 26" driver (Part# 26A), 16" passenger (Part# 16A)
-
-### Tools
-
-- [x] OBDLink MX+ — Bluetooth, full MS-CAN + HS-CAN, works with FORScan
-- [ ] [FORScan](https://forscan.org/download.html) — free Ford diagnostics: MyKey reset, PATS key programming, EPAS tuning, all module codes, disable fake engine noise
-- [ ] Admin Key — currently 0 admin / 3 MyKey. Reset via FORScan BCM → MyKey → Reset MyKey (free)
-- [ ] IA Key Programming via FORScan — PATS module → add key, works with 1 existing key (bypasses 2-key requirement)
-- [ ] Torque Wrench — 0–150 ft-lb (wheel bolts: **100 ft-lb** · drain plug: **20 ft-lb** · spark plugs: **10 ft-lb**)
-- [ ] Oil Drain Pan — 8 qt+ for 5.7 qt capacity
-- [ ] Oil Filter Wrench — fits FL-910S
-- [ ] T30 Torx Bit Set — brake caliper slider pins
-- [ ] 32mm Socket — front hub nut
-- [ ] Jack Stands (×4) — never use floor jack alone
+</details>
 
 ---
 
-## Done
+#### Oil Filter
+**Installed:** [Motorcraft FL-910S](https://www.amazon.com/s?k=Motorcraft+FL-910S) — OEM
 
-<!-- Move completed items here with [x] and note install date / cost -->
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft FL-910S](https://www.amazon.com/s?k=Motorcraft+FL-910S) | FL-910S | ~$8 | replace every oil change |
+| OEM+ | [WIX 57060XP](https://www.amazon.com/s?k=WIX+57060XP) | 57060XP | ~$10 | extended performance |
+| OEM+ | [Purolator Boss PBL14610](https://www.amazon.com/s?k=Purolator+PBL14610) | PBL14610 | ~$12 | premium filtration |
+
+</details>
+
+---
+
+#### Engine Oil *(5.7 qt capacity)*
+**Installed:** OEM 5W-30 Full Synthetic — ⚠️ unknown condition
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft 5W-30 Full Syn](https://www.amazon.com/s?k=Motorcraft+5W-30+full+synthetic) | XO-5W30-QSP | ~$8/qt | Ford spec |
+| OEM+ | [Motul 8100 X-clean+ 5W-30](https://www.amazon.com/s?k=Motul+8100+X-clean+5W-30) | — | ~$12/qt | excellent for EcoBoost turbo |
+| OEM+ | [Castrol Edge 5W-30](https://www.amazon.com/s?k=Castrol+Edge+5W-30+titanium) | — | ~$9/qt | titanium FST |
+| Track | [Mobil 1 0W-40](https://www.amazon.com/s?k=Mobil+1+0W-40) | — | ~$11/qt | wider temp range for track |
+
+</details>
+
+---
+
+#### PCV Valve
+**Installed:** OEM PCV valve — ⚠️ unknown · inspect at 60k
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford PCV Valve](https://www.amazon.com/s?k=Ford+CM5Z-6A666-A+PCV) | CM5Z-6A666-A | ~$15 | clogging causes oil leaks and smoke |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>FORCED INDUCTION</b></summary>
+<br>
+
+#### Intercooler
+**Installed:** OEM IHI Top-Mount (TMIC) — stock · heat soak prone on hard pulls
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Mishimoto FMIC Kit](https://www.mishimoto.com/ford-focus-st-front-mount-intercooler-kit.html) | MMINT-FST-13 | ~$550 | best value, eliminates heat soak |
+| Upgrade | [Mountune FMIC](https://mountuneusa.com/collections/focus-st) | — | ~$600 | OEM+ quality fitment |
+| Upgrade | [Injen FMIC](https://www.injen.com) | — | ~$480 | budget option |
+
+</details>
+
+---
+
+#### Recirculation / Blow-Off Valve
+**Installed:** OEM diverter valve — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Forge Motorsport RV](https://www.forge-motorsport.com) | FMDV14T | ~$130 | better boost hold |
+| Upgrade | [Turbosmart Kompact BOV](https://www.turbosmart.com) | TS-0203-1061 | ~$150 | plumb-back or venting options |
+
+</details>
+
+---
+
+#### Charge Pipes
+**Installed:** OEM plastic charge pipes — stock · ⚠️ inspect for cracks
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Cobb Charge Pipe Kit](https://www.cobbtuning.com) | — | ~$175 | aluminum, eliminates boost leak points |
+| Upgrade | [Mishimoto Charge Pipe](https://www.mishimoto.com) | — | ~$150 | direct fit |
+
+</details>
+
+---
+
+#### Intake / Airbox
+**Installed:** OEM plastic airbox — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM+ | [Mountune High Flow Air Box](https://mountuneusa.com/collections/focus-st/products/high-flow-airbox) | — | ~$250 | warranty-safe, drop-in |
+| Performance | [Cobb SF Intake](https://www.cobbtuning.com/products/ford-focus-st-short-ram-intake-system) | — | ~$350 | +8whp, tune recommended |
+| Performance | [Mishimoto Cold Air Intake](https://www.mishimoto.com) | MMAI-FST-13 | ~$320 | direct fit |
+
+</details>
+
+---
+
+#### ECU / Tune
+**Installed:** OEM ECU — stock tune · ~247hp / 270 ft-lb
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Tune | [Cobb AccessPort V3](https://www.cobbtuning.com/products/ford-focus-st-accessport) | AP3-FOR-005 | ~$649 | must-have · datalogging + OTS maps |
+| Package | [Mountune MP215](https://mountuneusa.com/collections/focus-st/products/mp215-performance-upgrade) | — | ~$800 | intake + tune · +28hp · warranty-safe |
+| Package | [Mountune MP235](https://mountuneusa.com/collections/focus-st/products/mp235-performance-upgrade) | — | ~$1,200 | FMIC + intake + tune · +37hp |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>EXHAUST</b></summary>
+<br>
+
+#### Downpipe
+**Installed:** OEM 3" catted downpipe — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Street | [Cobb 3" Catted Downpipe](https://www.cobbtuning.com) | — | ~$500 | high-flow cat, emissions legal |
+| Street | [Mountune Downpipe](https://mountuneusa.com) | — | ~$550 | OEM quality |
+| Track | [Cobb Catless Downpipe](https://www.cobbtuning.com) | — | ~$425 | off-road/track only |
+
+</details>
+
+---
+
+#### Cat-Back
+**Installed:** OEM resonated cat-back — stock · single exit
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Budget | [Resonator Delete Pipe](https://www.amazon.com/s?k=focus+st+resonator+delete) | — | ~$50 | cheap first mod, noticeable tone |
+| Street | [Mountune Cat-Back](https://mountuneusa.com/collections/focus-st) | — | ~$700 | refined tone, OEM quality |
+| Aggressive | [Borla ATAK Cat-Back](https://www.borla.com) | — | ~$1,100 | loud, polished tips |
+| Aggressive | [Milltek Non-Resonated](https://www.millteksport.com) | — | ~$900 | raspy, track sound |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>COOLING</b></summary>
+<br>
+
+#### Thermostat *(78°C)*
+**Installed:** [Motorcraft RT-1274](https://www.amazon.com/s?k=Motorcraft+RT-1274) — OEM · ⚠️ unknown
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft RT-1274](https://www.amazon.com/s?k=Motorcraft+RT-1274) | RT-1274 | ~$20 | replace if running warm |
+| OEM | [Gates TH48891G1](https://www.amazon.com/s?k=Gates+TH48891G1) | TH48891G1 | ~$18 | OEM equivalent |
+
+</details>
+
+---
+
+#### Coolant
+**Installed:** [Motorcraft VC-3-B](https://www.amazon.com/s?k=Motorcraft+VC-3-B) — OEM orange · ⚠️ unknown age
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft VC-3-B](https://www.amazon.com/s?k=Motorcraft+VC-3-B) | VC-3-B | ~$18/gal | orange · 50/50 premix |
+| OEM | [Zerex G-05](https://www.amazon.com/s?k=Zerex+G-05+orange+coolant) | — | ~$16/gal | Ford-compatible formula |
+
+</details>
+
+---
+
+#### Radiator
+**Installed:** OEM plastic radiator — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM Radiator](https://www.amazon.com/s?k=2017+Focus+ST+radiator) | — | ~$200 | direct replacement |
+| Upgrade | [Mishimoto Aluminum Radiator](https://www.mishimoto.com/ford-focus-st-aluminum-radiator.html) | MMRAD-FST-13 | ~$350 | better thermal capacity |
+
+</details>
+
+---
+
+#### Oil Cooler
+**Installed:** None — not factory equipped
+
+<details>
+<summary>Add Oil Cooler</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Forge Motorsport Oil Cooler](https://www.forge-motorsport.com) | FMOC001 | ~$400 | essential for track use |
+| Upgrade | [Setrab Oil Cooler Kit](https://www.setrab.com) | — | ~$450 | prevents oil breakdown on track |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>DRIVETRAIN</b></summary>
+<br>
+
+#### Clutch *(stock holds ~280 ft-lb)*
+**Installed:** OEM single-disc clutch — ⚠️ unknown wear
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM Clutch Kit](https://www.amazon.com/s?k=2017+focus+st+clutch+kit+OEM) | — | ~$300 | direct replacement |
+| Street | [Exedy Stage 1](https://www.exedyclutch.com) | — | ~$350 | holds 350 ft-lb · daily-able |
+| Street+ | [Clutchmasters FX350](https://www.clutchmasters.com) | — | ~$550 | good street/track balance |
+| Track | [Clutchmasters FX400](https://www.clutchmasters.com) | — | ~$700 | aggressive · stiff pedal |
+
+</details>
+
+---
+
+#### Gearbox Fluid *(MT82 — 1.8 qt)*
+**Installed:** OEM fluid — ⚠️ unknown · fix cold crunch with XTM5-QS
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft XTM5-QS](https://www.amazon.com/s?k=Motorcraft+XTM5-QS) | XTM5-QS | ~$18/qt | 1.8 qt fill · fixes cold weather crunch |
+| OEM+ | [Amsoil Synchromesh MTF](https://www.amazon.com/s?k=Amsoil+Synchromesh+MTF) | MTFQT-EA | ~$20/qt | popular MT82 upgrade |
+
+</details>
+
+---
+
+#### Differential
+**Installed:** OEM open diff — stock
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Quaife ATB Diff](https://www.quaife.co.uk/products/ford-focus-st-atb-differential) | QDF11J | ~$1,100 | best single handling mod · eliminates torque steer |
+| Upgrade | [Wavetrac ATB Diff](https://www.wavetrac.net) | — | ~$1,000 | torque-biasing alternative |
+
+</details>
+
+---
+
+#### Shifter
+**Installed:** OEM shifter — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Add-on | [Whiteline Shifter Bushings](https://www.whiteline.com.au) | KIT008 | ~$50 | removes slop from stock shifter |
+| Upgrade | [Agency Power Short Shifter](https://www.agencypower.com) | AP-FFS-150 | ~$180 | reduces throw |
+| Upgrade | [Cobb Short Throw Shifter](https://www.cobbtuning.com) | — | ~$350 | reduces throw ~25% |
+
+</details>
+
+---
+
+#### Motor Mounts
+**Installed:** OEM rubber motor mounts — stock
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Mountune Motor Mount Inserts](https://mountuneusa.com) | — | ~$100 | poly inserts · more NVH than stock |
+| Upgrade | [Whiteline Motor Mount Kit](https://www.whiteline.com.au) | — | ~$120 | full poly replacement |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>SUSPENSION</b></summary>
+<br>
+
+> Stock: MacPherson front / Control Blade rear · 22mm front bar · 21.7mm rear bar
+
+#### Springs / Coilovers
+**Installed:** OEM springs + dampers — stock ride height
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Drop | [Eibach Pro-Kit](https://www.eibach.com) | E10-35-007-04-22 | ~$250 | 25mm drop · OEM dampers |
+| Drop | [H&R Sport Springs](https://www.hrsprings.com) | 29073-2 | ~$250 | 30mm drop |
+| Coilover | [Fortune Auto 500](https://www.fortuneauto.com) | — | ~$1,100 | great value · built to order |
+| Coilover | [KW Variant 3](https://www.kwsuspension.com) | 35220065 | ~$2,100 | best quality · independent comp/rebound adj |
+
+</details>
+
+---
+
+#### Front Sway Bar *(OEM 22mm)*
+**Installed:** OEM 22mm front sway bar — stock
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Whiteline 27mm Front Bar](https://www.whiteline.com.au) | BSF39Z | ~$200 | up from 22mm · reduces understeer |
+| Upgrade | [Eibach Anti-Roll Front Bar](https://www.eibach.com) | — | ~$180 | good OEM+ option |
+
+</details>
+
+---
+
+#### Rear Sway Bar *(OEM 21.7mm)*
+**Installed:** OEM 21.7mm rear sway bar — stock
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Whiteline 22mm Rear Bar](https://www.whiteline.com.au) | BSR55XZ | ~$180 | pairs with Whiteline front |
+| Upgrade | [Eibach Anti-Roll Rear Bar](https://www.eibach.com) | — | ~$180 | pairs with Eibach front |
+
+</details>
+
+---
+
+#### End Links
+**Installed:** OEM end links — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM End Links](https://www.amazon.com/s?k=2017+focus+st+sway+bar+end+links) | — | ~$30 ea | direct replacement |
+| Upgrade | [Whiteline Adjustable End Links](https://www.whiteline.com.au) | KLC180 | ~$80 | required with upgraded sway bars |
+
+</details>
+
+---
+
+#### Control Arm Bushings
+**Installed:** OEM rubber bushings — ⚠️ unknown wear
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM Bushing Kit](https://www.amazon.com/s?k=2017+focus+st+control+arm+bushings) | — | ~$80 | replace if torn or worn |
+| Upgrade | [Whiteline Rear Trailing Arm Bushings](https://www.whiteline.com.au) | W63474 | ~$80 | corrects rear camber slop |
+| Upgrade | [Powerflex Rear Subframe Bushings](https://www.powerflex.co.uk) | PFF19-1802 | ~$120 | tighter rear end |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>BRAKES</b></summary>
+<br>
+
+> Stock: 320×25mm vented front · 302×10mm solid rear · single-piston sliding calipers
+
+#### Front Brake Pads
+**Installed:** [Motorcraft BR-1308A](https://www.amazon.com/s?k=Motorcraft+BR-1308A) — OEM · ⚠️ unknown wear
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft BR-1308A](https://www.amazon.com/s?k=Motorcraft+BR-1308A) | BR-1308A | ~$45 | direct replacement |
+| Street | [Hawk HPS](https://www.hawkperformance.com) | HB432F.661 | ~$75 | low dust · better bite |
+| Street | [EBC Redstuff](https://www.ebcbrakes.com) | DP31573C | ~$80 | ceramic · very low dust |
+| Track | [Hawk DTC-60](https://www.hawkperformance.com) | HB432F.N | ~$150 | track/HPDE · cold bite poor |
+| Track | [Carbotech XP8](https://www.carbotechengineering.com) | CT1049-XP8 | ~$160 | excellent HPDE choice |
+
+</details>
+
+---
+
+#### Rear Brake Pads
+**Installed:** [Motorcraft BR-1303A](https://www.amazon.com/s?k=Motorcraft+BR-1303A) — OEM · ⚠️ unknown wear
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft BR-1303A](https://www.amazon.com/s?k=Motorcraft+BR-1303A) | BR-1303A | ~$40 | direct replacement |
+| Street | [Hawk HPS Rear](https://www.hawkperformance.com) | HB533F.668 | ~$65 | matches HPS front |
+| Street | [EBC Greenstuff Rear](https://www.ebcbrakes.com) | DP21573 | ~$60 | low dust |
+| Track | [Hawk DTC-60 Rear](https://www.hawkperformance.com) | HB533N.668 | ~$130 | track only |
+
+</details>
+
+---
+
+#### Front Rotors *(320×25mm vented)*
+**Installed:** OEM vented rotors — stock · ⚠️ unknown wear
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft BRR-73](https://www.amazon.com/s?k=Motorcraft+BRR-73) | BRR-73 | ~$60 ea | 320mm direct fit |
+| Upgrade | [Stoptech Sport Slotted](https://www.stoptech.com) | 126.61085SR | ~$80 ea | slotted · better pad degas |
+| Upgrade | [EBC USR Slotted](https://www.ebcbrakes.com) | USR1453 | ~$75 ea | street/track |
+| Upgrade | [Brembo OE Replacement](https://www.amazon.com/s?k=Brembo+focus+st+front+rotor) | — | ~$70 ea | OEM+ quality |
+
+</details>
+
+---
+
+#### Rear Rotors *(302×10mm solid)*
+**Installed:** OEM solid rotors — stock · ⚠️ unknown wear
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM Rear Rotor](https://www.amazon.com/s?k=2017+focus+st+rear+rotor+302mm) | — | ~$40 ea | 302mm solid |
+| Upgrade | [Stoptech Sport Slotted Rear](https://www.stoptech.com) | 126.61099SR | ~$60 ea | matches front |
+| Upgrade | [EBC USR Slotted Rear](https://www.ebcbrakes.com) | USR1454 | ~$55 ea | |
+
+</details>
+
+---
+
+#### Brake Fluid *(DOT 4 LV — Ford spec WSS-M6C65-A2)*
+**Installed:** OEM DOT 4 LV — ⚠️ unknown age
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft DOT 4 LV](https://www.amazon.com/s?k=Motorcraft+PM-20+brake+fluid) | PM-20 | ~$15/qt | Ford spec · must use LV spec |
+| Upgrade | [ATE SL.6 DOT 4](https://www.amazon.com/s?k=ATE+SL6+brake+fluid) | — | ~$15/qt | 312°C dry boiling point |
+| Track | [Motul RBF600](https://www.amazon.com/s?k=Motul+RBF600) | — | ~$20/500ml | 312°C dry · flush annually on track |
+
+</details>
+
+---
+
+#### Brake Lines
+**Installed:** OEM rubber brake lines — stock
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Goodridge Stainless Lines](https://www.goodridge.com) | FD0900-4P | ~$100 | sharper pedal feel · no expansion |
+| Upgrade | [Russell Stainless Lines](https://www.holley.com/brands/russell) | — | ~$90 | comparable quality |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>WHEELS & TIRES</b></summary>
+<br>
+
+> Stock: 18×7.5" alloy · 5×108mm · ET52.5 · 63.3mm hub bore · lug torque 100 ft-lb
+
+#### Wheels
+**Installed:** OEM 18×7.5" 5-spoke alloy — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Track | [Enkei RPF1 17×8 +45](https://www.enkei.com) | 184-780-6545BK | ~$180 ea | 16.2 lb · classic track wheel |
+| Track | [Konig Hypergram 17×8 +45](https://www.konigwheels.com) | — | ~$130 ea | budget lightweight |
+| Street | [OZ Racing Ultraleggera 17×7.5](https://www.ozracing.com) | — | ~$250 ea | forged, lightweight |
+| Street | [BBS CH-R 18×8](https://www.bbs.com) | — | ~$400 ea | premium forged |
+
+</details>
+
+---
+
+#### Tires *(235/40R18)*
+**Installed:** OEM 235/40R18 Goodyear Eagle F1 Asymmetric 2 — ⚠️ unknown age/wear
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Goodyear Eagle F1 Asym 2](https://www.goodyear.com) | 235/40R18 | ~$180 ea | OEM fitment |
+| Street | [Michelin Pilot Sport 4S](https://www.michelin.com) | 235/40R18 | ~$220 ea | best daily/track in OE size |
+| Street | [Continental ExtremeContact Sport](https://www.continentaltire.com) | 235/40R18 | ~$170 ea | great value |
+| Track | [Falken Azenis RT660](https://www.falkentire.com) | 235/40R18 | ~$190 ea | autocross/HPDE |
+| Track | [Bridgestone Potenza RE-71RS](https://www.bridgestonetire.com) | 235/40R18 | ~$200 ea | excellent grip |
+
+</details>
+
+---
+
+#### Lug Nuts *(M12×1.5 · 17mm hex)*
+**Installed:** OEM lug nuts — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM Lug Nuts](https://www.amazon.com/s?k=ford+focus+M12x1.5+lug+nuts+17mm) | — | ~$30/set | M12×1.5 · 17mm hex |
+| Upgrade | [McGard Wheel Locks](https://www.mcgard.com) | 24157 | ~$40 | anti-theft · same spec |
+| Upgrade | [Gorilla Acorn Lug Nuts](https://www.amazon.com/s?k=Gorilla+M12x1.5+lug+nuts) | 71037 | ~$25/set | for aftermarket wheels |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>ELECTRICAL</b></summary>
+<br>
+
+#### Battery *(Group 96R — 590 CCA min)*
+**Installed:** OEM Group 96R — ⚠️ unknown age
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft BXT-96R](https://www.amazon.com/s?k=Motorcraft+BXT-96R-590) | BXT-96R-590 | ~$150 | 590 CCA · direct fit |
+| OEM | [Interstate MTZ-96R](https://www.amazon.com/s?k=Interstate+MTZ-96R) | MTZ-96R | ~$140 | popular alternative |
+| Upgrade | [Optima RedTop 96R](https://www.amazon.com/s?k=Optima+RedTop+96R) | 8020-164 | ~$200 | AGM · great cold start |
+
+</details>
+
+---
+
+#### Intelligent Access Key *(M3N5WY8609)*
+**Installed:** OEM M3N5WY8609 IA key — push-to-start · ⚠️ 0 admin keys / 3 MyKeys (auction car)
+
+<details>
+<summary>Replace / Add Spare</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Keyless2Go M3N5WY8609](https://www.amazon.com/s?k=M3N5WY8609+keyless2go) | M3N5WY8609 | ~$30 | program via FORScan PATS |
+| OEM | [Strattec M3N5WY8609](https://www.amazon.com/s?k=Strattec+M3N5WY8609) | 5921561 | ~$35 | OEM Ford supplier |
+| OEM | [Ilco ILO-A2053](https://www.amazon.com/s?k=Ilco+M3N5WY8609+focus) | ILO-A2053 | ~$35 | quality aftermarket |
+
+> Program with FORScan: PATS module → Add Key — works with 1 existing key, no dealer needed
+
+</details>
+
+---
+
+#### IA Key Battery *(CR2032)*
+**Installed:** OEM CR2032 — ⚠️ unknown age
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Panasonic CR2032](https://www.amazon.com/s?k=Panasonic+CR2032) | CR2032 | ~$1 ea | inside fob · replace if range drops |
+| OEM | [Duracell CR2032](https://www.amazon.com/s?k=Duracell+CR2032) | CR2032 | ~$2 ea | longer shelf life |
+
+</details>
+
+---
+
+#### Alternator
+**Installed:** OEM alternator — ⚠️ unknown condition
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft GL-8972](https://www.amazon.com/s?k=Motorcraft+GL-8972) | GL-8972 | ~$200 | remanufactured |
+| OEM | [Remy 94703](https://www.amazon.com/s?k=Remy+94703+alternator) | 94703 | ~$180 | quality reman |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>LIGHTING</b></summary>
+<br>
+
+> Stock: halogen projector headlights · H11 low / H1 high · H16 fogs · incandescent interior
+
+#### Headlights
+**Installed:** OEM halogen projectors — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM Headlight Assy](https://www.amazon.com/s?k=2014-2018+focus+st+headlight+assembly) | — | ~$200 ea | direct replacement |
+| Upgrade | [Morimoto XB LED Headlights](https://www.theretrofitsource.com) | LF506 | ~$500/set | plug-and-play · massive improvement |
+| Budget | [H11 LED Bulb Kit](https://www.amazon.com/s?k=H11+LED+headlight+bulb) | — | ~$40/set | drop-in LED · modest improvement |
+
+</details>
+
+---
+
+#### Fog Lights *(H16)*
+**Installed:** OEM H16 halogen fogs — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Diode Dynamics SLF H16](https://www.diodedynamics.com) | DD0085P | ~$50/set | plug-and-play LED · direct fit |
+| Upgrade | [Diode Dynamics SL1 H16](https://www.diodedynamics.com) | DD0090P | ~$80/set | brighter · fan-cooled |
+
+</details>
+
+---
+
+#### Tail Lights
+**Installed:** OEM tail lights — stock
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM Tail Light](https://www.amazon.com/s?k=2014-2018+focus+st+tail+light) | — | ~$150 ea | direct replacement |
+| Upgrade | [Spyder LED Tail Lights](https://www.spyder-auto.com) | ALT-YD-FF13-LED | ~$250/set | LED · blacked-out option |
+
+</details>
+
+---
+
+#### Interior LEDs
+**Installed:** OEM incandescent bulbs — stock
+
+<details>
+<summary>Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Diode Dynamics Interior Kit](https://www.diodedynamics.com) | DD0239 | ~$40 | full kit · warm white |
+| Budget | [194 LED Dome/Map Bulbs](https://www.amazon.com/s?k=194+LED+bulb+white+6000k) | — | ~$10 | individual dome and map lights |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>INTERIOR</b></summary>
+<br>
+
+#### Head Unit
+**Installed:** OEM Ford SYNC — stock · no CarPlay/Android Auto
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Budget | [Pioneer MVH-1400NEX](https://www.amazon.com/s?k=Pioneer+MVH-1400NEX) | MVH-1400NEX | ~$180 | wired CarPlay/Android Auto |
+| Street | [Kenwood DMX7709S](https://www.amazon.com/s?k=Kenwood+DMX7709S) | DMX7709S | ~$350 | wireless CarPlay · clean UI |
+| Street | [Pioneer DMH-W4660NEX](https://www.amazon.com/s?k=Pioneer+DMH-W4660NEX) | DMH-W4660NEX | ~$400 | wireless CarPlay/Android Auto · floating 7" |
+
+</details>
+
+---
+
+#### Seats
+**Installed:** OEM sport seats — ⚠️ unknown condition
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Corbeau GTS II](https://www.corbeau.com) | — | ~$500 ea | good support · affordable |
+| Upgrade | [Recaro Sportster CS](https://www.recaro-automotive.com) | — | ~$800 ea | bolstered · OEM bracket fitment |
+| Track | [Sparco Sprint Shell](https://www.sparco-usa.com) | — | ~$600 ea | FIA certified · requires harness bar |
+
+</details>
+
+---
+
+#### Shift Knob
+**Installed:** OEM shift knob — stock · M12×1.75 thread
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| Upgrade | [Mishimoto Weighted Shift Knob](https://www.mishimoto.com) | MMSK-UN-BKRD | ~$45 | weighted · M12×1.75 |
+| Upgrade | [Cobb Knob](https://www.cobbtuning.com) | 516100 | ~$50 | weighted · machined |
+| Upgrade | [Agency Power Shift Knob](https://www.agencypower.com) | — | ~$60 | aluminum |
+
+</details>
+
+---
+
+#### Floor Mats
+**Installed:** OEM carpet mats — ⚠️ likely worn
+
+<details>
+<summary>Replace / Upgrade</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford OEM All-Weather Mats](https://www.amazon.com/s?k=2017+ford+focus+all+weather+mats+oem) | — | ~$80/set | rubber · direct fit |
+| Upgrade | [Husky Liners X-Act Contour](https://www.amazon.com/s?k=Husky+Liners+ford+focus+2017) | — | ~$100/set | good fit · budget option |
+| Upgrade | [Weathertech FloorLiners](https://www.weathertech.com) | 444721-446019 | ~$150/set | laser measured · best coverage |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>MAINTENANCE</b></summary>
+<br>
+
+#### Cabin Air Filter
+**Installed:** [Motorcraft FP-67](https://www.amazon.com/s?k=Motorcraft+FP-67) — OEM · DG9Z-19N619-A · ⚠️ unknown
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft FP-67](https://www.amazon.com/s?k=Motorcraft+FP-67) | FP-67 | ~$20 | replace annually |
+| Upgrade | [K&N VF2054](https://www.amazon.com/s?k=K%26N+VF2054) | VF2054 | ~$45 | washable/reusable |
+
+</details>
+
+---
+
+#### Serpentine Belt
+**Installed:** OEM belt — ⚠️ unknown age · inspect at 60k · replace at 100k
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Ford 6PK1763](https://www.amazon.com/s?k=Ford+6PK1763+serpentine+belt) | 6PK1763 | ~$30 | OEM spec |
+| OEM | [Gates K060695](https://www.amazon.com/s?k=Gates+K060695) | K060695 | ~$25 | direct equivalent |
+| OEM | [Dayco 5060695](https://www.amazon.com/s?k=Dayco+5060695) | 5060695 | ~$22 | OEM quality |
+
+</details>
+
+---
+
+#### Wiper Blades *(26" driver / 16" passenger)*
+**Installed:** OEM wiper blades — ⚠️ unknown age
+
+<details>
+<summary>Replace</summary>
+
+| Tier | Part | # | ~Price | Notes |
+|------|------|---|--------|-------|
+| OEM | [Motorcraft WW-2526](https://www.amazon.com/s?k=Motorcraft+WW-2526) | WW-2526 | ~$30/set | 26" + 16" |
+| Upgrade | [Bosch Icon 26A + 16A](https://www.amazon.com/s?k=Bosch+Icon+26A+wiper) | 26A / 16A | ~$40/set | beam blades · excellent quality |
+| Upgrade | [Rain-X Latitude 26" + 16"](https://www.amazon.com/s?k=Rain-X+Latitude+26+wiper) | — | ~$35/set | good all-weather |
+
+</details>
+
+</details>
+
+---
+
+<details>
+<summary><b>TOOLS & DIAGNOSTICS</b></summary>
+<br>
+
+#### OBD2 Adapter
+**Installed:** [OBDLink MX+](https://www.obdlink.com/products/obdlink-mxp/) — ✅ owned · Bluetooth · full MS-CAN + HS-CAN
+
+<details>
+<summary>Alternatives</summary>
+
+| Tier | Part | ~Price | Notes |
+|------|------|--------|-------|
+| ✅ Owned | [OBDLink MX+](https://www.obdlink.com/products/obdlink-mxp/) | ~$130 | full Ford protocol support |
+| Budget | [OBDLink EX](https://www.obdlink.com) | ~$60 | USB only |
+
+</details>
+
+---
+
+#### Diagnostic Software
+**Installed:** [FORScan](https://forscan.org/download.html) — free · use with OBDLink MX+
+
+<details>
+<summary>Reference</summary>
+
+| Tool | Notes |
+|------|-------|
+| [FORScan](https://forscan.org/download.html) | Free Ford diagnostics · all module codes |
+| [FORScan Extended License](https://forscan.org) | ~$12/yr · unlocks full module config |
+
+> **MyKey Reset:** BCM → Body Control Module → Service Functions → MyKey Reset (free, no admin key needed)  
+> **New IA Key:** PATS → Add Key — works with 1 existing key, bypasses 2-key dealer requirement  
+> **EPAS Tuning:** Power Assisted Steering module → steering weight, off-center correction
+
+</details>
+
+---
+
+#### Hand Tools
+
+<details>
+<summary>Recommended</summary>
+
+| Tool | ~Price | Notes |
+|------|--------|-------|
+| [Torque Wrench 0–150 ft-lb](https://www.amazon.com/s?k=torque+wrench+0-150+ft-lb) | ~$50 | wheels: **100 ft-lb** · drain plug: **20 ft-lb** · spark plugs: **10 ft-lb** |
+| [Oil Drain Pan 8qt+](https://www.amazon.com/s?k=oil+drain+pan+8+quart) | ~$15 | 5.7 qt engine capacity |
+| [Oil Filter Wrench](https://www.amazon.com/s?k=oil+filter+wrench+FL-910S) | ~$10 | fits FL-910S |
+| [T30 Torx Bit Set](https://www.amazon.com/s?k=T30+torx+bit+set) | ~$15 | brake caliper slider pins |
+| [32mm Socket](https://www.amazon.com/s?k=32mm+impact+socket) | ~$15 | front hub nut |
+| [Jack Stands ×4](https://www.amazon.com/s?k=3+ton+jack+stands) | ~$60 | never use floor jack alone |
+
+</details>
+
+</details>
