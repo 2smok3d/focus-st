@@ -1,0 +1,19 @@
+{
+  "name": "Focus ST Parts",
+  "short_name": "Focus ST",
+  "start_url": "add.html",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0d0d0d",
+  "theme_color": "#0d0d0d",
+  "share_target": {
+    "action": "add.html",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "url": "url",
+      "text": "text",
+      "title": "title"
+    }
+  }
+}
