@@ -147,6 +147,11 @@
 - [ ] Motul 8100 X-clean+ 5W-30 — popular OEM+ oil upgrade
 
 ### Wear Items
+- [ ] [Ford OEM Key Fob](https://www.amazon.com/s?k=164-R8070+ford+focus+key+fob) — part# 164-R8070, 4-button 315MHz, includes remote start button
+- [ ] Key Fob Battery — CR2032, replace if range drops before buying new fob
+- [ ] Key Fob Programming — self-program: cycle ignition 8× in 10s until chime, press any button within 8s; or dealer ~$75–100
+- [ ] [KeylessOption Aftermarket Fob](https://www.amazon.com/s?k=keylessoption+ford+focus+st+key+fob) — ~$15, needs programming, same 315MHz
+- [ ] Spare Transponder Key — get a second key cut + programmed (dealer or locksmith ~$100–150 total)
 - [ ] Front Brake Pads — 320mm front, replace around 30k mi depending on use
 - [ ] Rear Brake Pads — 302mm rear
 - [ ] Front Rotors — stock 320mm vented
