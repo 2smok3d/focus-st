@@ -5,175 +5,249 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0d0d0d">
 <title>Focus ST Parts</title>
 <link rel="manifest" href="manifest.json">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{background:#0d0d0d;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+body{background:#0d0d0d;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
 
-.screen{display:none;padding:24px 20px 52px;max-width:480px;margin:0 auto;transition:opacity .15s ease}
-.screen.active{display:block}
+/* Full-screen fixed screens — button always pinned to bottom */
+.screen{display:none;position:fixed;inset:0;flex-direction:column;background:#0d0d0d}
+.screen.active{display:flex;animation:fadeIn .18s ease forwards}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-header{display:flex;align-items:center;justify-content:space-between;padding-top:env(safe-area-inset-top,8px);margin-bottom:28px}
-.logo{font-size:21px;font-weight:700;letter-spacing:-.5px;display:flex;align-items:center;gap:10px}
+/* ── Add screen ──────────────────────────────────────── */
+#s-add > header{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:max(env(safe-area-inset-top,10px),10px) 18px 10px;
+}
+.scroll-area{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:4px 18px 8px;overscroll-behavior:contain;
+}
+.bottom-bar{
+  flex-shrink:0;
+  padding:8px 18px max(env(safe-area-inset-bottom,14px),14px);
+  background:linear-gradient(to top,#0d0d0d 75%,transparent);
+}
+
+/* ── Config screen ───────────────────────────────────── */
+#s-cfg > header{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:max(env(safe-area-inset-top,10px),10px) 18px 10px;
+}
+.cfg-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 24px}
+
+/* ── Logo / header bits ──────────────────────────────── */
+.logo{font-size:20px;font-weight:700;letter-spacing:-.4px;display:flex;align-items:center;gap:9px}
 .logo em{color:#e8000d;font-style:normal}
-.offline-pill{font-size:10px;font-weight:600;letter-spacing:.4px;background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.22);border-radius:5px;padding:2px 7px;display:none}
+.offline-pill{font-size:10px;font-weight:600;letter-spacing:.3px;background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2);border-radius:5px;padding:2px 6px;display:none}
 body.offline .offline-pill{display:block}
+.icon-btn{background:none;border:none;color:#505050;cursor:pointer;padding:8px;border-radius:8px;line-height:0;flex-shrink:0;transition:color .12s,background .12s}
+.icon-btn:active{background:#181818;color:#ccc}
 
-.icon-btn{background:none;border:none;color:#555;cursor:pointer;padding:8px;border-radius:8px;line-height:0;transition:color .15s,background .15s}
-.icon-btn:active{background:#181818;color:#e8e8e8}
-
-.field{margin-bottom:18px}
-label{display:block;font-size:11px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:#505050;margin-bottom:8px}
-
+/* ── Fields ──────────────────────────────────────────── */
+.field{margin-bottom:14px}
+label{display:block;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#484848;margin-bottom:6px}
 input,textarea{
-  width:100%;background:#131313;border:1.5px solid #1e1e1e;
-  color:#e8e8e8;border-radius:10px;padding:13px 15px;
+  width:100%;background:#131313;border:1.5px solid #1d1d1d;
+  color:#e8e8e8;border-radius:10px;padding:12px 13px;
   font-size:16px;font-family:inherit;outline:none;
   -webkit-appearance:none;appearance:none;
   transition:border-color .15s,background .15s;
 }
-input:focus,textarea:focus{border-color:#e8000d;background:#161616}
-::placeholder{color:#333}
-textarea{resize:none;height:74px;line-height:1.5}
+input:focus,textarea:focus{border-color:#e8000d;background:#151515}
+::placeholder{color:#2c2c2c}
 
-/* Category pills — 2×2 grid, much better on mobile than a dropdown */
-.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* Name is the primary field — bigger */
+#name{font-size:18px;font-weight:500;padding:13px 13px;letter-spacing:-.2px}
+
+/* ── Category — horizontal swipeable strip ───────────── */
+.cat-strip{display:flex;gap:7px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:1px}
+.cat-strip::-webkit-scrollbar{display:none}
 .cat-pill{
-  background:#131313;border:1.5px solid #1e1e1e;color:#505050;
-  border-radius:10px;padding:13px 8px;font-size:13px;font-weight:500;
-  cursor:pointer;font-family:inherit;text-align:center;
-  -webkit-appearance:none;transition:all .12s;
+  flex-shrink:0;background:#131313;border:1.5px solid #1d1d1d;color:#484848;
+  border-radius:8px;padding:9px 15px;font-size:13px;font-weight:500;
+  cursor:pointer;font-family:inherit;white-space:nowrap;min-height:40px;
+  -webkit-appearance:none;transition:border-color .12s,color .12s,background .12s;
 }
-.cat-pill:active{transform:scale(.96)}
+.cat-pill:active{opacity:.7}
 .cat-pill.sel{background:rgba(232,0,13,.09);border-color:#e8000d;color:#e8e8e8}
 
-/* Primary button */
+/* ── Notes expand ────────────────────────────────────── */
+.notes-toggle{
+  display:flex;align-items:center;gap:5px;background:none;border:none;
+  color:#484848;font-size:13px;font-family:inherit;cursor:pointer;
+  padding:4px 0 12px;-webkit-appearance:none;transition:color .12s;
+}
+.notes-toggle svg{flex-shrink:0;transition:transform .2s}
+.notes-toggle.open{color:#888}
+.notes-toggle.open svg{transform:rotate(45deg)}
+.notes-area{overflow:hidden;max-height:0;opacity:0;transition:max-height .22s ease,opacity .18s}
+.notes-area.open{max-height:100px;opacity:1}
+textarea#notes{resize:none;height:72px;line-height:1.5;font-size:15px}
+
+/* ── Add button (sticky bottom) ──────────────────────── */
 .btn{
   width:100%;padding:15px;background:#e8000d;color:#fff;
   border:none;border-radius:12px;font-size:17px;font-weight:600;
-  cursor:pointer;font-family:inherit;margin-top:6px;
+  cursor:pointer;font-family:inherit;
   display:flex;align-items:center;justify-content:center;gap:9px;
-  transition:opacity .15s,transform .1s;-webkit-appearance:none;
+  transition:opacity .12s,transform .1s;-webkit-appearance:none;min-height:52px;
 }
-.btn:active:not(:disabled){transform:scale(.98);opacity:.88}
-.btn:disabled{opacity:.38;cursor:not-allowed}
-.btn.ghost{background:#131313;color:#666;border:1.5px solid #1e1e1e;font-size:15px;font-weight:500;margin-top:10px}
+.btn:active:not(:disabled){transform:scale(.98);opacity:.85}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.ghost{background:#131313;color:#606060;border:1.5px solid #1d1d1d;font-size:15px;font-weight:500;margin-top:10px;min-height:46px}
 .btn.ghost:active:not(:disabled){background:#181818}
 
-.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Toast — spring slide-up */
+/* ── Success overlay (share flow) ────────────────────── */
+.success-overlay{
+  position:fixed;inset:0;background:#0d0d0d;z-index:200;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.success-overlay.show{opacity:1;pointer-events:all}
+.success-check{width:60px;height:60px;background:rgba(76,175,80,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.success-name{font-size:17px;font-weight:600;text-align:center;padding:0 32px;max-width:360px}
+.success-cat{font-size:13px;color:#555}
+
+/* ── Toast ───────────────────────────────────────────── */
 .toast{
-  position:fixed;bottom:max(24px,env(safe-area-inset-bottom,24px));
-  left:16px;right:16px;max-width:448px;margin:0 auto;
-  background:#191919;border:1px solid #272727;
-  padding:13px 16px;border-radius:12px;
+  position:fixed;bottom:max(16px,env(safe-area-inset-bottom,16px));
+  left:14px;right:14px;max-width:440px;margin:0 auto;
+  background:#181818;border:1px solid #252525;
+  padding:12px 15px;border-radius:11px;
   display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;
   transform:translateY(110px);opacity:0;
-  transition:transform .3s cubic-bezier(.34,1.45,.64,1),opacity .2s;
-  pointer-events:none;z-index:99;
+  transition:transform .28s cubic-bezier(.34,1.45,.64,1),opacity .18s;
+  pointer-events:none;z-index:100;
 }
 .toast.show{transform:translateY(0);opacity:1;pointer-events:all}
 .toast.ok{border-color:#1a3520}.toast.ok .tmsg{color:#4caf50}
 .toast.err{border-color:#351a1a}.toast.err .tmsg{color:#f44336}
 .tmsg{flex:1}
 .tdis{background:none;border:none;color:#444;cursor:pointer;font-size:22px;padding:0;line-height:1;flex-shrink:0}
-.tdis:active{color:#888}
 
-/* Recent adds */
-.recent{margin-top:30px}
-.recent-hdr{font-size:11px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:#363636;margin-bottom:10px}
-.ritem{padding:9px 0;border-bottom:1px solid #131313;display:flex;align-items:baseline;gap:8px;overflow:hidden}
+/* ── Recent adds ─────────────────────────────────────── */
+.recent{margin-top:6px;margin-bottom:4px}
+.recent-hdr{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#303030;margin-bottom:8px}
+.ritem{padding:8px 0;border-bottom:1px solid #121212;display:flex;align-items:center;gap:8px;overflow:hidden}
 .ritem:last-child{border-bottom:none}
-.rcat{font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:#363636;flex-shrink:0;width:56px}
-.rname{font-size:13px;color:#606060;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rname a{color:#606060;text-decoration:none}
-.rname a:active{color:#888}
+.rcat{font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:#303030;flex-shrink:0;min-width:48px}
+.rname{font-size:13px;color:#505050;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rname a{color:#505050;text-decoration:none}
 
-/* Config */
-.cfg-sub{font-size:14px;color:#555;margin-bottom:26px;line-height:1.65}
-.hint{font-size:12px;color:#444;margin-top:7px;line-height:1.5}
+/* ── Config ──────────────────────────────────────────── */
+.cfg-sub{font-size:14px;color:#505050;margin-bottom:20px;line-height:1.6;padding-top:2px}
+.hint{font-size:12px;color:#404040;margin-top:7px;line-height:1.5}
 .hint a{color:#e8000d;text-decoration:none}
-.hint b{color:#777;font-weight:500}
+.hint b{color:#686868;font-weight:500}
 </style>
 </head>
 <body>
 
-<!-- Add screen -->
+<!-- ── Add screen ──────────────────────────────────── -->
 <div class="screen" id="s-add">
   <header>
-    <div class="logo">Focus <em>ST</em><span class="offline-pill">Offline</span></div>
+    <div class="logo">Focus <em>ST</em> <span class="offline-pill">Offline</span></div>
     <button class="icon-btn" id="btn-cfg" aria-label="Settings">
-      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true">
+      <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
       </svg>
     </button>
   </header>
 
-  <div class="field">
-    <label>URL</label>
-    <input type="url" id="url" placeholder="https://..." inputmode="url" autocomplete="off" autocorrect="off">
-  </div>
-  <div class="field">
-    <label>Part name *</label>
-    <input type="text" id="name" placeholder="e.g. Mountune MP215 upgrade" autocorrect="off">
-  </div>
-  <div class="field">
-    <label>Category</label>
-    <div class="cat-grid">
-      <button type="button" class="cat-pill" data-val="Performance">Performance</button>
-      <button type="button" class="cat-pill" data-val="Exterior">Exterior</button>
-      <button type="button" class="cat-pill" data-val="Interior">Interior</button>
-      <button type="button" class="cat-pill" data-val="Maintenance &amp; Consumables">Maintenance</button>
+  <div class="scroll-area">
+    <!-- Name first — primary thing to confirm after sharing -->
+    <div class="field">
+      <label>Part name *</label>
+      <input type="text" id="name" placeholder="e.g. Mountune MP215 upgrade"
+             autocorrect="off" autocapitalize="words" enterkeyhint="go">
+    </div>
+
+    <div class="field">
+      <label>Category</label>
+      <div class="cat-strip" role="group">
+        <button type="button" class="cat-pill" data-val="Performance">Performance</button>
+        <button type="button" class="cat-pill" data-val="Exterior">Exterior</button>
+        <button type="button" class="cat-pill" data-val="Interior">Interior</button>
+        <button type="button" class="cat-pill" data-val="Maintenance &amp; Consumables">Maintenance</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>URL</label>
+      <input type="url" id="url" placeholder="https://..." inputmode="url"
+             autocomplete="off" autocorrect="off" enterkeyhint="next">
+    </div>
+
+    <!-- Notes hidden by default — most adds don't need them -->
+    <button type="button" class="notes-toggle" id="notes-toggle">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+      </svg>
+      Add notes
+    </button>
+    <div class="notes-area" id="notes-area">
+      <textarea id="notes" placeholder="Price, fitment notes, priority..." enterkeyhint="go"></textarea>
+    </div>
+
+    <div id="recent" class="recent" style="display:none">
+      <div class="recent-hdr">Recent</div>
+      <div id="recent-list"></div>
     </div>
   </div>
-  <div class="field">
-    <label>Notes</label>
-    <textarea id="notes" placeholder="Price, fitment notes, priority..."></textarea>
-  </div>
 
-  <button class="btn" id="btn-add">Add to list</button>
-
-  <div id="recent" class="recent" style="display:none">
-    <div class="recent-hdr">Recent</div>
-    <div id="recent-list"></div>
+  <div class="bottom-bar">
+    <button class="btn" id="btn-add">Add to list</button>
   </div>
 </div>
 
-<!-- Config screen -->
+<!-- ── Config screen ────────────────────────────────── -->
 <div class="screen" id="s-cfg">
   <header>
     <div class="logo">Focus <em>ST</em></div>
     <button class="icon-btn" id="btn-back" aria-label="Back">
-      <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+      <svg width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
   </header>
-
-  <div class="cfg-sub">Enter your GitHub details once — saved to this device only, never sent anywhere except GitHub's API.</div>
-
-  <div class="field">
-    <label>GitHub username</label>
-    <input type="text" id="cfg-owner" placeholder="your-username" autocapitalize="none" autocorrect="off" spellcheck="false">
+  <div class="cfg-scroll">
+    <div class="cfg-sub">Your GitHub details — saved to this device only.</div>
+    <div class="field">
+      <label>GitHub username</label>
+      <input type="text" id="cfg-owner" placeholder="your-username" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next">
+    </div>
+    <div class="field">
+      <label>Repository name</label>
+      <input type="text" id="cfg-repo" placeholder="focus-st" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next">
+    </div>
+    <div class="field">
+      <label>Personal access token</label>
+      <input type="password" id="cfg-token" placeholder="ghp_..." autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
+      <div class="hint">Needs <b>Contents: read &amp; write</b>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create fine-grained token →</a></div>
+    </div>
+    <button class="btn" id="btn-save">Save</button>
+    <button class="btn ghost" id="btn-test">Test connection</button>
   </div>
-  <div class="field">
-    <label>Repository name</label>
-    <input type="text" id="cfg-repo" placeholder="focus-st" autocapitalize="none" autocorrect="off" spellcheck="false">
-  </div>
-  <div class="field">
-    <label>Personal access token</label>
-    <input type="password" id="cfg-token" placeholder="ghp_..." autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false">
-    <div class="hint">Needs <b>Contents: read &amp; write</b>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create fine-grained token →</a></div>
-  </div>
+</div>
 
-  <button class="btn" id="btn-save">Save</button>
-  <button class="btn ghost" id="btn-test">Test connection</button>
+<!-- ── Success overlay (share → add → auto-close) ─── -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-check">
+    <svg width="28" height="28" fill="none" stroke="#4caf50" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="success-name" id="success-name"></div>
+  <div class="success-cat" id="success-cat"></div>
 </div>
 
 <div class="toast" id="toast">
@@ -182,162 +256,142 @@ textarea{resize:none;height:74px;line-height:1.5}
 </div>
 
 <script>
-// ── Keys ──────────────────────────────────────────────────
+// ── Storage ───────────────────────────────────────────────
 const K = { cfg:'fst_v1', cache:'fst_cache', hist:'fst_hist', cat:'fst_cat' };
-
-// ── Config ────────────────────────────────────────────────
 const getCfg   = () => { try { return JSON.parse(localStorage.getItem(K.cfg)); } catch { return null; } };
-const saveCfg  = c  => localStorage.setItem(K.cfg, JSON.stringify(c));
-
-// ── File cache — skips GET on repeat adds (5 min TTL) ─────
-const getCache   = () => { try { const c = JSON.parse(localStorage.getItem(K.cache)); return c && Date.now()-c.ts < 3e5 ? c : null; } catch { return null; } };
-const setCache   = (sha, content) => localStorage.setItem(K.cache, JSON.stringify({ sha, content, ts: Date.now() }));
+const saveCfg  = c => localStorage.setItem(K.cfg, JSON.stringify(c));
+const getCache = () => { try { const c = JSON.parse(localStorage.getItem(K.cache)); return c && Date.now()-c.ts < 3e5 ? c : null; } catch { return null; } };
+const setCache = (sha,c) => localStorage.setItem(K.cache, JSON.stringify({sha,content:c,ts:Date.now()}));
 const clearCache = () => localStorage.removeItem(K.cache);
-
-// ── History (last 8 adds) ─────────────────────────────────
 const getHist  = () => { try { return JSON.parse(localStorage.getItem(K.hist)) || []; } catch { return []; } };
-const pushHist = item => { const h = getHist(); h.unshift(item); localStorage.setItem(K.hist, JSON.stringify(h.slice(0,8))); };
+const pushHist = i => { const h = getHist(); h.unshift(i); localStorage.setItem(K.hist, JSON.stringify(h.slice(0,8))); };
 
 // ── Toast ─────────────────────────────────────────────────
 let _tt;
-const toast = (msg, type = 'ok') => {
+const toast = (msg, type='ok') => {
   const el = document.getElementById('toast');
   document.getElementById('tmsg').textContent = msg;
-  el.className = 'toast show ' + type;
+  el.className = 'toast show '+type;
   clearTimeout(_tt);
-  _tt = setTimeout(() => el.className = 'toast', type === 'err' ? 4500 : 2800);
+  _tt = setTimeout(() => el.className='toast', type==='err' ? 4500 : 2600);
 };
-document.getElementById('tdis').onclick = () => document.getElementById('toast').className = 'toast';
+document.getElementById('tdis').onclick = () => document.getElementById('toast').className='toast';
 
-// ── Screen fade transitions ───────────────────────────────
+// ── Screen transitions ────────────────────────────────────
 const show = id => {
-  const prev = document.querySelector('.screen.active');
-  const next = document.getElementById(id);
-  if (prev?.id === id) return;
-  if (prev) {
-    prev.style.opacity = '0';
-    prev.classList.remove('active');
-    setTimeout(() => { prev.style.display = 'none'; prev.style.opacity = ''; }, 160);
-  }
-  next.style.display = 'block';
-  next.style.opacity = '0';
-  requestAnimationFrame(() => requestAnimationFrame(() => { next.style.opacity = '1'; next.classList.add('active'); }));
+  document.querySelectorAll('.screen').forEach(s => {
+    const on = s.id === id;
+    s.classList.toggle('active', on);
+    s.style.display = on ? 'flex' : 'none';
+  });
 };
 
 // ── Category pills ────────────────────────────────────────
 let activeCat = localStorage.getItem(K.cat) || 'Performance';
 const pills = document.querySelectorAll('.cat-pill');
-const setPill = val => { pills.forEach(p => p.classList.toggle('sel', p.dataset.val === val)); activeCat = val; localStorage.setItem(K.cat, val); };
+const setPill = val => { pills.forEach(p => p.classList.toggle('sel', p.dataset.val===val)); activeCat=val; localStorage.setItem(K.cat,val); };
 setPill(activeCat);
 pills.forEach(p => p.addEventListener('click', () => setPill(p.dataset.val)));
 
-// ── Render recent adds ────────────────────────────────────
+// ── Notes toggle ──────────────────────────────────────────
+let notesOpen = false;
+const notesToggle = document.getElementById('notes-toggle');
+const notesArea   = document.getElementById('notes-area');
+notesToggle.addEventListener('click', () => {
+  notesOpen = !notesOpen;
+  notesArea.classList.toggle('open', notesOpen);
+  notesToggle.classList.toggle('open', notesOpen);
+  if (notesOpen) setTimeout(() => document.getElementById('notes').focus(), 220);
+});
+
+// ── History ───────────────────────────────────────────────
 const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const renderHist = () => {
-  const h = getHist();
-  const wrap = document.getElementById('recent');
-  if (!h.length) { wrap.style.display = 'none'; return; }
+  const h = getHist(), wrap = document.getElementById('recent');
+  if (!h.length) { wrap.style.display='none'; return; }
   wrap.style.display = 'block';
   document.getElementById('recent-list').innerHTML = h.map(i =>
-    '<div class="ritem">' +
-    '<span class="rcat">' + esc(i.cat.replace(' & Consumables','')) + '</span>' +
-    '<span class="rname">' + (i.url ? '<a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.name)+'</a>' : esc(i.name)) + '</span>' +
-    '</div>'
+    '<div class="ritem"><span class="rcat">'+esc(i.cat.replace(' & Consumables',''))+'</span>' +
+    '<span class="rname">'+(i.url?'<a href="'+esc(i.url)+'" target="_blank" rel="noopener">'+esc(i.name)+'</a>':esc(i.name))+'</span></div>'
   ).join('');
 };
 
-// ── Title cleaner — strips e-commerce site suffixes ───────
-const cleanTitle = t => {
-  if (!t) return '';
-  return t
-    .replace(/^Amazon\.com\s*[:·]\s*/i, '')
-    .replace(/\s*[-–—|·]\s*(Amazon\.com|eBay|Walmart|CARiD|RockAuto|AutoZone|O'Reilly|JEGS|Summit Racing|Holley|AmericanMuscle|TireRack|Advance Auto).*/i, '')
-    .replace(/ \| [^|]{1,50}$/, '')
-    .trim().slice(0, 100);
-};
+// ── Title cleaner ─────────────────────────────────────────
+const cleanTitle = t => t
+  ? t.replace(/^Amazon\.com\s*[:·]\s*/i,'')
+      .replace(/\s*[-–—|·]\s*(Amazon\.com|eBay|Walmart|CARiD|RockAuto|AutoZone|O'Reilly|JEGS|Summit Racing|Holley|AmericanMuscle|TireRack|Advance Auto).*/i,'')
+      .replace(/ \| [^|]{1,50}$/,'')
+      .trim().slice(0,100)
+  : '';
 
 // ── GitHub API ────────────────────────────────────────────
-const ghHdrs = tok => ({ Authorization: 'token ' + tok, Accept: 'application/vnd.github.v3+json' });
-const ghUrl  = (c, path) => 'https://api.github.com/repos/' + c.owner + '/' + c.repo + '/contents/' + path;
+const ghHdrs = tok => ({ Authorization:'token '+tok, Accept:'application/vnd.github.v3+json' });
+const ghUrl  = (c,p) => 'https://api.github.com/repos/'+c.owner+'/'+c.repo+'/contents/'+p;
 
-const ghGet = async (c, path) => {
-  const r = await fetch(ghUrl(c, path), { headers: ghHdrs(c.token) });
-  if (!r.ok) {
-    if (r.status === 401) throw new Error('Bad token — check settings');
-    if (r.status === 404) throw new Error('Repo or file not found');
-    throw new Error('GitHub ' + r.status);
-  }
+const ghGet = async (c,p) => {
+  const r = await fetch(ghUrl(c,p), { headers:ghHdrs(c.token) });
+  if (!r.ok) { if(r.status===401) throw new Error('Bad token — check settings'); if(r.status===404) throw new Error('Repo or file not found'); throw new Error('GitHub '+r.status); }
   return r.json();
 };
 
-const ghPut = async (c, path, content, sha, msg) => {
-  const r = await fetch(ghUrl(c, path), {
-    method: 'PUT',
-    headers: Object.assign({ 'Content-Type': 'application/json' }, ghHdrs(c.token)),
-    body: JSON.stringify({ message: msg, content: btoa(unescape(encodeURIComponent(content))), sha })
+const ghPut = async (c,p,content,sha,msg) => {
+  const r = await fetch(ghUrl(c,p), {
+    method:'PUT',
+    headers:Object.assign({'Content-Type':'application/json'},ghHdrs(c.token)),
+    body:JSON.stringify({message:msg, content:btoa(unescape(encodeURIComponent(content))), sha})
   });
-  if (!r.ok) {
-    const e = await r.json().catch(() => ({}));
-    const err = new Error(e.message || 'GitHub ' + r.status);
-    if (r.status === 409) err.conflict = true;
-    throw err;
-  }
+  if (!r.ok) { const e=await r.json().catch(()=>({})); const err=new Error(e.message||'GitHub '+r.status); if(r.status===409) err.conflict=true; throw err; }
   return r.json();
 };
 
-// ── Markdown section injection ────────────────────────────
-const injectLine = (md, section, line) => {
-  const lines = md.split('\n');
-  const hdr = '## ' + section;
-  const idx = lines.findIndex(l => l.trim() === hdr);
-  if (idx === -1) {
-    const done = lines.findIndex(l => l.trim() === '## Done');
-    lines.splice(done !== -1 ? done : lines.length, 0, '', hdr, line, '');
-    return lines.join('\n');
-  }
-  let end = lines.length;
-  for (let i = idx+1; i < lines.length; i++) { if (/^## /.test(lines[i])) { end = i; break; } }
-  let at = end;
-  for (let i = end-1; i > idx; i--) { const t = lines[i].trim(); if (t && t !== '---') { at = i+1; break; } }
-  lines.splice(at, 0, line);
+// ── Markdown injection ────────────────────────────────────
+const injectLine = (md,section,line) => {
+  const lines=md.split('\n'), hdr='## '+section;
+  const idx=lines.findIndex(l=>l.trim()===hdr);
+  if(idx===-1){ const done=lines.findIndex(l=>l.trim()==='## Done'); lines.splice(done!==-1?done:lines.length,0,'',hdr,line,''); return lines.join('\n'); }
+  let end=lines.length;
+  for(let i=idx+1;i<lines.length;i++){ if(/^## /.test(lines[i])){ end=i; break; } }
+  let at=end;
+  for(let i=end-1;i>idx;i--){ const t=lines[i].trim(); if(t&&t!=='---'){ at=i+1; break; } }
+  lines.splice(at,0,line);
   return lines.join('\n');
 };
 
-// ── Core add — cached SHA, auto-retry on 409 conflict ─────
-const doAdd = async (c, name, url, cat, notes) => {
+// ── Add — cached SHA, auto-retry on 409 ──────────────────
+const doAdd = async (c,name,url,cat,notes) => {
   const decode = b64 => decodeURIComponent(escape(atob(b64.replace(/\n/g,''))));
   const link   = url ? '['+name+']('+url+')' : name;
-  const newLine = '- [ ] ' + link + (notes ? ' — '+notes : '');
+  const newLine = '- [ ] '+link+(notes?' — '+notes:'');
 
-  const run = async (sha, current) => {
-    const res = await ghPut(c, 'PARTS.md', injectLine(current, cat, newLine), sha, 'Add part: '+name);
-    setCache(res.content.sha, injectLine(current, cat, newLine));
+  const commit = async (sha,current) => {
+    const updated = injectLine(current,cat,newLine);
+    const res = await ghPut(c,'PARTS.md',updated,sha,'Add part: '+name);
+    setCache(res.content.sha, updated);
   };
 
   const cached = getCache();
-  if (cached) {
-    try { await run(cached.sha, cached.content); return; }
-    catch (e) { if (!e.conflict) throw e; clearCache(); }
-  }
+  if (cached) { try { await commit(cached.sha,cached.content); return; } catch(e){ if(!e.conflict) throw e; clearCache(); } }
 
-  // Fresh fetch (first add, or after cache miss / conflict)
-  const raw = await ghGet(c, 'PARTS.md');
+  const raw = await ghGet(c,'PARTS.md');
   const current = decode(raw.content);
   setCache(raw.sha, current);
-  await run(raw.sha, current);
+  await commit(raw.sha, current);
 };
 
-// ── Pre-fill from Android share target ───────────────────
+// ── Share target params ───────────────────────────────────
 const sp = new URLSearchParams(location.search);
 const sharedUrl   = sp.get('url') || sp.get('text') || '';
 const sharedTitle = cleanTitle(sp.get('title') || '');
-if (sharedUrl)   document.getElementById('url').value = sharedUrl;
+const fromShare   = !!sharedUrl;
+
+if (sharedUrl)   document.getElementById('url').value  = sharedUrl;
 if (sharedTitle) document.getElementById('name').value = sharedTitle;
 
 // ── Init ──────────────────────────────────────────────────
 getCfg() ? show('s-add') : show('s-cfg');
 renderHist();
-if (sharedUrl) setTimeout(() => document.getElementById('name').focus(), 300);
+// Auto-focus name when arriving from share so user just confirms and taps Add
+if (fromShare) setTimeout(() => document.getElementById('name').focus(), 300);
 
 // ── Offline indicator ─────────────────────────────────────
 const syncOnline = () => document.body.classList.toggle('offline', !navigator.onLine);
@@ -347,34 +401,37 @@ syncOnline();
 
 // ── Settings ──────────────────────────────────────────────
 document.getElementById('btn-cfg').addEventListener('click', () => {
-  const c = getCfg() || {};
-  document.getElementById('cfg-owner').value = c.owner || '';
-  document.getElementById('cfg-repo').value  = c.repo  || '';
-  document.getElementById('cfg-token').value = c.token || '';
+  const c = getCfg()||{};
+  document.getElementById('cfg-owner').value = c.owner||'';
+  document.getElementById('cfg-repo').value  = c.repo||'';
+  document.getElementById('cfg-token').value = c.token||'';
   show('s-cfg');
 });
-document.getElementById('btn-back').addEventListener('click', () => { if (getCfg()) show('s-add'); });
+document.getElementById('btn-back').addEventListener('click', () => { if(getCfg()) show('s-add'); });
 
 document.getElementById('btn-save').addEventListener('click', () => {
-  const c = { owner: document.getElementById('cfg-owner').value.trim(), repo: document.getElementById('cfg-repo').value.trim(), token: document.getElementById('cfg-token').value.trim() };
-  if (!c.owner || !c.repo || !c.token) { toast('Fill in all three fields', 'err'); return; }
+  const c = {
+    owner: document.getElementById('cfg-owner').value.trim(),
+    repo:  document.getElementById('cfg-repo').value.trim(),
+    token: document.getElementById('cfg-token').value.trim()
+  };
+  if(!c.owner||!c.repo||!c.token){ toast('Fill in all three fields','err'); return; }
   saveCfg(c); clearCache(); toast('Saved'); show('s-add');
 });
 
 document.getElementById('btn-test').addEventListener('click', async () => {
   const btn = document.getElementById('btn-test');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Testing…';
-  const c = { owner: document.getElementById('cfg-owner').value.trim(), repo: document.getElementById('cfg-repo').value.trim(), token: document.getElementById('cfg-token').value.trim() };
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Testing…';
+  const c = { owner:document.getElementById('cfg-owner').value.trim(), repo:document.getElementById('cfg-repo').value.trim(), token:document.getElementById('cfg-token').value.trim() };
   try {
-    const data = await ghGet(c, 'PARTS.md');
-    const n = decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))).split('\n').filter(l => /^- \[.?\]/.test(l)).length;
-    toast('Connected — ' + n + ' part' + (n !== 1 ? 's' : '') + ' tracked');
-  } catch(e) { toast(e.message, 'err'); }
-  finally { btn.disabled = false; btn.textContent = 'Test connection'; }
+    const data = await ghGet(c,'PARTS.md');
+    const n = decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))).split('\n').filter(l=>/^- \[.?\]/.test(l)).length;
+    toast('Connected — '+n+' part'+(n!==1?'s':'')+' tracked');
+  } catch(e){ toast(e.message,'err'); }
+  finally { btn.disabled=false; btn.textContent='Test connection'; }
 });
 
-// ── Add part ──────────────────────────────────────────────
+// ── Add handler ───────────────────────────────────────────
 const addBtn = document.getElementById('btn-add');
 
 const handleAdd = async () => {
@@ -382,9 +439,9 @@ const handleAdd = async () => {
   const url   = document.getElementById('url').value.trim();
   const notes = document.getElementById('notes').value.trim();
 
-  if (!name) { document.getElementById('name').focus(); toast('Part name is required', 'err'); return; }
-  const c = getCfg(); if (!c) { show('s-cfg'); return; }
-  if (!navigator.onLine) { toast('No internet connection', 'err'); return; }
+  if (!name) { document.getElementById('name').focus(); toast('Part name is required','err'); return; }
+  const c = getCfg(); if(!c){ show('s-cfg'); return; }
+  if(!navigator.onLine){ toast('No internet connection','err'); return; }
 
   addBtn.disabled = true;
   addBtn.innerHTML = '<div class="spinner"></div> Adding…';
@@ -392,16 +449,27 @@ const handleAdd = async () => {
   try {
     await doAdd(c, name, url, activeCat, notes);
     navigator.vibrate?.(30);
-    pushHist({ name, url, cat: activeCat });
+    pushHist({ name, url, cat:activeCat });
     renderHist();
-    toast('Added to ' + activeCat.replace(' & Consumables', ''));
-    document.getElementById('url').value   = '';
-    document.getElementById('name').value  = '';
-    document.getElementById('notes').value = '';
-    document.getElementById('url').focus();
+
+    if (fromShare) {
+      // Full-screen success then auto-close — feels native
+      document.getElementById('success-name').textContent = name;
+      document.getElementById('success-cat').textContent  = 'Added to '+activeCat.replace(' & Consumables','');
+      document.getElementById('success-overlay').classList.add('show');
+      setTimeout(() => history.back(), 1500);
+    } else {
+      toast('Added to '+activeCat.replace(' & Consumables',''));
+      document.getElementById('url').value='';
+      document.getElementById('name').value='';
+      document.getElementById('notes').value='';
+      // Collapse notes again
+      notesOpen=false; notesArea.classList.remove('open'); notesToggle.classList.remove('open');
+      document.getElementById('name').focus();
+    }
   } catch(e) {
-    navigator.vibrate?.([60, 40, 60]);
-    toast(e.message, 'err');
+    navigator.vibrate?.([60,40,60]);
+    toast(e.message,'err');
   } finally {
     addBtn.disabled = false;
     addBtn.textContent = 'Add to list';
@@ -409,10 +477,11 @@ const handleAdd = async () => {
 };
 
 addBtn.addEventListener('click', handleAdd);
-['url','name','notes'].forEach(id =>
-  document.getElementById(id).addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAdd(); }
-  })
+
+// URL enter → jump to name; name/notes enter → submit
+document.getElementById('url').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); document.getElementById('name').focus(); } });
+['name','notes'].forEach(id =>
+  document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); handleAdd(); } })
 );
 </script>
 </body>
