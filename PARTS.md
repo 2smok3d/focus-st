@@ -166,9 +166,9 @@
 ### Tools
 - [ ] Cobb AccessPort V3 — also functions as OBD2 scanner / datalLogger
 - [ ] Admin Key — check dash: Settings → MyKey → Admin Key Detected. If 0 admin keys, MyKey restrictions are active (speed cap, volume limit, etc.)
-- [ ] [ELM327 OBD2 Adapter](https://www.amazon.com/s?k=elm327+obd2+usb+forscan) — USB or Bluetooth, ~$10, needed for FORScan
-- [ ] [FORScan](https://forscan.org/download.html) — free Ford diagnostic software, resets MyKey/admin key, unlocks hidden config (disable fake engine noise, adjust EPAS steering weight, enable hidden dash menus, full module codes)
-- [ ] Admin Key Reset via FORScan — Body Control Module → MyKey → reset all MyKey, makes current key admin. Free alternative to dealer ($75–100)
+- [x] OBDLink MX+ — Bluetooth adapter, full MS-CAN + HS-CAN support, works with FORScan
+- [ ] [FORScan](https://forscan.org/download.html) — free, pair with MX+ over Bluetooth. Resets MyKey, unlocks hidden config (disable fake engine noise, EPAS steering weight, hidden dash menus, all module codes)
+- [ ] Admin Key Reset via FORScan — BCM → MyKey → Reset MyKey, makes current key the admin. Free vs dealer $75–100
 - [ ] Autel MaxiLink ML619 — budget OBD2 scanner with ABS/SRS codes
 - [ ] Oil Drain Pan — 8qt+ for 5.7qt capacity
 - [ ] Torque Wrench — 0-150 ft-lb range, needed for wheel bolts (103 ft-lb) + drain plug (20 ft-lb)
