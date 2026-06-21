@@ -11,10 +11,8 @@
 <link rel="manifest" href="manifest.json">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{background:#0d0d0d;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
-.screen{display:none;position:fixed;inset:0;flex-direction:column;background:#0d0d0d}
-.screen.active{display:flex;animation:fadeIn .15s ease}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+body{background:#0d0d0d;color:#e8e8e8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;display:flex;flex-direction:column;height:100dvh;overflow:hidden}
 header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
   padding:max(env(safe-area-inset-top,10px),10px) 18px 10px;min-height:52px}
 .logo{font-size:19px;font-weight:800;letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
@@ -125,33 +123,33 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 .mod-sec-hdr{padding:14px 18px 5px;font-size:10px;font-weight:700;letter-spacing:.7px;
   text-transform:uppercase;color:#2e2e2e}
 .mod-item{padding:11px 18px;border-bottom:1px solid #111}
-.mod-slot-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;
-  color:#333;margin-bottom:5px}
+.mod-slot-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#333;margin-bottom:5px}
 .mod-stock{font-size:11px;color:#2a2a2a;margin-bottom:4px}
 .mod-row{display:flex;align-items:center;gap:8px}
-.mod-installed{font-size:14px;color:#c0c0c0;font-weight:500;flex:1;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap}
+.mod-installed{font-size:14px;color:#c0c0c0;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mod-link{color:#333;text-decoration:none;padding:5px;line-height:0;flex-shrink:0;transition:color .12s}
 .mod-link:active{color:#888}
 .mods-empty{padding:52px 18px;text-align:center;color:#323232;font-size:14px;line-height:1.6}
 
-/* ── Upgrade sheet */
+/* ── Shared sheet base */
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:150;
   opacity:0;pointer-events:none;transition:opacity .22s}
 .sheet-bg.open{opacity:1;pointer-events:all}
+.sheet-handle{width:36px;height:4px;background:#1e1e1e;border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.sheet-x{background:none;border:none;color:#333;cursor:pointer;padding:4px;line-height:0;
+  -webkit-appearance:none;transition:color .12s;flex-shrink:0}
+.sheet-x:active{color:#888}
+
+/* ── Upgrade sheet */
 .upg-sheet{position:fixed;bottom:0;left:0;right:0;background:#111;border-radius:20px 20px 0 0;
   z-index:151;display:flex;flex-direction:column;max-height:80vh;transform:translateY(100%);
   transition:transform .3s cubic-bezier(.34,1.1,.64,1);padding-bottom:env(safe-area-inset-bottom,0)}
 .upg-sheet.open{transform:translateY(0)}
-.sheet-handle{width:36px;height:4px;background:#1e1e1e;border-radius:2px;margin:10px auto 0;flex-shrink:0}
 .sheet-hdr{flex-shrink:0;display:flex;align-items:flex-start;padding:14px 18px 10px;gap:12px;
   border-bottom:1px solid #181818}
 .sheet-title{flex:1;min-width:0}
 .sheet-slot-name{font-size:16px;font-weight:700;color:#ddd}
 .sheet-cur{font-size:12px;color:#383838;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sheet-x{background:none;border:none;color:#333;cursor:pointer;padding:4px;line-height:0;
-  -webkit-appearance:none;transition:color .12s;flex-shrink:0}
-.sheet-x:active{color:#888}
 .sheet-rows{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .sheet-row{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid #181818;
   cursor:pointer;gap:10px;transition:background .1s}
@@ -179,12 +177,20 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 .confirm-install:active{opacity:.8}
 .confirm-install:disabled{opacity:.4}
 
-/* ── Config */
-.cfg-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 18px 28px}
-.cfg-sub{font-size:14px;color:#454545;margin-bottom:20px;line-height:1.65;padding-top:2px}
-.hint{font-size:12px;color:#383838;margin-top:7px;line-height:1.55}
-.hint a{color:#e8000d;text-decoration:none}
-.hint b{color:#555;font-weight:500}
+/* ── Token sheet */
+.tok-sheet{position:fixed;bottom:0;left:0;right:0;background:#0f0f0f;border-radius:20px 20px 0 0;
+  z-index:160;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.1,.64,1);
+  padding-bottom:env(safe-area-inset-bottom,0)}
+.tok-sheet.open{transform:translateY(0)}
+.tok-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:159;
+  opacity:0;pointer-events:none;transition:opacity .22s}
+.tok-bg.open{opacity:1;pointer-events:all}
+.tok-hdr{display:flex;align-items:center;padding:16px 18px 12px;border-bottom:1px solid #1a1a1a}
+.tok-title{flex:1;font-size:17px;font-weight:700;color:#e8e8e8}
+.tok-body{padding:20px 18px 14px;display:flex;flex-direction:column;gap:14px}
+.tok-hint{font-size:12px;color:#3a3a3a;line-height:1.6}
+.tok-hint a{color:#e8000d;text-decoration:none}
+.tok-hint b{color:#505050;font-weight:600}
 
 /* ── Success overlay */
 .success-overlay{position:fixed;inset:0;background:#0d0d0d;z-index:200;display:flex;
@@ -211,146 +217,105 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 </head>
 <body>
 
-<!-- ── Main screen ──────────────────────────────────────────── -->
-<div class="screen" id="s-main">
-  <header>
-    <div class="logo">Focus <em>ST</em> <span class="offline-pill">Offline</span></div>
-    <button class="icon-btn" id="btn-cfg" aria-label="Settings">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-      </svg>
-    </button>
-  </header>
+<header>
+  <div class="logo">Focus <em>ST</em> <span class="offline-pill">Offline</span></div>
+  <button class="icon-btn" id="btn-cfg" aria-label="Settings">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+</header>
 
-  <div class="tab-content">
-
-    <!-- Add pane -->
-    <div class="pane" id="pane-add">
-      <div class="scroll-area">
-        <div class="field">
-          <label>Part name *</label>
-          <input type="text" id="name" placeholder="e.g. Mountune MP215 upgrade"
-                 autocorrect="off" autocapitalize="words" enterkeyhint="go">
-        </div>
-        <div class="field">
-          <label>Category</label>
-          <div class="strip" id="cat-strip" role="group"></div>
-        </div>
-        <div class="field">
-          <label>Subcategory</label>
-          <div class="strip sub-strip" id="sub-strip" role="group"></div>
-        </div>
-        <div class="field">
-          <label>URL</label>
-          <input type="url" id="url" placeholder="https://…" inputmode="url"
-                 autocomplete="off" autocorrect="off" enterkeyhint="next">
-        </div>
-        <button type="button" class="notes-toggle" id="notes-toggle">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
-          </svg>
-          Add notes
-        </button>
-        <div class="notes-area" id="notes-area">
-          <textarea id="notes" placeholder="Price, fitment, priority…" enterkeyhint="go"></textarea>
-        </div>
-        <div id="recent" class="recent" style="display:none">
-          <div class="recent-hdr">Recent</div>
-          <div id="recent-list"></div>
-        </div>
+<div class="tab-content">
+  <div class="pane" id="pane-add">
+    <div class="scroll-area">
+      <div class="field">
+        <label>Part name *</label>
+        <input type="text" id="name" placeholder="e.g. Mountune MP215 upgrade"
+               autocorrect="off" autocapitalize="words" enterkeyhint="go">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <div class="strip" id="cat-strip" role="group"></div>
+      </div>
+      <div class="field">
+        <label>Subcategory</label>
+        <div class="strip sub-strip" id="sub-strip" role="group"></div>
+      </div>
+      <div class="field">
+        <label>URL</label>
+        <input type="url" id="url" placeholder="https://…" inputmode="url"
+               autocomplete="off" autocorrect="off" enterkeyhint="next">
+      </div>
+      <button type="button" class="notes-toggle" id="notes-toggle">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+        </svg>
+        Add notes
+      </button>
+      <div class="notes-area" id="notes-area">
+        <textarea id="notes" placeholder="Price, fitment, priority…" enterkeyhint="go"></textarea>
+      </div>
+      <div id="recent" class="recent" style="display:none">
+        <div class="recent-hdr">Recent</div>
+        <div id="recent-list"></div>
       </div>
     </div>
-
-    <!-- Garage pane -->
-    <div class="pane hidden" id="pane-garage">
-      <div class="g-topbar">
-        <span class="g-stats" id="g-stats">Catalog</span>
-        <button class="refresh-btn" id="g-refresh" aria-label="Refresh">
-          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M23 4v6h-6M1 20v-6h6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-      <div class="garage-scroll" id="garage-scroll">
-        <div class="g-loading"><div class="g-spinner"></div></div>
-      </div>
-    </div>
-
-    <!-- Mods pane -->
-    <div class="pane hidden" id="pane-mods">
-      <div class="mods-topbar">
-        <span class="mods-stats" id="mods-stats">Changes from stock</span>
-      </div>
-      <div class="mods-scroll" id="mods-scroll">
-        <div class="g-loading"><div class="g-spinner"></div></div>
-      </div>
-    </div>
-
   </div>
 
-  <div class="action-bar" id="action-bar">
-    <button class="btn" id="btn-add">Add to list</button>
+  <div class="pane hidden" id="pane-garage">
+    <div class="g-topbar">
+      <span class="g-stats" id="g-stats">Catalog</span>
+      <button class="refresh-btn" id="g-refresh" aria-label="Refresh">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M23 4v6h-6M1 20v-6h6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="garage-scroll" id="garage-scroll">
+      <div class="g-loading"><div class="g-spinner"></div></div>
+    </div>
   </div>
 
-  <nav class="tab-bar">
-    <button class="tab sel" id="tab-add-btn">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke-linecap="round"/>
-      </svg>
-      Add
-    </button>
-    <button class="tab" id="tab-garage-btn">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Garage
-    </button>
-    <button class="tab" id="tab-mods-btn">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="17 6 23 6 23 12" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Mods
-    </button>
-  </nav>
-</div>
-
-<!-- ── Config screen ─────────────────────────────────────────── -->
-<div class="screen" id="s-cfg">
-  <header>
-    <div class="logo">Focus <em>ST</em></div>
-    <button class="icon-btn" id="btn-back" aria-label="Back">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M19 12H5M12 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
-  </header>
-  <div class="cfg-scroll">
-    <div class="cfg-sub">Your GitHub details — saved to this device only.</div>
-    <div class="field">
-      <label>GitHub username</label>
-      <input type="text" id="cfg-owner" placeholder="your-username"
-             autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next">
+  <div class="pane hidden" id="pane-mods">
+    <div class="mods-topbar">
+      <span class="mods-stats" id="mods-stats">Changes from stock</span>
     </div>
-    <div class="field">
-      <label>Repository name</label>
-      <input type="text" id="cfg-repo" placeholder="focus-st"
-             autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next">
+    <div class="mods-scroll" id="mods-scroll">
+      <div class="g-loading"><div class="g-spinner"></div></div>
     </div>
-    <div class="field">
-      <label>Personal access token</label>
-      <input type="password" id="cfg-token" placeholder="ghp_…"
-             autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
-      <div class="hint">Needs <b>Contents: read &amp; write</b>. <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create token →</a></div>
-    </div>
-    <button class="btn" id="btn-save">Save</button>
-    <button class="btn ghost" id="btn-test">Test connection</button>
   </div>
 </div>
 
-<!-- ── Upgrade sheet ─────────────────────────────────────────── -->
+<div class="action-bar" id="action-bar">
+  <button class="btn" id="btn-add">Add to list</button>
+</div>
+
+<nav class="tab-bar">
+  <button class="tab sel" id="tab-add-btn">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8" stroke-linecap="round"/>
+    </svg>
+    Add
+  </button>
+  <button class="tab" id="tab-garage-btn">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+      <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Garage
+  </button>
+  <button class="tab" id="tab-mods-btn">
+    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="17 6 23 6 23 12" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Mods
+  </button>
+</nav>
+
+<!-- Upgrade sheet -->
 <div class="sheet-bg" id="sheet-bg"></div>
 <div class="upg-sheet" id="upg-sheet">
   <div class="sheet-handle"></div>
@@ -373,7 +338,31 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
   </div>
 </div>
 
-<!-- ── Success overlay ───────────────────────────────────────── -->
+<!-- Token sheet -->
+<div class="tok-bg" id="tok-bg"></div>
+<div class="tok-sheet" id="tok-sheet">
+  <div class="sheet-handle"></div>
+  <div class="tok-hdr">
+    <span class="tok-title">GitHub Token</span>
+    <button class="sheet-x" id="tok-x" aria-label="Close">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M18 6L6 18M6 6l12 12" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="tok-body">
+    <input type="password" id="tok-input" placeholder="ghp_…"
+           autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" enterkeyhint="done">
+    <div class="tok-hint">
+      Needs <b>Contents: read &amp; write</b> on <b>2smok3d/focus-st</b>.<br>
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">Create token →</a>
+    </div>
+    <button class="btn" id="tok-save">Save</button>
+    <button class="btn ghost" id="tok-test">Test connection</button>
+  </div>
+</div>
+
+<!-- Success overlay -->
 <div class="success-overlay" id="success-overlay">
   <div class="success-check">
     <svg width="26" height="26" fill="none" stroke="#4caf50" stroke-width="2.5" viewBox="0 0 24 24">
@@ -390,43 +379,39 @@ textarea#notes{resize:none;height:74px;line-height:1.5;font-size:15px}
 </div>
 
 <script>
-// ── Category data ────────────────────────────────────────────
-const CATS = [
-  { val:'Performance', label:'Performance', subs:[
+const OWNER='2smok3d',REPO='focus-st';
+
+const CATS=[
+  {val:'Performance',label:'Performance',subs:[
     {val:'Engine / Intake',label:'Engine'},{val:'Exhaust',label:'Exhaust'},
     {val:'Suspension',label:'Suspension'},{val:'Brakes',label:'Brakes'},
     {val:'Cooling',label:'Cooling'},{val:'Drivetrain',label:'Drivetrain'},
-    {val:'Tune / ECU',label:'Tune'}
-  ]},
-  { val:'Exterior', label:'Exterior', subs:[
+    {val:'Tune / ECU',label:'Tune'}]},
+  {val:'Exterior',label:'Exterior',subs:[
     {val:'Wheels & Tires',label:'Wheels'},{val:'Body / Aero',label:'Body & Aero'},
-    {val:'Lighting',label:'Lighting'},{val:'Wraps & Paint',label:'Wraps'}
-  ]},
-  { val:'Interior', label:'Interior', subs:[
+    {val:'Lighting',label:'Lighting'},{val:'Wraps & Paint',label:'Wraps'}]},
+  {val:'Interior',label:'Interior',subs:[
     {val:'Seats / Harness',label:'Seats'},{val:'Gauges & Displays',label:'Gauges'},
     {val:'Audio',label:'Audio'},{val:'Pedals & Steering',label:'Pedals'},
-    {val:'Other Interior',label:'Other'}
-  ]},
-  { val:'Maintenance & Consumables', label:'Maintenance', subs:[
+    {val:'Other Interior',label:'Other'}]},
+  {val:'Maintenance & Consumables',label:'Maintenance',subs:[
     {val:'Fluids & Filters',label:'Fluids'},{val:'Wear Items',label:'Wear Items'},
-    {val:'Tools',label:'Tools'}
-  ]}
+    {val:'Tools',label:'Tools'}]}
 ];
 
-// ── Storage ──────────────────────────────────────────────────
-const K={cfg:'fst_v1',cache:'fst_cache',hist:'fst_hist',cat:'fst_cat',sub:'fst_sub'};
-const getCfg   =()=>{try{return JSON.parse(localStorage.getItem(K.cfg));}catch{return null;}};
-const saveCfg  =c=>localStorage.setItem(K.cfg,JSON.stringify(c));
-const getCache =()=>{try{const c=JSON.parse(localStorage.getItem(K.cache));return c&&Date.now()-c.ts<3e5?c:null;}catch{return null;}};
-const setCache =(sha,c)=>localStorage.setItem(K.cache,JSON.stringify({sha,content:c,ts:Date.now()}));
+const K={tok:'fst_tok',cache:'fst_cache',hist:'fst_hist',cat:'fst_cat',sub:'fst_sub'};
+const getToken  =()=>{try{return localStorage.getItem(K.tok)||null;}catch{return null;}};
+const saveToken =t=>{try{localStorage.setItem(K.tok,t);}catch{}};
+const getCfg    =()=>{const t=getToken();return t?{owner:OWNER,repo:REPO,token:t}:null;};
+const getCache  =()=>{try{const c=JSON.parse(localStorage.getItem(K.cache));return c&&Date.now()-c.ts<3e5?c:null;}catch{return null;}};
+const setCache  =(sha,c)=>localStorage.setItem(K.cache,JSON.stringify({sha,content:c,ts:Date.now()}));
 const clearCache=()=>localStorage.removeItem(K.cache);
-const getHist  =()=>{try{return JSON.parse(localStorage.getItem(K.hist))||[];}catch{return[];}};
-const pushHist =i=>{const h=getHist();h.unshift(i);localStorage.setItem(K.hist,JSON.stringify(h.slice(0,8)));};
-const getSubs  =()=>{try{return JSON.parse(localStorage.getItem(K.sub))||{};}catch{return{};}};
-const saveSubs =s=>localStorage.setItem(K.sub,JSON.stringify(s));
+const getHist   =()=>{try{return JSON.parse(localStorage.getItem(K.hist))||[];}catch{return[];}};
+const pushHist  =i=>{const h=getHist();h.unshift(i);localStorage.setItem(K.hist,JSON.stringify(h.slice(0,8)));};
+const getSubs   =()=>{try{return JSON.parse(localStorage.getItem(K.sub))||{};}catch{return{};}};
+const saveSubs  =s=>localStorage.setItem(K.sub,JSON.stringify(s));
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-// ── Toast ────────────────────────────────────────────────────
 let _tt;
 const toast=(msg,type='ok')=>{
   const el=document.getElementById('toast');
@@ -436,15 +421,39 @@ const toast=(msg,type='ok')=>{
 };
 document.querySelector('.tdis').onclick=()=>document.getElementById('toast').className='toast';
 
-// ── Screens ──────────────────────────────────────────────────
-const showScreen=id=>{
-  document.querySelectorAll('.screen').forEach(s=>{
-    const on=s.id===id;s.classList.toggle('active',on);s.style.display=on?'flex':'none';
-  });
+const openTokSheet=()=>{
+  document.getElementById('tok-input').value=getToken()||'';
+  document.getElementById('tok-bg').classList.add('open');
+  document.getElementById('tok-sheet').classList.add('open');
+  setTimeout(()=>document.getElementById('tok-input').focus(),350);
 };
+const closeTokSheet=()=>{
+  document.getElementById('tok-bg').classList.remove('open');
+  document.getElementById('tok-sheet').classList.remove('open');
+};
+document.getElementById('tok-bg').addEventListener('click',closeTokSheet);
+document.getElementById('tok-x').addEventListener('click',closeTokSheet);
+document.getElementById('btn-cfg').addEventListener('click',openTokSheet);
+document.getElementById('tok-save').addEventListener('click',()=>{
+  const t=document.getElementById('tok-input').value.trim();
+  if(!t){toast('Paste your token first','err');return;}
+  saveToken(t);clearCache();catalogLoaded=false;
+  toast('Saved');closeTokSheet();
+});
+document.getElementById('tok-test').addEventListener('click',async()=>{
+  const btn=document.getElementById('tok-test');
+  const t=document.getElementById('tok-input').value.trim();
+  if(!t){toast('Paste your token first','err');return;}
+  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Testing…';
+  try{
+    const data=await ghGet({owner:OWNER,repo:REPO,token:t},'PARTS.md');
+    const n=decode(data.content).split('\n').filter(l=>l.startsWith('**Installed:**')).length;
+    toast('Connected — '+n+' part slot'+(n!==1?'s':'')+' tracked');
+  }catch(e){toast(e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='Test connection';}
+});
 
-// ── Tabs ─────────────────────────────────────────────────────
-let activeTab='add', catalogLoaded=false;
+let activeTab='add',catalogLoaded=false;
 const switchTab=tab=>{
   activeTab=tab;
   ['add','garage','mods'].forEach(t=>{
@@ -458,8 +467,7 @@ document.getElementById('tab-add-btn').onclick   =()=>switchTab('add');
 document.getElementById('tab-garage-btn').onclick=()=>switchTab('garage');
 document.getElementById('tab-mods-btn').onclick  =()=>switchTab('mods');
 
-// ── Category / subcategory ────────────────────────────────────
-let activeCat=(()=>{try{return localStorage.getItem(K.cat)||'Performance';}catch{return 'Performance';}})();
+let activeCat=(()=>{try{return localStorage.getItem(K.cat)||'Performance';}catch{return'Performance';}})();
 let activeSubs=getSubs();
 const catData =v=>CATS.find(c=>c.val===v);
 const curSub  =()=>activeSubs[activeCat]||catData(activeCat)?.subs[0]?.val||'';
@@ -489,7 +497,6 @@ const renderSubs=animate=>{
   if(animate){strip.classList.add('fading');setTimeout(doRender,140);}else doRender();
 };
 
-// ── Notes ────────────────────────────────────────────────────
 let notesOpen=false;
 const notesToggle=document.getElementById('notes-toggle');
 const notesArea=document.getElementById('notes-area');
@@ -500,7 +507,6 @@ notesToggle.addEventListener('click',()=>{
   if(notesOpen)setTimeout(()=>document.getElementById('notes').focus(),220);
 });
 
-// ── Recent history ────────────────────────────────────────────
 const renderHist=()=>{
   const h=getHist(),wrap=document.getElementById('recent');
   if(!h.length){wrap.style.display='none';return;}
@@ -511,13 +517,11 @@ const renderHist=()=>{
   ).join('');
 };
 
-// ── Title cleaner ─────────────────────────────────────────────
 const cleanTitle=t=>!t?'':t
   .replace(/^Amazon\.com\s*[:·]\s*/i,'')
   .replace(/\s*[-–—|·]\s*(Amazon\.com|eBay|Walmart|CARiD|RockAuto|AutoZone|O'Reilly|JEGS|Summit Racing|Holley|AmericanMuscle|TireRack|Advance Auto).*/i,'')
   .replace(/ \| [^|]{1,50}$/,'').trim().slice(0,100);
 
-// ── GitHub API ────────────────────────────────────────────────
 const ghHdrs=tok=>({Authorization:'token '+tok,Accept:'application/vnd.github.v3+json'});
 const ghUrl =(c,p)=>`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${p}`;
 const decode=b64=>decodeURIComponent(escape(atob(b64.replace(/\n/g,''))));
@@ -540,28 +544,15 @@ const ghPut=async(c,p,content,sha,msg)=>{
   return r.json();
 };
 
-// ── parseCatalog ──────────────────────────────────────────────
 const parseCatalog=md=>{
-  const lines=md.split('\n');
-  const sections=[];
+  const lines=md.split('\n'),sections=[];
   let sec=null,slot=null,inUpg=false,upgRows=[];
-
-  const finalizeSlot=()=>{
-    if(slot){slot.upgrades=[...upgRows];upgRows=[];}
-    slot=null;inUpg=false;
-  };
-
+  const finalizeSlot=()=>{if(slot){slot.upgrades=[...upgRows];upgRows=[];}slot=null;inUpg=false;};
   for(const line of lines){
     const sm=line.match(/<summary><b>([^<]+)<\/b><\/summary>/);
     if(sm){finalizeSlot();sec={name:sm[1],slots:[]};sections.push(sec);continue;}
-
     const pm=line.match(/^#### (.+)/);
-    if(pm&&sec){
-      finalizeSlot();
-      slot={name:pm[1],installed:'',installedUrl:'',condition:'⚠️',isMod:false,upgrades:[]};
-      sec.slots.push(slot);continue;
-    }
-
+    if(pm&&sec){finalizeSlot();slot={name:pm[1],installed:'',installedUrl:'',condition:'⚠️',isMod:false,upgrades:[]};sec.slots.push(slot);continue;}
     if(line.startsWith('**Installed:**')&&slot){
       const raw=line.slice('**Installed:**'.length).trim();
       slot.isMod=raw.includes('<!-- MOD -->');
@@ -572,17 +563,13 @@ const parseCatalog=md=>{
       slot.condition=clean.includes('✅')?'✅':clean.includes('🔧')?'🔧':'⚠️';
       continue;
     }
-
     if(line.includes('<summary>')&&!line.includes('<b>')&&slot){inUpg=true;upgRows=[];continue;}
-
     if(line==='</details>'&&inUpg){if(slot)slot.upgrades=[...upgRows];inUpg=false;continue;}
-
     if(inUpg&&line.startsWith('|')&&!line.startsWith('|---')){
       const cols=line.split('|').slice(1,-1).map(c=>c.trim());
       if(cols.length>=2&&cols[0]&&cols[0]!=='Tier'&&cols[0]!=='Tool'&&cols[0]!=='Item'){
         const lm=cols[1]?.match(/^\[([^\]]+)\]\(([^)]+)\)/);
-        upgRows.push({tier:cols[0],name:lm?lm[1]:(cols[1]||''),url:lm?lm[2]:'',
-          partNum:cols[2]||'',price:cols[3]||'',notes:cols[4]||''});
+        upgRows.push({tier:cols[0],name:lm?lm[1]:(cols[1]||''),url:lm?lm[2]:'',partNum:cols[2]||'',price:cols[3]||'',notes:cols[4]||''});
       }
     }
   }
@@ -590,20 +577,13 @@ const parseCatalog=md=>{
   return sections;
 };
 
-// ── updateInstallInMd ─────────────────────────────────────────
 const updateInstallInMd=(md,slotName,partName,partUrl)=>{
-  const lines=md.split('\n');
-  const base=slotName.split(' *(')[0];
+  const lines=md.split('\n'),base=slotName.split(' *(')[0];
   let inSlot=false;
   for(let i=0;i<lines.length;i++){
-    if(lines[i].startsWith('#### ')){
-      const h=lines[i].slice(5).trim();
-      inSlot=(h===slotName||h.startsWith(base));
-      continue;
-    }
+    if(lines[i].startsWith('#### ')){const h=lines[i].slice(5).trim();inSlot=(h===slotName||h.startsWith(base));continue;}
     if(inSlot&&lines[i].startsWith('**Installed:**')){
-      const p=partUrl?`[${partName}](${partUrl})`:partName;
-      lines[i]=`**Installed:** ${p} — ✅ installed <!-- MOD -->`;
+      lines[i]=`**Installed:** ${partUrl?`[${partName}](${partUrl})`:partName} — ✅ installed <!-- MOD -->`;
       return lines.join('\n');
     }
     if(inSlot&&(lines[i].startsWith('#### ')||lines[i].includes('<summary><b>'))){inSlot=false;}
@@ -611,21 +591,17 @@ const updateInstallInMd=(md,slotName,partName,partUrl)=>{
   throw new Error(`Slot "${slotName}" not found in PARTS.md`);
 };
 
-// ── generateModsMd ────────────────────────────────────────────
 const generateModsMd=catalog=>{
   const out=['# Focus ST — Changes from OEM','','*Auto-generated from PARTS.md*','','---',''];
   let any=false;
   for(const sec of catalog){
-    const mods=sec.slots.filter(s=>s.isMod);
-    if(!mods.length)continue;
-    any=true;
-    out.push('## '+sec.name,'');
+    const mods=sec.slots.filter(s=>s.isMod);if(!mods.length)continue;
+    any=true;out.push('## '+sec.name,'');
     for(const s of mods){
       out.push('**'+s.name.split(' *(')[0]+'**');
       const oem=s.upgrades.find(u=>/^oem$/i.test(u.tier));
       if(oem)out.push('Stock: '+oem.name+(oem.partNum&&oem.partNum!=='—'?' · '+oem.partNum:''));
-      const inst=s.installedUrl?`[${s.installed}](${s.installedUrl})`:s.installed;
-      out.push('Installed: '+inst+' ✅','');
+      out.push('Installed: '+(s.installedUrl?`[${s.installed}](${s.installedUrl})`:s.installed)+' ✅','');
     }
     out.push('---','');
   }
@@ -633,14 +609,8 @@ const generateModsMd=catalog=>{
   return out.join('\n');
 };
 
-// ── Catalog loading / rendering ───────────────────────────────
 let catalogData=null;
-
-const buildViews=content=>{
-  catalogData=parseCatalog(content);
-  renderGarage(catalogData);
-  renderMods(catalogData);
-};
+const buildViews=content=>{catalogData=parseCatalog(content);renderGarage(catalogData);renderMods(catalogData);};
 
 const loadCatalog=async(force=false)=>{
   const c=getCfg();if(!c)return;
@@ -652,8 +622,7 @@ const loadCatalog=async(force=false)=>{
   try{
     const data=await ghGet(c,'PARTS.md');
     const content=decode(data.content);
-    setCache(data.sha,content);
-    buildViews(content);
+    setCache(data.sha,content);buildViews(content);
   }catch(e){
     document.getElementById('garage-scroll').innerHTML=`<div class="g-error">${esc(e.message)}</div>`;
     document.getElementById('mods-scroll').innerHTML=`<div class="mods-empty">${esc(e.message)}</div>`;
@@ -666,7 +635,6 @@ document.getElementById('g-refresh').addEventListener('click',async()=>{
   await loadCatalog(true);btn.classList.remove('spinning');
 });
 
-// ── renderGarage ──────────────────────────────────────────────
 const chevSvg=`<svg class="g-chevron" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const arrSvg=`<svg class="g-slot-arr" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const extSvg=`<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" stroke-linecap="round" stroke-linejoin="round"/><polyline points="15 3 21 3 21 9" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="14" x2="21" y2="3" stroke-linecap="round"/></svg>`;
@@ -674,7 +642,6 @@ const extSvg=`<svg width="13" height="13" fill="none" stroke="currentColor" stro
 const renderGarage=sections=>{
   const total=sections.reduce((n,s)=>n+s.slots.length,0);
   document.getElementById('g-stats').textContent=`${sections.length} sections · ${total} slots`;
-
   const scroll=document.getElementById('garage-scroll');
   scroll.innerHTML=sections.map((sec,si)=>`
     <div class="g-section" id="gsec-${si}">
@@ -689,19 +656,15 @@ const renderGarage=sections=>{
         </div>`).join('')}
       </div>
     </div>`).join('');
-
   scroll.querySelectorAll('.g-section-hdr').forEach(hdr=>hdr.addEventListener('click',()=>{
     document.getElementById('gsec-'+hdr.dataset.si).classList.toggle('open');
   }));
-
   scroll.querySelectorAll('.g-slot').forEach(row=>row.addEventListener('click',()=>{
-    const sec=catalogData[+row.dataset.si];
-    const slot=sec?.slots[+row.dataset.gi];
+    const slot=catalogData[+row.dataset.si]?.slots[+row.dataset.gi];
     if(slot)openSheet(slot);
   }));
 };
 
-// ── renderMods ────────────────────────────────────────────────
 const renderMods=sections=>{
   const groups=sections.map(s=>({name:s.name,items:s.slots.filter(x=>x.isMod)})).filter(s=>s.items.length);
   const scroll=document.getElementById('mods-scroll');
@@ -727,15 +690,12 @@ const renderMods=sections=>{
     }).join('')}`).join('');
 };
 
-// ── Upgrade sheet ─────────────────────────────────────────────
-let sheetSlot=null, selectedUpg=null;
-
+let sheetSlot=null,selectedUpg=null;
 const openSheet=slot=>{
   sheetSlot=slot;selectedUpg=null;
   document.getElementById('sheet-slot-name').textContent=slot.name.split(' *(')[0];
   document.getElementById('sheet-cur').textContent='Currently: '+slot.installed+' '+slot.condition;
   document.getElementById('sheet-confirm').style.display='none';
-
   const rows=document.getElementById('sheet-rows');
   if(!slot.upgrades.length){
     rows.innerHTML='<div style="padding:24px 18px;text-align:center;color:#333;font-size:14px">No options defined for this slot</div>';
@@ -750,29 +710,23 @@ const openSheet=slot=>{
         <span class="srow-price">${esc(u.price)}</span>
         ${u.url?`<a class="srow-link" href="${esc(u.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${extSvg}</a>`:''}
       </div>`).join('');
-
     rows.querySelectorAll('.sheet-row').forEach(row=>row.addEventListener('click',()=>{
-      const i=+row.dataset.i;
-      selectedUpg=slot.upgrades[i];
+      selectedUpg=slot.upgrades[+row.dataset.i];
       rows.querySelectorAll('.sheet-row').forEach(r=>r.classList.remove('sel'));
       row.classList.add('sel');
       const n=selectedUpg.name;
       document.getElementById('confirm-txt').textContent='Install '+(n.length>30?n.slice(0,30)+'…':n)+'?';
-      const conf=document.getElementById('sheet-confirm');
-      conf.style.display='flex';
+      document.getElementById('sheet-confirm').style.display='flex';
     }));
   }
-
   document.getElementById('sheet-bg').classList.add('open');
   document.getElementById('upg-sheet').classList.add('open');
 };
-
 const closeSheet=()=>{
   document.getElementById('sheet-bg').classList.remove('open');
   document.getElementById('upg-sheet').classList.remove('open');
   sheetSlot=null;selectedUpg=null;
 };
-
 document.getElementById('sheet-bg').addEventListener('click',closeSheet);
 document.getElementById('sheet-x').addEventListener('click',closeSheet);
 document.getElementById('confirm-cancel').addEventListener('click',()=>{
@@ -781,18 +735,14 @@ document.getElementById('confirm-cancel').addEventListener('click',()=>{
   document.getElementById('sheet-rows').querySelectorAll('.sheet-row').forEach(r=>r.classList.remove('sel'));
 });
 
-// ── doInstallPart ─────────────────────────────────────────────
 const doInstallPart=async(c,slotName,partName,partUrl)=>{
   const run=async(sha,content)=>{
     const updated=updateInstallInMd(content,slotName,partName,partUrl);
     const newCat=parseCatalog(updated);
-    const modsContent=generateModsMd(newCat);
     const res=await ghPut(c,'PARTS.md',updated,sha,'install: '+partName);
     setCache(res.content.sha,updated);
-    try{
-      const md=await ghGet(c,'MODS.md').catch(()=>null);
-      await ghPut(c,'MODS.md',modsContent,md?.sha,'update mods log');
-    }catch(e){console.warn('MODS.md:',e.message);}
+    try{const md=await ghGet(c,'MODS.md').catch(()=>null);await ghPut(c,'MODS.md',generateModsMd(newCat),md?.sha,'update mods log');}
+    catch(e){console.warn('MODS.md:',e.message);}
     buildViews(updated);
   };
   const cached=getCache();
@@ -810,18 +760,11 @@ document.getElementById('confirm-install').addEventListener('click',async()=>{
   btn.disabled=true;btn.innerHTML='<div class="spinner" style="border-top-color:#fff"></div>';
   try{
     await doInstallPart(c,sheetSlot.name,selectedUpg.name,selectedUpg.url);
-    navigator.vibrate?.(30);
-    closeSheet();
-    toast('Installed: '+selectedUpg.name);
-  }catch(e){
-    navigator.vibrate?.([40,20,40]);
-    toast(e.message,'err');
-  }finally{
-    btn.disabled=false;btn.innerHTML='Install ✓';
-  }
+    navigator.vibrate?.(30);closeSheet();toast('Installed: '+selectedUpg.name);
+  }catch(e){navigator.vibrate?.([40,20,40]);toast(e.message,'err');}
+  finally{btn.disabled=false;btn.innerHTML='Install ✓';}
 });
 
-// ── injectLine (Add tab → Wishlist section) ───────────────────
 const injectLine=(md,_cat,_sub,line)=>{
   const lines=md.split('\n');
   const wi=lines.findIndex(l=>l.trim()==='## Wishlist');
@@ -830,22 +773,17 @@ const injectLine=(md,_cat,_sub,line)=>{
     for(let i=wi+1;i<lines.length;i++){if(/^## /.test(lines[i])){end=i;break;}}
     let at=end;
     for(let i=end-1;i>wi;i--){if(lines[i].trim()){at=i+1;break;}}
-    lines.splice(at,0,line);
-    return lines.join('\n');
+    lines.splice(at,0,line);return lines.join('\n');
   }
-  lines.push('','---','','## Wishlist','',line,'');
-  return lines.join('\n');
+  lines.push('','---','','## Wishlist','',line,'');return lines.join('\n');
 };
 
-// ── doAdd ─────────────────────────────────────────────────────
 const doAdd=async(c,name,url,cat,sub,notes)=>{
-  const link=url?'['+name+']('+url+')':name;
-  const newLine='- [ ] '+link+(notes?' — '+notes:'');
+  const newLine='- [ ] '+(url?'['+name+']('+url+')':name)+(notes?' — '+notes:'');
   const commit=async(sha,current)=>{
-    const updated=injectLine(current,cat,sub,newLine);
-    const res=await ghPut(c,'PARTS.md',updated,sha,'add: '+name);
-    setCache(res.content.sha,updated);
-    if(catalogLoaded)buildViews(updated);
+    const res=await ghPut(c,'PARTS.md',injectLine(current,cat,sub,newLine),sha,'add: '+name);
+    setCache(res.content.sha,injectLine(current,cat,sub,newLine));
+    if(catalogLoaded)buildViews(injectLine(current,cat,sub,newLine));
   };
   const cached=getCache();
   if(cached){try{await commit(cached.sha,cached.content);return;}catch(e){if(!e.conflict)throw e;clearCache();}}
@@ -855,60 +793,27 @@ const doAdd=async(c,name,url,cat,sub,notes)=>{
   await commit(raw.sha,current);
 };
 
-// ── Share params ──────────────────────────────────────────────
 const sp=new URLSearchParams(location.search);
 const sharedUrl=sp.get('url')||sp.get('text')||'';
 const sharedTitle=cleanTitle(sp.get('title')||'');
 const fromShare=!!sharedUrl;
 
-// ── Init ──────────────────────────────────────────────────────
 renderCats();renderSubs(false);renderHist();
 if(sharedUrl)document.getElementById('url').value=sharedUrl;
 if(sharedTitle)document.getElementById('name').value=sharedTitle;
-showScreen(getCfg()?'s-main':'s-cfg');
+if(!getToken())openTokSheet();
 if(fromShare)setTimeout(()=>document.getElementById('name').focus(),300);
 
 const syncOnline=()=>document.body.classList.toggle('offline',!navigator.onLine);
 window.addEventListener('online',syncOnline);window.addEventListener('offline',syncOnline);syncOnline();
 
-// ── Settings ──────────────────────────────────────────────────
-document.getElementById('btn-cfg').addEventListener('click',()=>{
-  const c=getCfg()||{};
-  document.getElementById('cfg-owner').value=c.owner||'';
-  document.getElementById('cfg-repo').value=c.repo||'';
-  document.getElementById('cfg-token').value=c.token||'';
-  showScreen('s-cfg');
-});
-document.getElementById('btn-back').addEventListener('click',()=>{if(getCfg())showScreen('s-main');});
-document.getElementById('btn-save').addEventListener('click',()=>{
-  const c={owner:document.getElementById('cfg-owner').value.trim(),
-           repo:document.getElementById('cfg-repo').value.trim(),
-           token:document.getElementById('cfg-token').value.trim()};
-  if(!c.owner||!c.repo||!c.token){toast('Fill in all three fields','err');return;}
-  saveCfg(c);clearCache();catalogLoaded=false;toast('Saved');showScreen('s-main');
-});
-document.getElementById('btn-test').addEventListener('click',async()=>{
-  const btn=document.getElementById('btn-test');
-  btn.disabled=true;btn.innerHTML='<div class="spinner"></div> Testing…';
-  const c={owner:document.getElementById('cfg-owner').value.trim(),
-            repo:document.getElementById('cfg-repo').value.trim(),
-            token:document.getElementById('cfg-token').value.trim()};
-  try{
-    const data=await ghGet(c,'PARTS.md');
-    const n=decode(data.content).split('\n').filter(l=>l.startsWith('**Installed:**')).length;
-    toast('Connected — '+n+' part slot'+(n!==1?'s':'')+' tracked');
-  }catch(e){toast(e.message,'err');}
-  finally{btn.disabled=false;btn.textContent='Test connection';}
-});
-
-// ── Add ───────────────────────────────────────────────────────
 const addBtn=document.getElementById('btn-add');
 const handleAdd=async()=>{
   const name=document.getElementById('name').value.trim();
   const url=document.getElementById('url').value.trim();
   const notes=document.getElementById('notes').value.trim();
   if(!name){document.getElementById('name').focus();toast('Part name is required','err');return;}
-  const c=getCfg();if(!c){showScreen('s-cfg');return;}
+  const c=getCfg();if(!c){openTokSheet();return;}
   if(!navigator.onLine){toast('No internet connection','err');return;}
   addBtn.disabled=true;addBtn.innerHTML='<div class="spinner"></div> Adding…';
   try{
@@ -935,7 +840,7 @@ addBtn.addEventListener('click',handleAdd);
 document.getElementById('url').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('name').focus();}});
 ['name','notes'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleAdd();}}));
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script>
 </body>
 </html>
