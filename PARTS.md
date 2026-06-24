@@ -912,7 +912,7 @@
 ---
 
 #### Diagnostic Software
-**Installed:** [FORScan](https://forscan.org/download.html) — free · use with OBDLink MX+
+**Installed:** ~$12/yr · unlocks full module config — ✅ installed <!-- MOD -->
 
 <details>
 <summary>Reference</summary>
