@@ -62,6 +62,17 @@ Until then, everything else proceeds without it.
 
 ## Gmail → receipts pipeline
 
+```mermaid
+flowchart LR
+    GM[Gmail order/receipt email] --> AUTO["Apps Script - hourly scan, parse vendor/amount"]
+    GM --> ASST["Assisted - 'log my receipts' → I search + parse"]
+    AUTO --> LOG[FOST - Receipts Log Sheet]
+    ASST --> LOG
+    ASST --> PDF["FOST/_Archive/receipts/YYYY - PDFs"]
+    LOG --> DASH["Master Tracker - budget vs actual roll-up"]
+    AUTO -. labels thread FOST-Logged .-> GM
+```
+
 **Goal:** every parts order/receipt gets logged to the Sheet and the PDF filed in FOST, tied to the right project.
 
 **How it works now (assisted):** when you say "log my latest receipts" (or on a schedule, if you want a recurring task), I search Gmail for order confirmations from the usual senders (Amazon, eBay, RockAuto, Mishimoto, COBB, Summit, FCP Euro, Tasca, etc.), extract vendor / item / price / date / order #, append them to the Sheet's **Receipts** tab, link them to a project, and save any attached PDF to `FOST/_Archive/receipts/YYYY/`.

@@ -8,6 +8,21 @@
 - Powertrain/steering tuning is **NOT** FORScan-editable → use COBB/SCT.
 - Two biggest risks: **SBL load** when opening `BdyCM Central Config (Main)` on 2017–18 cars, and **tire-circumference edits** that cause a stuck **P160A/P2610**.
 
+## Module map
+
+```mermaid
+flowchart TB
+    MX["OBDLink MX+ - MS-CAN + HS-CAN"] --> FORS[FORScan Extended]
+    FORS --> BCM["BdyCM/BCM 726 - lighting, windows, locks, double-honk, MyKey"]
+    FORS --> IPC["IPC 720 - shift light, TPMS/DDS, gauges"]
+    FORS --> APIM["APIM 7D0 - SYNC splash, climate, audio, nav"]
+    FORS --> ACM[ACM 727 - audio]
+    FORS --> ABS["ABS 760 - traction, DDS relearn"]
+    FORS --> PATS["PATS - Add Key, 2nd key"]
+    WARN{{"CC platform: use Module Config dropdowns, NOT raw Super Duty As-Built hex"}}
+    FORS -.-> WARN
+```
+
 ## Prereqs
 - Adapter: OBDLink MX+ (owned) · License: FORScan **Extended** (free 2-mo trial, renewable).
 - Battery **> 11.6 V** (charger on). Pull VIN As-Built from **motorcraftservice.com** + save `.abt` of every module. **One change → verify → next.**

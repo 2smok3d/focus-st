@@ -5,6 +5,35 @@
 >
 > **Authoring model:** this repo is the authoring layer (version-controlled, feeds the PWA, holds the wiring diagrams + streamlined bundles). The **FFST "mechanic vault"** in Google Drive (FOST → *FFST Knowledge Base*, 16 docs) is the deep reference for OEM specs, diagnostics, recalls and forum-graded knowledge. On any spec conflict, the vault's Grade-A (Ford/NHTSA) values win — reconciled here.
 
+Full index of everything (repo + Drive + sheets): **[INDEX.md](INDEX.md)**.
+
+---
+
+## Systems at a glance
+
+```mermaid
+flowchart TB
+    ENG["ENGINE 2.0 EcoBoost - 252hp/270 - oil leak? 🔧"]
+    FI["FORCED INDUCTION - Depo Beast FMIC ✅ - stock diverter"]
+    EXH[EXHAUST - stock catted DP + resonated catback]
+    COOL["COOLING - radiator HOLE 🔧 - AGS deleted ❌ - AZ heat"]
+    DT["DRIVETRAIN - MMT6 6MT - 240mm clutch - TS mounts ✅"]
+    SUS[SUSPENSION - stock MacPherson / Control Blade]
+    BRK[BRAKES - 320 front / 302 rear single-piston]
+    WT[WHEELS/TIRES - 18x8 +55 - 235/40R18]
+    ELE["ELECTRICAL - upgraded battery ✅ - 0 admin keys 🔧"]
+    LGT[LIGHTING - halogen H11/H1 - LED plan]
+    INT[INTERIOR - SYNC1 4in - RR2 plan]
+    MOD["MODULES - BCM/IPC/APIM/ACM/ABS - FORScan via OBDLink MX+ ✅"]
+
+    ENG --- FI --- EXH
+    ENG --- COOL
+    ENG --- DT --- SUS --- BRK --- WT
+    ELE --- MOD --- LGT --- INT
+```
+
+Legend: ✅ good/done · 🔧 needs attention · ❌ removed. Details per system below.
+
 ---
 
 ## 1. Identity
