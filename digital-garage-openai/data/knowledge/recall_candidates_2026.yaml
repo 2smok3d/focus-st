@@ -1,0 +1,16 @@
+recalls:
+  - campaign: 26V369000
+    ford_program: 26S40
+    date: 2026-06-08
+    population_summary: "Certain 2012-2018 Focus vehicles previously repaired incorrectly under 18V735"
+    risk: "Canister purge valve malfunction may cause unexpected engine stall"
+    remedy: "PCM software update, free"
+    applicability: VIN_SPECIFIC
+  - campaign: 26V012000
+    ford_program: 25SA4
+    date: 2026-01-14
+    population_summary: "Certain 2016-2018 Focus and other Ford models equipped with affected engine block heater"
+    risk: "Heater may crack, leak coolant and short circuit when plugged in"
+    remedy: "Replacement heater or specified alternative remedy"
+    applicability: VIN_SPECIFIC
+policy: "Never mark a campaign ACTIVE for the vehicle solely from model year. Confirm through Ford/NHTSA VIN lookup and record lookup timestamp."

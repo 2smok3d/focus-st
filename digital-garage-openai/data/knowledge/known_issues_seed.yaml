@@ -1,0 +1,32 @@
+issues:
+  - key: purge_evap
+    systems: [EVAP, fuel]
+    symptoms: [stalling, hesitation, inaccurate fuel gauge, hard start after refueling, vacuum in fuel tank]
+    authority: "OEM/recall + strong community history"
+    actions: ["Check VIN-specific recall/CSP status", "scan DTCs", "test purge behavior", "inspect tank/canister if applicable"]
+    2026_recall_candidate: "26S40 / NHTSA 26V369; only certain vehicles previously repaired under 18V735"
+  - key: p04db_crankcase_ventilation
+    systems: [PCV, crankcase ventilation, intake]
+    symptoms: [P04DB, oil seepage, smoke, ventilation plausibility fault]
+    authority: "diagnostic code + modification-sensitive field evidence"
+    actions: ["document PCV/catch-can/intake configuration", "inspect routing and restrictions", "smoke/pressure test appropriately", "verify calibration expectations"]
+  - key: mmt6_shift_quality
+    systems: [transmission, clutch]
+    symptoms: [gear engagement resistance, third-gear hesitation, grinding]
+    authority: "community field signal; requires mechanical diagnosis"
+    actions: ["clutch release verification", "hydraulic assessment", "cable/linkage inspection", "fluid/spec verification", "synchro diagnosis only after external causes excluded"]
+  - key: clutch_hydraulic_release
+    systems: [clutch, brakes]
+    symptoms: [clutch pedal sticking/down, incomplete disengagement, difficult shifting]
+    authority: "community field signal"
+    actions: ["check shared brake/clutch fluid state", "inspect for hydraulic leakage", "bleed/test hydraulics", "confirm slave/release bearing before transmission removal"]
+  - key: cooling_hose_connections
+    systems: [cooling]
+    symptoms: [coolant smell, loss, residue near heater hose connections, overheating]
+    authority: "community field reports"
+    actions: ["pressure test cold", "inspect heater-core quick connections", "inspect radiator/fan operation", "record leak location before replacement"]
+  - key: wheel_bearing_noise
+    systems: [wheel_end]
+    symptoms: [humming, growl, speed-related noise]
+    authority: "general wheel-end diagnostics + community cases"
+    actions: ["rule out tire cupping", "compare loaded/unloaded behavior", "inspect play/roughness", "verify press procedure if repeated failure"]

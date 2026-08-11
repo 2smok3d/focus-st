@@ -1,0 +1,26 @@
+vehicle: focus-st-2017
+strategy_name: "Garage Reliability Strategy — Phoenix / Tuned / Occasional Track"
+policy: "These are garage recommendations, not Ford-required intervals. Keep side-by-side with OEM schedule."
+recommendations:
+  engine_oil:
+    street_miles: [3000, 5000]
+    rationale: "Turbocharged GDI engine, hot climate, unknown prior history and performance use; adjust using oil analysis and actual duty cycle."
+  spark_plugs:
+    tuned_inspection_miles: [5000, 10000]
+    replace_miles_typical: [15000, 30000]
+    rationale: "Calibration- and plug-dependent; log gap, heat range, misfire counts and tune requirement."
+  manual_transmission_fluid:
+    street_miles: [30000, 50000]
+    track_or_hard_use_miles: [15000, 30000]
+    rationale: "Preventive garage strategy only; verify exact fluid specification."
+  brake_fluid:
+    street_months: [24, 36]
+    track: "Use boiling-point/moisture condition plus pre-event inspection; select fluid compatible with system requirements."
+  coolant:
+    strategy: "Inspect every service; shorten replacement based on age, repairs, contamination, heat history and concentration rather than exceeding Ford maximum."
+  intercooler:
+    trigger: "Tuned use, repeated pulls or documented charge-temperature heat soak."
+    verification: ["ambient temperature", "charge temperature start/end", "recovery time", "knock correction", "repeatability"]
+  track_event:
+    pre: ["multi-point inspection", "brakes", "fluid", "tires", "wheel torque", "leaks", "cooling", "battery restraint", "diagnostic scan"]
+    post: ["diagnostic scan", "fluid/leak inspection", "brake/tire measurements", "wheel bearing/play", "half-shaft boots", "cooling inspection", "datalog review"]
