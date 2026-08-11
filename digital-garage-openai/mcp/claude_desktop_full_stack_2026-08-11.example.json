@@ -1,0 +1,65 @@
+{
+  "mcpServers": {
+    "digital-garage": {
+      "command": "python",
+      "args": ["-m", "garage.mcp_server"],
+      "cwd": "C:/dev/focus-st/digital-garage-openai",
+      "env": {
+        "GARAGE_DATABASE_URL": "postgresql+psycopg://garage:garage@localhost:5432/garage",
+        "GARAGE_DATA_ROOT": "C:/Users/YOU/DigitalGarageData",
+        "GARAGE_ALLOW_VEHICLE_WRITES": "false"
+      }
+    },
+    "github-readonly": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e", "GITHUB_READ_ONLY=1",
+        "-e", "GITHUB_TOOLSETS=context,repos,issues,pull_requests,actions",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "filesystem-garage-readonly": {
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--mount", "type=bind,src=C:/Users/YOU/DigitalGarageData,dst=/projects/garage,readonly",
+        "mcp/filesystem",
+        "/projects/garage"
+      ]
+    },
+    "memory": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-memory"]
+    },
+    "playwright-research": {
+      "command": "cmd",
+      "args": [
+        "/c", "npx", "-y", "@playwright/mcp@latest",
+        "--isolated",
+        "--headless"
+      ]
+    },
+    "git-readonly": {
+      "command": "uvx",
+      "args": [
+        "mcp-server-git",
+        "--repository",
+        "C:/dev/focus-st"
+      ]
+    }
+  },
+  "_notes": {
+    "postgres_sqlite": "The Digital Garage MCP server is the preferred typed database boundary. Add a generic Postgres/SQLite MCP only if you want direct schema access; keep it read-only for AI clients.",
+    "docker": "Docker Desktop MCP Toolkit/Gateway is recommended as the production way to aggregate containerized MCP servers and manage secrets.",
+    "google_drive": "Use a Google Drive MCP/connector with write scope restricted to DIGITAL GARAGE — OPENAI BUILD; treat pre-existing /FOST material as read-only.",
+    "home_assistant": "Add your chosen Home Assistant MCP server only after restricting its tools. Do not expose vehicle CAN/ECU write paths through Home Assistant.",
+    "rest_api": "The garage FastAPI service is the stable external REST boundary; add a generic REST/OpenAPI MCP client if desired.",
+    "terminal": "Prefer Claude Code's controlled terminal or a sandboxed terminal MCP scoped to the garage workspace. Never expose unrestricted vehicle-write scripts by default.",
+    "windows": "The filesystem example uses Docker bind mounts and Windows-style host paths. Replace YOU and C:/dev/focus-st with your actual paths."
+  }
+}
