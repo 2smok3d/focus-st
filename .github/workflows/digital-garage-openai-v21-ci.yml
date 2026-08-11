@@ -1,0 +1,45 @@
+name: Digital Garage OpenAI v2.1 CI
+
+on:
+  push:
+    branches: ["openai/digital-garage"]
+    paths:
+      - "digital-garage-openai/v2/**"
+      - ".github/workflows/digital-garage-openai-v21-ci.yml"
+  pull_request:
+    paths:
+      - "digital-garage-openai/v2/**"
+
+permissions:
+  contents: read
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: digital-garage-openai/v2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: digital-garage-openai/v2/requirements-v2.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-v2.txt pytest
+      - name: Compile Python
+        run: python -m compileall -q garage_v2 tests
+      - name: Run core tests
+        run: pytest -q tests
+      - name: Import FastAPI application
+        run: python -c "from garage_v2.api_v21 import app; print(app.title)"
+      - name: Validate JSON knowledge files
+        run: |
+          python -m json.tool data/focus_st_2017_engine_bay.json >/dev/null
+          python -m json.tool data/focus_st_2017_parts_seed.json >/dev/null
+      - name: Validate compose render
+        working-directory: .
+        run: docker compose -f digital-garage-openai/v2/docker-compose.v21.yml config >/dev/null
