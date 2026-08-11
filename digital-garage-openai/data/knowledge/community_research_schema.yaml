@@ -1,0 +1,13 @@
+fields:
+  identity: [source_url, thread_title, post_date, author]
+  vehicle_context: [model_year, mileage, climate, fuel, tune, modifications]
+  diagnostic_context: [symptom, dtcs, tests, measurements]
+  intervention: [action, parts, procedure_source]
+  result: [outcome, followup_miles, followup_time, recurrence]
+  evidence: [photos, logs, invoices, dealer_diagnosis]
+  synthesis: [corroborations, counterexamples, confidence, conflicts]
+confidence_levels:
+  anecdote: "single report or outcome unclear"
+  repeated_pattern: "multiple independent similar reports"
+  measured_field_evidence: "reports include objective data and outcome"
+  corroborated: "community pattern agrees with manufacturer/OEM/technical evidence"

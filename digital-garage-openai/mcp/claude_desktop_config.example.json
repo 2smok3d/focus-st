@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "digital-automotive-garage": {
+      "command": "docker",
+      "args": ["compose", "-f", "docker-compose.turnkey.yml", "exec", "-T", "garage", "python", "-m", "garage.mcp_server"],
+      "cwd": "REPLACE_WITH_PATH_TO_focus-st/digital-garage-openai"
+    }
+  }
+}

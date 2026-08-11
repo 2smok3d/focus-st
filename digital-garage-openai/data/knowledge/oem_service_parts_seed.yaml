@@ -1,0 +1,11 @@
+vehicle: focus-st-2017
+source: "Ford 2017 Focus ST Owner's Manual Supplement — replacement parts"
+parts:
+  - {system: intake, slot: engine_air_filter, manufacturer: Motorcraft, part_number: FA-1908, tier: OEM}
+  - {system: engine, slot: oil_filter, manufacturer: Motorcraft, part_number: FL-910-S, tier: OEM}
+  - {system: ignition, slot: spark_plug, manufacturer: Motorcraft, part_number: SP-537, alternate_identifier: CYFS12Y2, tier: OEM}
+  - {system: electrical, slot: battery, manufacturer: Motorcraft, part_number: BXT-96R-590, tier: OEM}
+  - {system: hvac, slot: cabin_air_filter, manufacturer: Motorcraft, part_number: FP-70, tier: OEM}
+notes:
+  - "Check Ford Parts/current catalog for supersessions before purchase."
+  - "Search links are not fitment confirmation."
