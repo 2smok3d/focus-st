@@ -1,0 +1,116 @@
+{
+  "vehicle_id": "focus-st-2017",
+  "rules": {
+    "fitment": "Search links are discovery aids only; verify exact vehicle/part fitment before purchase.",
+    "pricing": "Do not persist a price as canonical unless source, currency and observed_at are recorded.",
+    "authority": "OEM service part references outrank community catalogs. Performance product claims are attributed to the manufacturer and are not treated as independent test results."
+  },
+  "slots": [
+    {
+      "slot":"engine_air_filter",
+      "current_state":"replaced_by_aftermarket_intake_system",
+      "oem":{"manufacturer":"Motorcraft","part":"FA-1908","authority":"Ford 2017 Focus ST supplement","fitment":"verified"},
+      "search":{"amazon":"Motorcraft FA-1908","ebay":"Motorcraft FA-1908 Focus ST"},
+      "notes":"Legacy repo listed FA-1802; Ford 2017 ST supplement lists FA-1908. Current vehicle has an Injen intake, so verify which filter element that intake actually uses."
+    },
+    {
+      "slot":"engine_oil_filter",
+      "current_state":"unknown_service_age",
+      "oem":{"manufacturer":"Motorcraft","part":"FL-910-S","authority":"Ford 2017 Focus ST supplement","fitment":"verified","industry_fallback":"SAE/USCAR-36-compliant filter if Motorcraft unavailable"},
+      "search":{"amazon":"Motorcraft FL-910-S","ebay":"Motorcraft FL-910-S"}
+    },
+    {
+      "slot":"spark_plugs",
+      "current_state":"unknown",
+      "oem":{"manufacturer":"Motorcraft","part":"SP-537 / CYFS12Y2","authority":"Ford 2017 Focus ST supplement","fitment":"verified","factory_gap_in":"0.027-0.031"},
+      "search":{"amazon":"Motorcraft SP-537 CYFS12Y2","ebay":"Motorcraft SP-537 CYFS12Y2 Focus ST"},
+      "notes":"Tuner-requested heat range/gap must be recorded separately from Ford factory specification."
+    },
+    {
+      "slot":"battery",
+      "current_state":"upgraded_exact_model_unknown",
+      "oem":{"manufacturer":"Motorcraft","part":"BXT-96R-590","authority":"Ford 2017 Focus ST supplement","fitment":"verified"},
+      "search":{"amazon":"96R battery Focus ST","ebay":"BXT-96R-590"},
+      "notes":"Existing build log says larger/upgraded battery. Capture chemistry, group size, Ah/CCA, manufacture date and BMS reset history before making charging conclusions."
+    },
+    {
+      "slot":"intercooler",
+      "current_state":"unverified",
+      "oem":{"manufacturer":"Ford","part":"VIN-dependent","fitment":"verify_by_VIN"},
+      "performance":[
+        {"manufacturer":"Garrett Motion","part_name":"PowerMax Focus ST Intercooler","part_number":"880736-6001","fitment":"manufacturer_verified_2013_2018","manufacturer_claims":{"core_vs_stock":"115% larger","support_hp":"up to 670 HP","avg_IAT_reduction_F":11},"source":"Garrett Motion official product page"},
+        {"manufacturer":"Mishimoto","part_name":"Performance Intercooler","part_number":"MMINT-FOST-13","fitment":"manufacturer_verified_2013_2018","manufacturer_claims":{"core_thickness_in":4.3,"core_size_increase":"128%","outlet_temp_reduction_F":34},"source":"Mishimoto official product page"},
+        {"manufacturer":"cp-e","part_name":"DeltaCore Focus ST FMIC","part_number":null,"fitment":"manufacturer_verified_Focus_ST","manufacturer_claims":{"core_dimensions_in":"28 x 8.25 x 5.5","bolt_in":true},"source":"cp-e official product page"}
+      ],
+      "search":{"amazon":"2013 2018 Focus ST intercooler","ebay":"2013 2018 Focus ST intercooler Garrett Mishimoto cp-e"}
+    },
+    {
+      "slot":"radiator",
+      "current_state":"repair_upgrade_history_required",
+      "oem":{"manufacturer":"Ford","part":"VIN-dependent","fitment":"verify_by_VIN"},
+      "performance":[
+        {"manufacturer":"Mishimoto","part_name":"Performance Aluminum Radiator","part_number":"MMRAD-FOST-13","fitment":"manufacturer_verified_2013_2018","manufacturer_claims":{"core":"34mm 2-row","coolant_capacity_increase":"25%","coolant_surface_area_increase":"16.6%","air_surface_area_increase":"10.7%"},"source":"Mishimoto official product page"}
+      ],
+      "search":{"amazon":"MMRAD-FOST-13","ebay":"MMRAD-FOST-13 Focus ST radiator"}
+    },
+    {
+      "slot":"engine_oil_cooler",
+      "current_state":"not_confirmed_installed",
+      "performance":[
+        {"manufacturer":"Mishimoto","part_name":"Thermostatic Oil Cooler Kit","part_number":"MMOC-FOST-13","fitment":"manufacturer_verified_2013_2018","manufacturer_claims":{"cooler_rows":19,"oil_temp_reduction_F":30,"additional_oil_capacity_qt":0.65,"retains_factory_liquid_to_liquid_cooler":true},"source":"Mishimoto official product page"}
+      ],
+      "search":{"amazon":"MMOC-FOST-13 Focus ST oil cooler","ebay":"MMOC-FOST-13"}
+    },
+    {
+      "slot":"radiator_hoses",
+      "current_state":"unknown",
+      "oem":{"manufacturer":"Ford","part":"VIN-dependent","fitment":"verify_by_VIN"},
+      "performance":[
+        {"manufacturer":"Mishimoto","part_name":"Silicone Radiator Hose Kit","part_number":"MMHOSE-FOST-13","fitment":"manufacturer_verified_2013_2018","manufacturer_claims":{"layers":5,"stock_style_quick_disconnects":true},"source":"Mishimoto official product page"}
+      ],
+      "search":{"amazon":"MMHOSE-FOST-13","ebay":"MMHOSE-FOST-13 Focus ST"}
+    },
+    {
+      "slot":"pcv_catch_can",
+      "current_state":"not_confirmed_installed",
+      "performance":[
+        {"manufacturer":"Radium Engineering","part_name":"PCV Catch Can Kit","part_number":"20-0315-FL","fitment":"manufacturer_verified_2013_2018_Focus_EcoBoost","requirements":["Focus ST requires sound symposer delete / compatible clearance solution"],"source":"Radium official Focus EcoBoost catch-can page"},
+        {"manufacturer":"Radium Engineering","part_name":"CCV Catch Can Kit","part_number":"20-0357-FL","fitment":"manufacturer_verified_2015_2018_Focus_ST","source":"Radium official Focus EcoBoost catch-can page"},
+        {"manufacturer":"Radium Engineering","part_name":"Dual Catch Can Kit","part_number":"20-0358-FL","fitment":"manufacturer_verified_2015_2018_Focus_ST","requirements":["20-0356 sound symposer delete or compatible solution"],"source":"Radium official Focus EcoBoost catch-can page"}
+      ],
+      "search":{"amazon":"Radium Focus ST catch can 20-0315-FL","ebay":"Radium Focus ST catch can"}
+    },
+    {
+      "slot":"turbo_recirculation_valve",
+      "current_state":"stock_unverified",
+      "performance":[
+        {"manufacturer":"mountune","part_name":"Uprated Air Recirculation Valve","part_number":null,"fitment":"manufacturer_verified_2013_2018_Focus_ST","manufacturer_claims":{"piston_type":true,"serviceable":true,"intended_for":"higher-than-stock boost"},"source":"mountune USA official product page"}
+      ],
+      "search":{"amazon":"mountune Focus ST recirculation valve","ebay":"mountune Focus ST recirculation valve"}
+    },
+    {
+      "slot":"rear_motor_mount",
+      "current_state":"upgraded",
+      "installed":{"manufacturer":"Torque Solutions","part_name":"Rear motor mount","part_number":null,"fitment":"existing_vehicle_record","details_needed":["exact part number","durometer","revision","install mileage"]},
+      "alternatives":[
+        {"manufacturer":"COBB","part_name":"Ford / Mazda Rear Motor Mount","part_number":"891010","fitment":"manufacturer_verified_2013_2018_Focus_ST","source":"COBB official Focus ST package/product data"}
+      ],
+      "search":{"amazon":"Torque Solutions Focus ST rear motor mount","ebay":"Torque Solutions Focus ST rear motor mount"}
+    },
+    {
+      "slot":"passenger_motor_mount",
+      "current_state":"upgraded",
+      "installed":{"manufacturer":"Torque Solutions","part_name":"Passenger-side motor mount","part_number":null,"fitment":"existing_vehicle_record","details_needed":["exact part number","durometer","revision","install mileage"]},
+      "search":{"amazon":"Torque Solutions Focus ST passenger motor mount","ebay":"Torque Solutions Focus ST passenger motor mount"}
+    },
+    {
+      "slot":"intake_system",
+      "current_state":"upgraded",
+      "installed":{"manufacturer":"Injen","part_name":"Cold-air intake","part_number":null,"fitment":"existing_vehicle_record","details_needed":["exact Injen SKU","filter SKU","CARB EO if relevant","intake pipe diameter","installation mileage"]},
+      "alternatives":[
+        {"manufacturer":"COBB","part_name":"Focus ST Cold Air Intake","part_number":null,"fitment":"manufacturer_offered_for_2013_2018_Focus_ST","source":"COBB official Stage 1+ package"}
+      ],
+      "search":{"amazon":"Injen 2017 Focus ST intake","ebay":"Injen 2017 Focus ST intake"}
+    }
+  ]
+}
