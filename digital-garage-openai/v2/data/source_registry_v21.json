@@ -1,0 +1,74 @@
+{
+  "schema_version": "2.1",
+  "policy": {
+    "authority_order": ["OEM", "government", "component_manufacturer", "recognized_technical_reference", "community_consensus", "individual_anecdote"],
+    "copyright": "Index and summarize legitimately accessible/owned manuals; do not mirror copyrighted workshop manuals wholesale.",
+    "canonicalization": "Conflicting claims remain separate until a higher-authority or sufficiently corroborated source resolves them."
+  },
+  "sources": [
+    {
+      "id": "ford-2017-st-engine-specs",
+      "authority": "OEM",
+      "publisher": "Ford Motor Company",
+      "title": "2017 Focus ST Owner's Manual Supplement — Engine Specifications",
+      "url": "https://www.fordservicecontent.com/Ford_Content/vdirsnet/OwnerManual/Home/Content?ProcUid=G1686597&Uid=G1686589&buildtype=web&countryCode=USA&div=f&languageCode=en&userMarket=usa&vFilteringEnabled=False&variantid=4429",
+      "supports": ["2.0L EcoBoost", "compression ratio 9.3:1", "firing order 1-3-4-2", "coil-on-plug", "spark plug gap 0.027-0.031 in"]
+    },
+    {
+      "id": "ford-2017-st-overboost",
+      "authority": "OEM",
+      "publisher": "Ford Motor Company",
+      "title": "2017 Focus ST Owner's Manual Supplement — Overboost",
+      "url": "https://www.fordservicecontent.com/Ford_Content/vdirsnet/OwnerManual/Home/Content?ProcUid=G1590292&Uid=G1686571&buildtype=web&countryCode=USA&div=f&languageCode=en&userMarket=usa&vFilteringEnabled=False&variantid=4429",
+      "supports": ["overboost operating concept", "20 second maximum overboost period before controlled reduction/reset"]
+    },
+    {
+      "id": "ford-2017-st-gauges",
+      "authority": "OEM",
+      "publisher": "Ford Motor Company",
+      "title": "2017 Focus ST Owner's Manual Supplement — Gauges",
+      "url": "https://www.fordservicecontent.com/Ford_Content/vdirsnet/OwnerManual/Home/Content?ProcUid=G1802522&Uid=G1802521&buildtype=web&countryCode=USA&div=f&languageCode=en&moidRef=G539492&userMarket=usa&vFilteringEnabled=False&variantid=4429",
+      "supports": ["oil temperature gauge behavior", "turbocharger boost gauge meaning", "oil pressure gauge meaning"]
+    },
+    {
+      "id": "ford-2017-focus-underhood-2l",
+      "authority": "OEM",
+      "publisher": "Ford Motor Company",
+      "title": "2017 Focus Owner's Manual — Under Hood Overview 2.0L",
+      "url": "https://www.fordservicecontent.com/Ford_Content/vdirsnet/OwnerManual/Home/Content?ProcUid=G1740475&Uid=G1740474&buildtype=web&countryCode=USA&div=f&languageCode=en&moidRef=G539651&userMarket=CAN&vFilteringEnabled=False&variantid=4426",
+      "supports": ["coolant reservoir location", "oil fill", "brake/clutch reservoir", "battery", "fuse box", "air filter", "dipstick", "washer reservoir"]
+    },
+    {
+      "id": "ford-recall-18S32",
+      "authority": "OEM",
+      "publisher": "Ford Motor Company",
+      "title": "Recall 18S32 — Focus canister purge valve",
+      "url": "https://media.ford.com/content/fordmedia/fna/ca/en/news/2018/10/25/ford-motor-company-issues-recall-in-north-america-for-select-201.html",
+      "supports": ["2.0L GDI/GTDI Focus recall population", "stuck-open purge valve failure path", "PCM/remedy overview"]
+    },
+    {
+      "id": "ford-recall-19S22",
+      "authority": "OEM",
+      "publisher": "Ford Motor Company",
+      "title": "Recall 19S22 — selected incomplete 18S32 calibration services",
+      "url": "https://media.ford.com/content/fordmedia/fna/ca/en/news/2019/07/09/ford-motor-company-issues-safety-recall.html",
+      "supports": ["18S32 follow-up context and selected populations"]
+    },
+    {
+      "id": "nhtsa-recall-policy",
+      "authority": "government",
+      "publisher": "NHTSA",
+      "title": "Recall lookup / safety recall guidance",
+      "url": "https://www.nhtsa.gov/recalls",
+      "supports": ["VIN-specific open recall verification workflow"]
+    },
+    {
+      "id": "user-build-log",
+      "authority": "user_record",
+      "publisher": "user's FFST project",
+      "title": "FFST Mods & Build Log",
+      "local_reference": "Google Drive spreadsheet 15D3jAIVtdRppoKn0ODPWvSBo4X2u8ZkEXrOxy-jF-Gk",
+      "supports": ["Injen intake installed", "ram air setup installed", "Torque Solutions rear mount installed", "Torque Solutions passenger mount installed", "upgraded battery", "hood scoops", "AGS and actuator removed"]
+    }
+  ]
+}
