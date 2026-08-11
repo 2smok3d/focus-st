@@ -2,6 +2,8 @@
 
 > Single source of truth for the car. Everything else (projects, parts, maintenance) references this file.
 > Legend: ✅ verified · ⚠️ unverified / needs check · 🔧 needs attention · ❌ removed / not present
+>
+> **Authoring model:** this repo is the authoring layer (version-controlled, feeds the PWA, holds the wiring diagrams + streamlined bundles). The **FFST "mechanic vault"** in Google Drive (FOST → *FFST Knowledge Base*, 16 docs) is the deep reference for OEM specs, diagnostics, recalls and forum-graded knowledge. On any spec conflict, the vault's Grade-A (Ford/NHTSA) values win — reconciled here.
 
 ---
 
@@ -14,7 +16,7 @@
 | Platform | MK3.5 facelift · global C-platform · **Central Configuration (CC)** car | FORScan master ref |
 | Engine | 2.0 L EcoBoost I4 turbo (GTDI, "R9DA/R9Dx") | Ford spec |
 | Rated output | ~252 hp / 270 lb-ft (crank, factory) · ⚠️ PARTS.md lists 247 hp — treat 252/270 as canonical | Ford spec |
-| Transmission | **MT82** 6-speed manual | Insurance app |
+| Transmission | **Getrag-Ford MMT6** 6-speed manual · ⚠️ earlier `PARTS.md` said "MT82" — MMT6 is correct per FFST vault research; **verify at car** (they take different fluid) | FFST vault / insurance |
 | Drive | FWD | — |
 | Color | Black | Purchase order |
 | VIN | **1FADP3L94HL223134** | Title / insurance / PO |
@@ -46,12 +48,14 @@
 
 | System | Spec |
 |--------|------|
+| Engine internals | Bore×stroke 87.5×83.1 mm · CR 9.3:1 · **firing order 1-3-4-2** · rev limit ~6,500 (6,800 for 3 s) |
 | Oil | 5W-30 full synthetic · **5.7 qt** w/ filter · Ford WSS-M2C946-A |
 | Oil filter | Motorcraft FL-910S |
-| Coolant | Motorcraft VC-3-B orange (50/50) · thermostat 78 °C |
-| Trans fluid | Motorcraft XTM5-QS · **1.8 qt** (fixes MT82 cold-crunch) |
-| Spark plugs | Motorcraft SP-537 (AGSF32PM) · gap **0.028"** (tighten toward 0.022" on high boost) |
-| Clutch | Single-disc · holds ~280 lb-ft stock |
+| Coolant | Motorcraft VC-3-B orange (50/50) · **~5.3 qt** · thermostat 78 °C · service coolant WSS-M97B57-A2 (Yellow) is Ford-compatible |
+| Trans fluid | ⚠️ **MMT6 → WSS-M2C200-D2 / Motorcraft XT-11-QDC · ~1.8 qt** (NOT the XTM5-QS listed for MT82 in PARTS.md — confirm transmission variant before buying) |
+| Spark plugs | Motorcraft SP-537 (AGSF32PM) · OEM gap **0.027–0.031"** · tuned ~0.025–0.026" on high boost |
+| Clutch | **240 mm** single dry disc w/ dual-mass flywheel · holds ~280 lb-ft stock |
+| Gear ratios | 1: 3.23 · 2: 1.95 · 3: 1.32 · 4: **1.03** · 5: 1.13 · 6: 0.94 · R: 4.60 · finals 4.063 / 2.955 |
 | Diff | Open (factory) — Quaife/Wavetrac ATB is the top handling mod |
 | Front brakes | 320 × 25 mm vented · single-piston sliding |
 | Rear brakes | 302 × 10 mm solid |

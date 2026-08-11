@@ -1,93 +1,106 @@
-# 🅐 Cockpit Electronics & Trim
+# 🅐 Cockpit Electronics & Trim — Head Unit + Maestro RR2
 
-> One center-stack / console teardown covers all of these. Pull the trim once, do the wireless charger, tray, LEDs, knob, and (optionally) the head unit together.
-> Vehicle: [VEHICLE.md](../VEHICLE.md)
+> The 2030-cabin build. One planned dash/console program: aftermarket head unit with **wireless Android Auto**, integrated through an **iDatalink Maestro RR2** so you keep steering controls, chimes, and vehicle/OBD data — plus the Qi charger, interior LEDs, blue ambient lighting, and shift knob while the dash is open.
+> Vehicle: [VEHICLE.md](../VEHICLE.md) · deep reference: FOST → *FFST Knowledge Base* → "08 Electronics, Infotainment & Interior".
 
-**Includes:** INBAY Qi wireless charger · center console tray (3D print) · interior LED swap · shift knob · head-unit/CarPlay (optional) · SYNC ↔ Galaxy S23 text sync
-**Difficulty:** ●●●○○ (the Qi charger 12V tap is the only wiring) · **Time:** 3–5 h
+**Difficulty:** ●●●●○ (integration + wiring) · **Time:** 6–10 h incl. bench prep · **Reversibility:** high if you keep the OEM harness intact.
 
 ---
 
-## Shared teardown
+## Why RR2 (not a bare radio)
+
+The ST1 runs **4" SYNC 1**. A plain aftermarket radio loses steering-wheel controls, warning chimes, and vehicle info. The **Maestro RR2** sits between the car and the new radio, translating the CAN data so those functions survive — and it can feed **OBD gauges** (boost, temps) onto the radio screen.
 
 ```mermaid
 flowchart LR
-    A[Remove shift boot + knob] --> B[Lift center console trim/surround]
-    B --> C[Remove climate/stereo bezel]
-    C --> D1[Qi charger into slot below stereo + 12V tap]
-    C --> D2[Head unit swap - optional]
-    B --> D3[Console tray drop-in]
-    A --> D4[Shift knob install]
-    E[Door/dome panels] --> D5[Interior 194 LEDs]
-    D1 --> F[Reassemble + test]
-    D2 --> F
+    CAR[Focus CAN bus + steering controls + chimes + VSS/reverse/park] --> HRN[iDatalink Focus T-harness ADS-MRR/ vehicle kit]
+    HRN --> RR2[Maestro RR2 - programmed on bench]
+    RR2 -->|retained data| HU[Aftermarket head unit - wireless Android Auto]
+    OBD[OBDII / MX+ strategy] -. gauges .-> RR2
+    ANT[Antenna adapter] --> HU
+    CAM[Reverse camera - optional] --> HU
+    MIC[External mic] --> HU
+    HU --> SPK[Factory speakers / future DSP+amp]
 ```
 
-Because the bezel and console come out for the charger *and* the head unit, sequence them in one sitting. The LEDs and knob are quick adjuncts while panels are off.
+> ⚠️ **Build from the current iDatalink compatibility page for your exact radio model + firmware** — not a generic video. RR2 feature availability (which gauges, whether the OBD screen uses its own connection) is radio-, firmware-, and vehicle-specific.
 
 ---
 
 ## Parts list
 
-| Job | Part | ~Price | Link / source |
-|-----|------|--------|---------------|
-| Wireless charger | **INBAY Qi kit** (fits slot below stereo; max phone **164 × 81 mm** — S23 fits) | ~$60 | US via eBay / EU sourcing |
-| 12V tap | Add-a-circuit fuse tap + inline fuse + Posi-taps | ~$12 | [search](https://www.amazon.com/s?k=add-a-circuit+fuse+tap+kit) |
-| Console tray | 3D print — **Thingiverse thing:4566871** | filament only | [thingiverse](https://www.thingiverse.com/thing:4566871) |
-| Interior LEDs | 194/T10 6000K multipack (shared w/ 🅱) | ~$12 | [search](https://www.amazon.com/s?k=194+LED+interior+kit) |
-| Shift knob | Cobb / Mishimoto weighted (**M12×1.75**) | ~$45 | [cobb](https://www.cobbtuning.com) |
-| Head unit (optional) | Kenwood DMX7709S (wireless CarPlay) | ~$350 | [search](https://www.amazon.com/s?k=Kenwood+DMX7709S) |
-| Head-unit install kit | Metra dash kit + Ford harness + antenna adapter for MK3 Focus | ~$40 | [search](https://www.amazon.com/s?k=Metra+ford+focus+2017+dash+kit) |
-| SYNC S23 text sync | software only | $0 | see below |
+| Job | Part | ~Price | Notes / link |
+|-----|------|--------|--------------|
+| Head unit | Wireless-Android-Auto DD unit (e.g. Kenwood DMX958XR / Pioneer DMH-WT/ Sony XAV) | ~$350–700 | pick one **on iDatalink's RR2 compatibility list** for Focus |
+| Integration | **iDatalink Maestro RR2** | ~$130 | [idatalinkmaestro.com](https://www.idatalinkmaestro.com/en) |
+| Vehicle harness/kit | iDatalink **Focus (2012–2018) T-harness + dash kit** | ~$100 | exact kit depends on chosen radio |
+| Antenna adapter | Ford → aftermarket antenna adapter | ~$10 | |
+| Backup camera (optional) | flush/plate cam | ~$40 | RR2 can retain/trigger |
+| External mic | quality external microphone | ~$15 | call clarity |
+| Wireless charger | INBAY Qi kit (below-stereo slot; phone envelope **164×81 mm**, S23 fits) | ~$60 | eBay/EU sourcing — measure slot first |
+| 12V distribution | add-a-circuit fuse taps + inline fuses + Posi-taps + ground lug | ~$20 | one fused distribution, not many random taps |
+| Interior LEDs | 194/T10 6000K multipack (shared w/ 🅱) | ~$12 | dome/map/door/footwell |
+| Blue ambient | dimmable automotive LED accent kit | ~$40 | footwell/console/door — accent only |
+| Shift knob | Cobb/Mishimoto weighted (M12×1.75) | ~$45 | |
 
-**Bundle cost:** ~$130 (charger + tray + LEDs + knob) → ~$520 with a CarPlay head unit + kit.
+**Bundle cost:** ~$530 (radio + RR2 + kit + charger + LEDs) → ~$800 with camera, ambient lighting, nicer radio.
 
 ---
 
-## Qi charger 12V wiring (the one real electrical job)
+## 12V power + data wiring
 
 ```mermaid
-flowchart LR
-    BAT[Battery +12V] --> FB[Fuse box - ACC/switched slot]
-    FB -->|add-a-circuit tap + inline fuse| SW{Switched 12V?}
-    SW -->|ignition on| POS[+ to Qi charger]
-    POS --> QI[INBAY Qi coil]
-    QI --> GND[Chassis ground bolt]
-    note[Use an ACC/switched fuse so the pad powers off with the car - no parasitic drain]
+flowchart TB
+    BATT[Battery] --> CONST[Constant 12V - radio memory + RR2]
+    FUSEACC[ACC/switched fuse via add-a-circuit] --> SW[Switched 12V - radio ON]
+    GNDBOLT[Clean chassis ground bolt] --> GND[Common ground - radio + RR2 + charger]
+    RR2DATA[RR2 data harness] --> HUCONN[Radio 20-pin + iDatalink port]
+    QISW[Qi charger 12V] --> FUSEACC
+    NOTE[Fuse every added leg at its source. Verify sleep current after install.]
 ```
 
-**Key rules:**
-- Tap a **switched/ACC** fuse (powers only with ignition) so the pad doesn't drain the battery parked. Use a circuit tester to find one that's dead with the key out.
-- Add-a-circuit puts an **inline fuse** on the new leg (1–3 A is plenty for a Qi pad) — never splice unfused into a live circuit.
-- Ground to a clean chassis bolt behind the console, not to a random bracket.
-- Route wire away from moving console parts and the shifter linkage.
-
-## SYNC ↔ Galaxy S23 text sync (software)
-Goal: SMS notifications read/announced through SYNC over Bluetooth.
-1. On the S23: **Settings → Connections → Bluetooth →** the SYNC device **→ enable "Contacts sharing" and "Message access / notifications."**
-2. On SYNC: **Phone → Text Messages →** allow download; re-pair if the message toggle didn't appear.
-3. Android scopes MAP (Message Access Profile) tightly — if texts still won't sync, toggle the Bluetooth permission for messages off/on and re-pair. RCS/Google Messages sometimes needs "SMS" (not chat) for MAP to expose them.
-4. If SYNC firmware is old, a SYNC update (APIM) can restore MAP — note in the [FORScan session](forscan-session.md).
+**Rules (from the vault's electrical standard):**
+- Record all module DTCs + as-built **before** disconnecting power; use a battery support supply during RR2 programming.
+- **Never** probe SRS/airbag circuits with a test light.
+- Fuse every added circuit near its source; size wire for current/length/heat, not connector looks.
+- One engineered chassis ground; label both ends of every added wire.
+- Qi charger + any always-on accessory on a **switched** feed → no parasitic drain.
 
 ---
 
-## Step-by-step (teardown order)
-1. Ignition off, **battery negative disconnected** (you'll tap 12V). Wait 5 min.
-2. Unscrew shift knob (CCW), lift the shift boot/surround (clips).
-3. Lift the console trim/surround, then the climate/stereo bezel (clips + a few screws behind the ashtray/tray).
-4. **Qi charger:** seat the coil in the slot below the stereo; run the 12V leg to a switched fuse via add-a-circuit; ground to chassis; tuck and secure wiring.
-5. **Head unit (optional):** unplug OEM SYNC, fit Metra kit + Ford harness + antenna adapter, mount new unit.
-6. **Console tray:** drop in the printed tray.
-7. **Interior LEDs:** swap dome/map/door/footwell 194s while panels are accessible.
-8. **Shift knob:** thread on the new M12×1.75 knob.
-9. Reconnect battery, test everything before final reassembly.
+## Bench plan (do BEFORE dash teardown)
+Lock these down first — a dash apart with a wrong harness is the classic failure:
+1. Exact **radio model + firmware**; confirm on iDatalink RR2 compatibility for Focus.
+2. RR2 **serial + firmware** (program/update on the bench via the Maestro app).
+3. Exact **Focus T-harness/dash kit**, antenna adapter, USB retention/replacement.
+4. Microphone location; backup-camera plan; speaker/amp architecture (now vs future DSP).
+5. OBD strategy: does the radio use RR2's dedicated OBD connection, or share with the MX+? (Don't run two active adapters loading the bus.)
+6. Steering-button assignment; which chimes/vehicle-info you want retained.
 
-## Verification
-- Qi pad charges the S23 and **powers off with the key** (verify no parasitic draw — quick clamp-meter check if you have one).
-- No CEL / no SYNC fault after battery reconnect.
-- Bluetooth text sync announces a test SMS.
-- All interior lights function; knob torqued snug.
+## Install sequence
+1. Battery negative off (wait 5 min). Record DTCs/as-built first.
+2. Program RR2 on the bench; label every harness branch.
+3. Pull shift knob (CCW) + boot, console surround, then climate/stereo bezel.
+4. Remove OEM SYNC unit; connect RR2 + T-harness; verify pin locks + grounds.
+5. **Qi charger:** seat coil in below-stereo slot; switched-12V via add-a-circuit; chassis ground; route clear of shifter.
+6. Interior LEDs + blue ambient while panels are off (accent zones, dimmable, no bare LEDs, no airbag/regulator interference).
+7. Shift knob on (M12×1.75).
+8. Dry-fit radio + USB routing; **connect and test before final assembly.**
+9. Reconnect battery.
 
-## Notes / open items
-- **INBAY fitment** for the below-stereo slot is US-sourcing dependent — confirm the exact kit model fits the MK3.5 slot before buying (measure the slot; 164×81 phone envelope is the constraint).
-- If you go CarPlay, the SYNC text-sync project becomes moot — decide head unit first (see the decision list in the setup guide).
+## Verification (the acceptance gate — from the vault)
+- Key-on / start / shutdown + retained accessory power.
+- **All steering buttons** (incl. long-press if programmed), chimes, vehicle info.
+- Wireless Android Auto connect + reconnect; GPS/Wi-Fi/BT coexistence; mic/call quality.
+- Reverse camera + trigger; dimmer/illumination.
+- Qi charges the S23 **and powers off with the key** (clamp-meter parasitic check).
+- **No new U-codes** — full module scan after install; car **sleeps** normally (measure draw after modules sleep vs baseline).
+- No loose wiring / sharp attachment; every removed panel refits with no new rattle.
+
+## Related (same cabin, separate docs/phases)
+- **Sound treatment + spare-well subwoofer + DSP/amp** — vault "08"; sequence speakers/DSP first, then enclosure (heat/water/cargo/roadside plan). Track as its own project.
+- **Seat/steering upgrades** — SRS/occupancy/buckle compatibility gates; never resistor-mask a restraint fault.
+
+## Open items
+- **Confirm INBAY kit fits the MK3.5 below-stereo slot** before buying (measure slot; 164×81 phone envelope).
+- **Pick the radio off iDatalink's Focus RR2 list** before ordering the harness/dash kit — that choice drives every other part number here.

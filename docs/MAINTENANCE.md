@@ -26,7 +26,7 @@
 | Oil + filter (5.7 qt 5W-30) | 5,000–7,500 mi (turbo, AZ heat → shorter end) |
 | Air filter | 15,000–30,000 mi |
 | Cabin filter | annually |
-| Trans fluid (MT82, 1.8 qt) | ~60,000 mi / on cold-crunch |
+| Trans fluid (MMT6 · WSS-M2C200-D2 / XT-11-QDC · ~1.8 qt) | baseline now if undocumented, then ~30–50k mi |
 | Brake fluid (DOT 4 LV) | 2 yr / annually if tracked |
 | Coolant | ~100,000 mi / after any service |
 | Spark plugs | ~60,000 mi (sooner if tuned) |
