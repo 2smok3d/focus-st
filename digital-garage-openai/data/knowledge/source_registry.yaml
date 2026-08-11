@@ -1,0 +1,12 @@
+authority_scale:
+  1: OEM / Ford service information
+  2: Government / regulatory
+  3: Component manufacturer
+  4: Recognized technical reference / standard
+  5: Experienced community consensus
+  6: Individual anecdote
+rules:
+  - Lower numeric authority rank wins a direct conflict unless obsolete/inapplicable and documented.
+  - Community evidence can create hypotheses but cannot become a safety-critical procedure without corroboration.
+  - Torque, fluids, wiring, fasteners, programming and restraint claims require authoritative provenance before VERIFIED.
+  - Prices and availability are ephemeral and timestamped.

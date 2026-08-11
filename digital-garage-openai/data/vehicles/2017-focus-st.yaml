@@ -1,0 +1,16 @@
+id: focus-st-2017
+identity:
+  year: 2017
+  make: Ford
+  model: Focus ST
+  market: North America
+  body: 5-door hatchback
+  engine: {family: 2.0L EcoBoost, induction: turbocharged, fuel: gasoline direct injection, valvetrain: twin independent variable cam timing}
+  transmission: {type: 6-speed manual, family: MMT6}
+vehicle_specific:
+  vin: '1FADP3L94HL223134'
+  trim: ST1
+  infotainment: SYNC 1 / 4-inch
+  note: Vehicle-specific values from legacy sources require independent verification before safety-critical use.
+goals: {use: reliable daily driver with occasional track use, power_target_whp: 300}
+climate: {location: Phoenix Arizona, considerations: [extreme heat, heat soak, cooling margin, battery aging, tire temperature]}
