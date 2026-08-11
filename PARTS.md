@@ -1,6 +1,6 @@
 # Ford Focus ST — Parts Tracker
 
-> 2017 · 2.0L EcoBoost · MT82 6-speed · Push-to-Start  
+> 2017 · 2.0L EcoBoost (252 hp / 270 lb-ft) · Getrag MMT6 6-speed · Push-to-Start  
 > ✅ good · ⚠️ unknown · 🔧 needs attention
 
 ---
@@ -172,7 +172,7 @@
 ---
 
 #### ECU / Tune
-**Installed:** OEM ECU — stock tune · ~247hp / 270 ft-lb
+**Installed:** OEM ECU — stock tune · 252 hp / 270 ft-lb
 
 <details>
 <summary>Upgrade</summary>
@@ -315,8 +315,8 @@
 
 ---
 
-#### Gearbox Fluid *(MT82 — 1.8 qt)*
-**Installed:** OEM fluid — ⚠️ unknown · fix cold crunch with XTM5-QS
+#### Gearbox Fluid *(Getrag MMT6 — ~1.8 qt)*
+**Installed:** OEM fluid — ⚠️ unknown · verify MMT6 spec **WSS-M2C200-D2 / Motorcraft XT-11-QDC** (see docs/VEHICLE.md — not the MT82 XTM5-QS)
 
 <details>
 <summary>Replace</summary>
@@ -575,10 +575,10 @@
 <summary><b>WHEELS & TIRES</b></summary>
 <br>
 
-> Stock: 18×7.5" alloy · 5×108mm · ET52.5 · 63.3mm hub bore · lug torque 100 ft-lb
+> Stock: 18×8" alloy · 5×108mm · ET55 (+55mm) · 63.3mm hub bore · lug torque 100 ft-lb
 
 #### Wheels
-**Installed:** OEM 18×7.5" 5-spoke alloy — stock
+**Installed:** OEM 18×8" 5-spoke alloy — stock
 
 <details>
 <summary>Replace / Upgrade</summary>

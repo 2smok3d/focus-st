@@ -14,7 +14,7 @@
 | Rear tail/turn/brake | **3157** (verify CK vs non-CK socket) | LASFIT T3 CANbus 3157 | ~$25 | [lasfit](https://www.lasfit.com/products/3157-canbus-error-free-ck-socket-switchback-led-bulbs-t3-series) |
 | " (alt) | 3157 | AUXITO / Syneticusa CANbus red | ~$18 | [search](https://www.amazon.com/s?k=3157+CANbus+red+LED+anti+hyperflash) |
 | Front turn/park | **7440** (7440A amber) | AUXITO / LASFIT / SEALIGHT 7440 CANbus amber | ~$20 | [search](https://www.amazon.com/s?k=7440+LED+CANbus+amber+no+hyperflash) |
-| Fog | **H11** (⚠️ verify vs H16 at car) | any reputable H11 LED, "no scatter" projector reviews | ~$30 | [search](https://www.amazon.com/s?k=H11+LED+fog+no+scatter) |
+| Fog | **verify at car — H8 / H11** (sources conflict; PARTS.md said H16) | reputable LED in the confirmed size, "no scatter" projector reviews | ~$30 | [search](https://www.amazon.com/s?k=H8+H11+LED+fog+no+scatter) |
 | Interior/dome/map/door | **194 / T10** 6000K | AUXITO 194 24-SMD | ~$12 | [search](https://www.amazon.com/s?k=AUXITO+194+LED+interior) |
 | Reverse | **194 / T10** | any error-free T10 | ~$10 | [search](https://www.amazon.com/s?k=194+LED+reverse) |
 | Trunk/cargo | **2825** | any 2825 LED | ~$8 | [search](https://www.amazon.com/s?k=2825+LED+bulb) |
@@ -54,7 +54,7 @@ flowchart TB
     subgraph FRONT
       HL[Headlight: H11 low + H1 high - halogen upgrade only]
       FT[Front turn/park: 7440 amber - behind wheel liner access]
-      FOG[Fog: H11 - under bumper]
+      FOG[Fog: H8/H11 verify - under bumper]
     end
     subgraph REAR
       TL[Tail/brake/turn: 3157 - access via hatch trim panel]
