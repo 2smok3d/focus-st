@@ -1,0 +1,143 @@
+version: "2.1"
+vehicle_id: focus-st-2017
+policy:
+  default_mode: read_only
+  deny_unless_approved:
+    - clear_dtc
+    - actuator_test_risky
+    - module_configuration_write
+    - module_flash
+    - ecu_write
+    - can_transmit
+  source_roots_read_only:
+    - google_drive:/FOST
+    - github:2smok3d/focus-st@master
+
+connectors:
+  forscan:
+    class: vehicle_diagnostics
+    transport: file_import
+    modes: [read, normalize]
+    accepted: [txt, log, csv]
+    writes: false
+    notes: "Import scans, vehicle info, DTCs, PID logs and backed-up configuration files as immutable evidence."
+
+  obdlink_ex:
+    class: vehicle_interface
+    transport: usb
+    preferred_host: linux_or_windows
+    modes: [diagnostics, logging]
+    writes: approval_only
+    notes: "Preferred wired Ford/FORScan interface when stability matters."
+
+  obdlink_mx_plus:
+    class: vehicle_interface
+    transport: bluetooth
+    preferred_host: android_or_windows
+    modes: [diagnostics, logging]
+    writes: approval_only
+
+  python_obd:
+    class: telemetry_library
+    modes: [read_pids, log]
+    writes: false
+    canonical_output: normalized_measurements
+
+  python_can:
+    class: can_library
+    modes: [receive, replay_off_vehicle]
+    vehicle_transmit: approval_only
+    canonical_output: normalized_can_frames
+
+  socketcan:
+    class: linux_can_transport
+    modes: [receive]
+    transmit: approval_only
+    recommended_interfaces: [can0, vcan0]
+    safety: "Use vcan0 by default for development/replay tests."
+
+  can_utils:
+    class: can_toolkit
+    modes: [candump, canplayer_off_vehicle, statistics]
+    vehicle_transmit: approval_only
+
+  savvycan:
+    class: can_analysis_gui
+    modes: [offline_analysis, dbc_decode]
+    vehicle_transmit: approval_only
+
+  wireshark:
+    class: packet_analysis
+    modes: [offline_analysis, socketcan_capture]
+    writes: false
+
+  postgres:
+    class: datastore
+    modes: [read, garage_write]
+    namespace: garage
+    notes: "Normalized source of truth; raw evidence remains in immutable evidence storage."
+
+  sqlite:
+    class: datastore
+    modes: [portable_read, portable_export]
+    notes: "Optional field/laptop portable cache; PostgreSQL remains primary in turnkey deployment."
+
+  github:
+    class: development_connector
+    source_repository: 2smok3d/focus-st
+    protected_existing_paths: true
+    new_build_prefix: digital-garage-openai/
+    mode: "existing content read-only; new isolated build files allowed"
+
+  google_drive:
+    class: evidence_and_library_connector
+    protected_source_root: /FOST
+    build_root: /FOST/DIGITAL GARAGE — OPENAI BUILD
+    mode: "source content read-only; create copies/new artifacts only"
+
+  filesystem:
+    class: ai_connector
+    allowed_roots:
+      - /garage-data
+      - ./digital-garage-openai
+    source_roots_read_only: true
+
+  docker:
+    class: runtime_connector
+    modes: [inspect, logs, garage_stack]
+    privileged: false
+    notes: "Do not expose host Docker socket to an untrusted AI process by default."
+
+  playwright:
+    class: research_and_ui_testing
+    modes: [public_web_research, dashboard_smoke_test]
+    credentials: "never persist into research artifacts"
+
+  terminal:
+    class: operations_connector
+    mode: sandboxed
+    vehicle_device_access: false
+    approval_required_for_device_access: true
+
+  memory:
+    class: ai_context
+    mode: read_write_project_memory
+    exclude:
+      - secrets
+      - oauth_tokens
+      - raw_personal_financial_data
+
+  rest_api:
+    class: garage_api
+    base_url: http://garage-api:8082
+    mode: read_first
+
+  home_assistant:
+    class: optional_automation
+    mode: notify_and_read_sensors
+    vehicle_control: false
+
+  mcp:
+    class: ai_tool_gateway
+    server: garage_v2.mcp_server
+    default_mode: read_only
