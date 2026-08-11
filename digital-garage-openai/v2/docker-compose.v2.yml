@@ -1,0 +1,39 @@
+services:
+  garage-db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: garage
+      POSTGRES_USER: garage
+      POSTGRES_PASSWORD: ${GARAGE_DB_PASSWORD:-garage-local-change-me}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U garage -d garage"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - garage-pgdata:/var/lib/postgresql/data
+
+  garage-api-v2:
+    build:
+      context: ../..
+      dockerfile: digital-garage-openai/v2/Dockerfile.v2
+    restart: unless-stopped
+    depends_on:
+      garage-db:
+        condition: service_healthy
+    environment:
+      GARAGE_DATABASE_URL: postgresql+psycopg://garage:${GARAGE_DB_PASSWORD:-garage-local-change-me}@garage-db:5432/garage
+      GARAGE_DATA_ROOT: /garage-data
+      GARAGE_VEHICLE_ID: focus-st-2017
+      GARAGE_VEHICLE_WRITES: "false"
+      GARAGE_APPROVAL_TOKEN: ${GARAGE_APPROVAL_TOKEN:-}
+      GARAGE_TZ: America/Phoenix
+    ports:
+      - "8082:8082"
+    volumes:
+      - garage-evidence:/garage-data
+
+volumes:
+  garage-pgdata:
+  garage-evidence:
