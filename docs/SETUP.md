@@ -66,9 +66,11 @@ Until then, everything else proceeds without it.
 
 **How it works now (assisted):** when you say "log my latest receipts" (or on a schedule, if you want a recurring task), I search Gmail for order confirmations from the usual senders (Amazon, eBay, RockAuto, Mishimoto, COBB, Summit, FCP Euro, Tasca, etc.), extract vendor / item / price / date / order #, append them to the Sheet's **Receipts** tab, link them to a project, and save any attached PDF to `FOST/_Archive/receipts/YYYY/`.
 
-**Optional fully-automatic (IFTTT):** an applet "New Gmail matching `subject:(order OR receipt OR invoice)` → append row to Google Sheet" can drop raw receipts into an inbox tab 24/7; I then reconcile + categorize them. Say the word and I'll set this up (it needs your OK to create the applet).
+**Fully-automatic (Google Apps Script — the working path):** IFTTT can't do this — its Gmail service exposes **no "new email" trigger** (retired), and Sheets isn't connected there. The native path is a Google Apps Script bound to the **FOST — Receipts Log** sheet: it scans Gmail hourly for order/receipt emails and appends them, labeling processed threads so it never double-logs. Script + 2-minute install: [`automation/gmail-receipts.gs`](automation/gmail-receipts.gs).
 
-**What you do:** nothing beyond forwarding a receipt if it comes from an unusual address. Keep receipts in the same Gmail account (bberault@gmail.com).
+**Live receipts home:** `FOST — Receipts Log` (Google Sheet in FOST) — the shared target for both the script (auto) and my assisted logging. Already seeded with your first 3 receipts (FORScan license, eBay blue silicone hose kit, Mishimoto promo hat).
+
+**What you do:** install the script once (or just say "log my receipts" and I do it). Keep receipts in bberault@gmail.com.
 
 ---
 
