@@ -41,7 +41,7 @@ cssclass: dashboard
 
 ## 🔌 Reference & automation
 - [[forscan-master-reference]] — FORScan cheat-sheet `#reference`
-- [[gmail-receipts|Gmail→Receipts Apps Script]] — receipt automation `#automation`
+- [Gmail→Receipts Apps Script](automation/gmail-receipts.gs) — receipt automation `#automation`
 
 ## ☁️ In Google Drive (FOST)
 Live/records that aren't markdown:
