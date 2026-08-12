@@ -19,6 +19,7 @@ cssclass: dashboard
 ## 🧭 Core notes
 | Note | What |
 |------|------|
+| [[FOST-COMPLETE\|📕 Complete Compendium]] | **100% of everything in one sectioned document** (auto-built from all notes) |
 | [[VEHICLE]] | Master spec — VIN, trim, drivetrain, bulbs, modules, mods, known issues, fact-check log |
 | [[PROJECTS]] | 30 projects → 7 streamlined bundles + cost/time roll-up |
 | [[MAINTENANCE]] | Service log + intervals |
