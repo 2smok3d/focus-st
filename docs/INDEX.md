@@ -116,6 +116,7 @@ flowchart TD
 | FFST - Maintenance and Issues Log | [open](https://docs.google.com/spreadsheets/d/1LUCMB22tILf_kGyXL83f28PElz3iadpC-A8idqObwOw) |
 | FFST - Mods and Build Log | [open](https://docs.google.com/spreadsheets/d/1VP3AXP1mCczWAMfazRYuB8CVNdO-3rNE6p0bM7Q7XVk) |
 
+> 🧹 **FOST has 3 competing folder structures** (mine + two ChatGPT passes, one duplicated). The connector can't move/delete, so see **[FOST-CLEANUP-MAP.md](FOST-CLEANUP-MAP.md)** (also in Drive as *FOST — CLEANUP PLAN*) for the ~10-min fix.
 > ⏳ Still to fetch (blocked): the Dropbox **Transfer** link's files — needs one manual save (see [SETUP.md](SETUP.md)).
 
 ---
