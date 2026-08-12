@@ -1,3 +1,9 @@
+---
+title: Project Index & Build Map
+aliases: [PROJECTS, Projects, Build Map, Roadmap]
+tags: [focus-st, project, moc]
+---
+
 # Project Index & Build Map — Focus ST
 
 > Every planned project, grouped into **streamlined bundles** (jobs that share teardown, tools, or a service session so you do them once, not five times).

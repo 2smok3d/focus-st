@@ -1,3 +1,9 @@
+---
+title: Vehicle Master Spec
+aliases: [VEHICLE, Vehicle, Master Spec, Digital Twin]
+tags: [focus-st, spec, vehicle]
+---
+
 # Vehicle Master Spec — 2017 Ford Focus ST
 
 > Single source of truth for the car. Everything else (projects, parts, maintenance) references this file.

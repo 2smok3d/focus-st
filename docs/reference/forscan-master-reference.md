@@ -1,3 +1,9 @@
+---
+title: FORScan Master Reference
+aliases: [forscan-master-reference, FORScan reference, FORScan cheat-sheet]
+tags: [focus-st, reference, forscan, electronics]
+---
+
 # FORScan Master Reference — 2017 Focus ST (MK3.5, US, Manual, ST1)
 
 > Distilled, version-controlled reference. The **full long-form research doc** (all 9 categories, every As-Built value, all forum sources) lives in FOST → `2017-Ford-Focus-ST/`. This is the working cheat-sheet for the [🅳 FORScan session](../projects/forscan-session.md).

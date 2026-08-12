@@ -1,3 +1,9 @@
+---
+title: 🅱 Exterior Lighting
+aliases: [exterior-lighting, Lighting, LED]
+tags: [focus-st, project, bundle-b, lighting]
+---
+
 # 🅱 Exterior Lighting (LED conversion)
 
 > ST1-specific, plug-and-play LED conversion. Bulb sizes verified against the ST1 research doc — **do not** use generic "Focus ST" listings (they blend ST2/ST3 specs). Headlights stay **halogen** on purpose (reflector housings scatter LED light — glare + inspection fail).

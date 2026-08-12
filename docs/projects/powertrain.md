@@ -1,3 +1,9 @@
+---
+title: 🅖 Powertrain / Performance
+aliases: [powertrain, Powertrain, Tune, AccessPort, Turbo]
+tags: [focus-st, project, bundle-g, powertrain, tuning]
+---
+
 # 🅖 Powertrain / Performance — Full Build
 
 > Tune-gated, reliability-first. The FMIC ("Beast") and intake are already on the car, so the next real gain is a **conservative custom tune** — then supporting hardware in the order that keeps the motor alive. This follows your vault's staged plan: health → thermal → calibrated power → (optional) more power.

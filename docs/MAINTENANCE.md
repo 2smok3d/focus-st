@@ -1,3 +1,9 @@
+---
+title: Maintenance & Service Log
+aliases: [MAINTENANCE, Service Log, Maintenance]
+tags: [focus-st, maintenance]
+---
+
 # Maintenance & Service Log — 2017 Focus ST
 
 > Chronological record of every service, repair, and mod. Append newest at top. Mirror each entry to the **Maintenance Log** tab of the master Sheet in FOST. Tie receipts to entries by date.

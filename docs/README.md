@@ -1,3 +1,9 @@
+---
+title: README — FOST vault
+aliases: [README]
+tags: [focus-st, meta]
+---
+
 # FOST — Focus ST Documentation System
 
 Everything about the car: specs, projects, maintenance, records. Version-controlled here, mirrored to **FOST** in Google Drive.

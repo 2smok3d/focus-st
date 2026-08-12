@@ -1,3 +1,9 @@
+---
+title: Setup Guide — Connections & Data Flow
+aliases: [SETUP, Setup, Connectors, Data Flow]
+tags: [focus-st, setup, automation]
+---
+
 # Setup Guide — Connections, Tools & Data Flow
 
 > How the whole system is wired together, what's already working, and the few things **only you can do** (authorizations + one Dropbox step). Read the checklist at the bottom.

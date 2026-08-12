@@ -1,3 +1,9 @@
+---
+title: 🅔 Handling & Brakes
+aliases: [handling-brakes, Handling, Brakes, Suspension, Wheels]
+tags: [focus-st, project, bundle-e, chassis, brakes]
+---
+
 # 🅔 Handling & Brakes — Full Build
 
 > The biggest-spend bundle, grouped because it all needs corner access and shares one alignment at the end. Sequence is strict: **wheels → Brembos → sway bars → springs/coilovers → alignment**. Do not lower or align until worn parts are sorted.

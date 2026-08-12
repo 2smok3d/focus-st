@@ -1,3 +1,9 @@
+---
+title: FOST Drive — Cleanup & Filing Map
+aliases: [FOST-CLEANUP-MAP, Cleanup, Drive cleanup]
+tags: [focus-st, meta, drive, cleanup]
+---
+
 # 🧹 FOST Drive — Cleanup & Filing Map
 
 > **Why this is a checklist, not done-for-you:** my Google Drive connector can only **create and copy** — it **cannot move, rename, or delete**. Reorganizing existing files requires drag-and-drop / delete, which only you can do. This map makes that ~10-minute job precise.
