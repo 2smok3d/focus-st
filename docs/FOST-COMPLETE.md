@@ -523,27 +523,78 @@ Ford VIN lookup + date, OR dealer OASIS, OR completed RO (campaign #, date, mile
 
 # 09 · KB · Diagnostics & DTC
 
-## 05 · Diagnostics & DTC Master
+## 05 · Focus ST Diagnostics and DTC Master
 
-> Symptom-first, least-invasive checks. Full version → [Google Doc](https://docs.google.com/document/d/1wzPz1STptHvcklTQq1SKwp8MVegl0NOnv_348NzYO9A).
+> Full text (merged from the FFST vault). Reference → [[forscan-master-reference]].
 
-**Before touching parts:** battery/charging → scan all modules → save current/pending/permanent/history + freeze frames → record mileage/fuel/tune/conditions → prove fault before replacing.
+### Diagnostic operating procedure
+#### Before touching parts
+1. Verify battery condition + charging voltage (low system voltage creates unrelated module/comm faults).
+2. Scan **all modules**, not only the PCM.
+3. Save current, pending, permanent and history codes.
+4. Save freeze-frame data before clearing anything.
+5. Record mileage, ambient temp, fuel level, fuel source/octane/ethanol, tune/map, gear/RPM/load, whether the symptom followed refueling or recent work.
+6. Photograph anything disturbed before disassembly.
+7. Check recalls, TSBs, software level, installed modifications.
+8. Prove the fault with tests before replacing a component.
 
-| Code | System | First checks |
-|------|--------|--------------|
-| P0300–P0304 | Misfire | plug/gap/coil, fuel, compression, charge leak, tune |
-| P0087/P0191 | Rail pressure | low-side, commanded vs actual, HPFP, tune demand |
-| P0234 | Overboost | wastegate/solenoid/plumbing, sensor, tune |
-| P0299 | Underboost | charge leaks, pipe retention, IC, BPV, wastegate |
-| P0456/P144A/P1450 | EVAP/purge | **purge valve, [[04 Recalls & TSBs\|recall]], tank vacuum** |
-| P0420 | Catalyst | exhaust leak, O2, cat, downpipe/tune, misfire/purge |
-| P2196 | O2 rich | purge stuck, injector, rail, O2, tune |
-| U-codes | Network | battery V, grounds, recent radio/FORScan work |
+#### Priority levels
+- **Stop and shut down:** oil-pressure warning, overheating, fuel leak, severe knock, flashing MIL with heavy misfire, uncontrolled boost, brake hydraulic failure.
+- **Drive only for diagnosis/repair:** repeat misfire, fuel-pressure code, over/underboost with limp mode, clutch hydraulic leak, wheel-bearing/tire defect.
+- **Monitor with case file:** isolated intermittent code with normal operation, evidence saved, safety unaffected.
 
-**Case closure:** root cause documented + part/cal numbers + retest under safe conditions + no code returns + collateral inspected + trackers updated.
+### DTC quick index
+| Code family | System | First checks |
+|---|---|---|
+| P0300–P0304 | Random/cylinder misfire | Plug condition/gap, coils, fuel, compression, charge leaks, tune |
+| P0087, P0191 | Fuel-rail pressure | Low-side supply, commanded vs actual rail pressure, fuel quality, HPFP/injector data, tune demand |
+| P0234 | Overboost | Wastegate/solenoid/plumbing, sensor data, tune, mechanical binding |
+| P0299 | Underboost | Charge leaks, pipe retention, intercooler, bypass valve, wastegate, exhaust restriction |
+| P0456, P144A, P1450 | EVAP/purge | Purge valve, recall/TSB status, tank vacuum/deformation, canister, PCM calibration |
+| P0420 | Catalyst efficiency | Exhaust leak, O2 response, catalyst condition, downpipe/tune, purge/misfire contamination |
+| P013x/P014x | O2 sensor/heater | Wiring, exhaust leaks, power/ground/heater test, contamination, tune/downpipe |
+| P2196 | Front O2 biased/stuck rich | Purge stuck open, injector leakage, fuel pressure, O2 circuit, tune |
+| P0106/P0068/P061A | Airflow/load/torque | MAP/TMAP/throttle data, vacuum/charge leaks, intake changes, calibration |
+| U-codes | Network communication | Battery voltage, grounds, connectors, recent radio/FORScan work, module topology |
+
+### Misfire (P0300–P0304)
+Patterns: cold-start stumble only; idle misfire; misfire under boost; one-cylinder recurring; random after bad fuel/tune/charge-pipe work.
+Test order: save freeze frame + cylinder counters → confirm correct fuel + map → inspect all plugs by cylinder (part, gap, deposits, cracking, tracking, oil/fuel) → if one cylinder implicated, swap the coil (clear only after evidence saved) and see if the fault follows → inspect coil boot/spring/well → check charge-air/vacuum integrity + fuel trims → compare low-side and high-side fuel pressure commanded vs actual → evaluate injector operation/wiring if fault stays on one cylinder → compression + leakdown when mechanical condition uncertain → borescope if oil consumption/detonation/coolant suspected.
+Interpretation: fault follows coil = coil/boot/circuit; improves after correct plugs/gap = ignition demand exceeded available spark (still verify tune/fuel); one cylinder low mechanically = locate leakage; multiple cylinders at high load with rail-pressure drop = fuel supply/calibration, not all coils.
+Don't: replace all four injectors without balance/electrical evidence; assume negative ignition corrections mean damage; continue WOT with a flashing MIL; tighten gap below tuner instruction to hide a fault.
+
+### EVAP/purge (P1450 / P0456 / P144A)
+The Focus purge-valve campaign history makes this high priority. Test order: record fuel level + whether symptom occurred after refueling → ask about rough idle/stall after fill, hard filling, gauge irregularity, tank deformation → **verify 18S32/26S40 status + PCM calibration** → observe purge command + fuel trims at idle → test purge valve sealing/flow per Ford → inspect hoses/canister/vapor lines/connector → inspect tank shape + fuel-delivery module if excessive vacuum → smoke-test at correct low pressure → confirm monitor completion, not just clear MIL.
+- **P1450:** excessive vacuum unable to bleed — stuck-open valve/campaign a major lead.
+- **P0456:** small leak — capless filler sealing, hoses, purge sealing, canister.
+- **P144A:** purge-vapor line restriction/flow — inspect valve, plumbing, current bulletin.
+
+### Underboost (P0299)
+Divide: is the PCM commanding more boost than the engine produces? is boost actually low or a sensor/reporting problem? only in heat/high gear/one map/after pipe work? Test order: confirm tune/map + target → inspect every charge connection (esp. any that previously separated) → intercooler core/end tanks + pipe O-rings → controlled smoke/pressure test → bypass valve + control → boost-control solenoid hoses + electrical → wastegate linkage/preload per procedure (don't randomly shorten) → compare commanded/actual boost, wastegate duty, throttle closure, load, airflow → exhaust restriction + turbo condition last. Common errors: buying a turbo before finding a loose charge pipe; increasing preload to hide a leak; comparing boost across weather/gears/tunes.
+
+### Overboost (P0234)
+Stop aggressive driving → verify correct map/no tune mismatch → inspect boost-control plumbing for crossed/split/pinched/disconnected hoses → verify MAP/TMAP plausibility key-on + under load → inspect wastegate linkage for binding/improper preload → compare commanded/actual boost, throttle closure, wastegate duty → return to a known-safe calibration via tuner/Accessport recovery + stable voltage. Overboost is not free performance.
+
+### Fuel pressure (P0087 / P0191)
+Required data: low-side pressure; commanded + actual high-pressure rail pressure; sensor plausibility; fuel level/composition/temp; load/RPM at divergence; tune fueling demand. Test order: confirm blend + no contamination → battery/charging stability + sensor wiring → low-side delivery + in-tank module → commanded vs actual rail pressure under controlled operation → HPFP + rail sensor per Ford → injector leakage/balance if pressure decays or rich misfire → whether the tune exceeds stock fueling. Don't keep high-load logging when actual rail pressure falls materially below commanded.
+
+### Catalyst (P0420)
+Distinguish: actual degradation; exhaust leak near the rear sensor; O2/wiring fault; repeated misfire/rich/purge fault contaminating data; aftermarket downpipe/cat + incompatible tune; software/monitor conditions. Test: inspect for accompanying misfire/fuel-trim/purge/O2 codes → identify downpipe + cat hardware → inspect exhaust leaks + sensor install/wiring → analyze upstream/downstream sensor behavior at temperature → correct engine-control faults before condemning the cat → verify emissions legality before changing hardware/calibration.
+
+### P2196 (O2 biased/stuck rich)
+Check purge early (esp. post-refuel). Save trims + freeze frame → test purge valve sealing/command → check injector leakage + rail-pressure behavior → inspect O2 wiring + exhaust leaks → confirm fuel blend/map → verify the sensor with controlled data before replacement.
+
+### Network / module U-codes
+Triggers: weak battery/voltage drop during crank/programming; loose grounds; disconnected APIM/ACM/radio during head-unit install; incompatible Maestro firmware/config; incorrect FORScan as-built edit; water intrusion/damaged harness; a module intentionally removed without config change. Test order: save full topology scan → check battery resting/cranking/charging → identify which module stopped communicating vs which merely report losing it → inspect recent work first → restore known-good backups when a coding change caused it → check power/ground/network at the missing module. Don't replace a module because others report losing communication with it.
+
+### Datalog minimums
+RPM, accelerator + throttle angle; commanded + actual boost/MAP; load + torque request; wastegate duty; ignition timing + cylinder corrections; short- + long-term fuel trims; lambda/AFR equivalence; commanded + actual rail pressure; charge-air + coolant temps; misfire counters; vehicle speed + gear. A datalog without hardware list, map, fuel, weather, gear and symptom is incomplete evidence.
+
+### Case closure standard
+Root cause identified or evidence-supported conclusion documented; repair/adjustment + part/calibration numbers recorded; original symptom retested under safe equivalent conditions; no relevant pending/current code returns after monitor completion or appropriate drive cycle; collateral systems inspected; maintenance/mod/cost trackers updated.
 
 ### Related
-[[00 Command Center]] · [[06 Powertrain]] · [[04 Recalls & TSBs]] · [[_KB-Home|KB Home]]
+[[00 Command Center]] · [[06 Powertrain]] · [[04 Recalls & TSBs]] · [[forscan-master-reference]] · [[_KB-Home|KB Home]]
 
 ---
 
@@ -553,24 +604,75 @@ Ford VIN lookup + date, OR dealer OASIS, OR completed RO (campaign #, date, mile
 
 ## 06 · Powertrain Master Manual
 
-> Diagnose the 2.0 GTDI as one system. Full version → [Google Doc](https://docs.google.com/document/d/1_9b-292YFsUR6J2Oi32-kgsxP4KZqGHlvERMlB38SBI). Build path → [[powertrain]].
+> Full text (merged from the FFST vault). Build path → [[powertrain]].
 
-**Air:** filter→compressor→hot pipe→intercooler→cold pipe→TB→manifold. **Fuel:** tank→HPFP→rail→DI injectors. **Torque:** engine→DMF→**240 mm clutch**→MMT6→diff→axles.
+### System map
+Diagnose the 2.0L GTDI as one controlled system.
+- **Air path:** filter → intake tube → compressor → hot-side charge pipe → intercooler → cold-side pipe → throttle body → intake manifold → cylinders.
+- **Exhaust path:** cylinders → integrated exhaust manifold/head → turbine → downpipe/catalyst → exhaust.
+- **Fuel path:** tank module/low side → high-pressure pump → rail → direct injectors.
+- **Crankcase/EVAP:** PCV + fresh-air circuits manage crankcase vapors; EVAP canister + purge valve meter tank vapor into the intake. Purge failure imitates fuel, O₂ and drivability faults.
+- **Torque path:** engine → dual-mass flywheel → 240 mm clutch → MMT6 → differential → axles → hubs.
 
-### Rules
-- **LSPI:** no full-load pull **< ~3,000 rpm** in a tall gear — downshift before boost.
-- Intercooler **before** aggressive tune (stock heat-soaks even tuned) — done ("Beast").
-- Don't touch wastegate rod as "free power." A pipe that blew off once → replace seals/clamps, pressure-test, witness-mark.
-- Oil pressure pod = trend only; a true drop is a **shutdown**.
+A modification in one path changes the operating context of others. The tune is the control layer, not a substitute for mechanical integrity.
+
+### Engine health
+**Reliability priorities:** correct oil level/spec; no overheating/coolant loss; correct fuel for the map; healthy plugs/coils + no unresolved misfire; sealed charge + vacuum system; functional purge/PCV; no high-load low-RPM operation; controlled intake temperature + competent calibration.
+
+**LSPI / low-speed high load:** risk rises when a turbo-DI engine is asked for high torque at low RPM. Don't floor the car in a tall gear at low RPM; downshift before requesting significant boost; use correct-quality fuel + oil; avoid excessive oil consumption + poor PCV; avoid aggressive calibration with uncontrolled low-RPM torque; keep charge temperature controlled. **No full-load pull begins below ~3,000 rpm unless the tuner specifies a different controlled procedure.** Street driving should downshift earlier rather than lug.
+
+**Compression + leakdown:** use when tune history unknown, a cylinder-specific misfire remains, plug evidence is abnormal, oil/coolant consumption exists, or a high-power build is planned. Warm engine when safe; support battery; same procedure on all cylinders; compare cylinders rather than a generic absolute number; leakdown location matters (intake/exhaust/crankcase/cooling); repeat an anomalous test before condemning the engine.
+
+**Oil pressure:** the factory pod is useful for trend awareness but not a substitute for a verified mechanical test when there's a warning, abnormal noise or suspect reading. Any true loss of pressure is a shutdown condition.
 
 ### Ignition
-Stock gap 0.027–0.031"; tuned ~0.025–0.026" / 1-step colder per tuner, inspect ~15–20k.
+Stock: OEM gap 0.027–0.031"; Ford normal replacement ~100,000 mi. Tuned: many ST tuners specify ~0.025–0.026" gap, a one-step-colder plug for boost/E-blend where recommended, replacement/inspection ~15,000–20,000 mi. Not universal — plug selection must match calibration/use/climate; colder is not automatically better on a lightly used or stock car. Read plugs by cylinder (uniformity, cracked porcelain, electrode erosion, detonation peppering, wet fuel/oil/coolant, carbon tracking, heat range). Don't "read" a plug immediately after long idle.
 
-### Fuel/ethanol
-Custom 91 calibrated as 91 (not 93). E30 = fixed-blend, **not** flex fuel — measure ethanol, calc blend, log rail pressure/trims; never full E85 on stock fueling. Stock DI ceiling ~mid-300 whp; aux/HPFP near ~400.
+### Turbocharger and boost control
+Stock turbo favors fast response + strong low/midrange torque; becomes inefficient as airflow demand rises (higher charge temp + backpressure). The practical stock-turbo build favors repeatable thermal performance over a single peak pull. Components: compressor/turbine, wastegate actuator + flapper, boost-control solenoid + hoses, bypass/recirc valve, MAP/TMAP data, PCM/tune torque + boost targets. **Wastegate warning:** don't alter rod length/preload as a generic "free power" mod — incorrect preload causes under/overboost, poor control, accelerated wear; use the turbo/tuner measured procedure only after leaks + control plumbing are proven. **Charge-pipe retention:** a pipe that blew off once must not simply be pushed back on — inspect bead/retention feature, O-ring + groove, clamp type/orientation, oil contamination, pipe alignment + engine movement, intercooler outlet/inlet damage, excessive boost/mount movement; clean compatible surfaces, replace damaged seals/clamps, pressure-test after.
 
-### MMT6 shift-quality order
-technique → fluid → cable ends/bushings → alignment → mounts → clutch hydraulics → clutch/DMF → internal synchros. Short shifter ≠ fix for drag/synchros.
+### Intercooler
+The stock unit is widely documented as a thermal limitation, including on tuned stock-turbo cars — upgrade before an aggressive calibration. Selection: demonstrated temperature control (not just core thickness), pressure drop, end-tank design/sealing, bumper/duct fit, weight/mounting, retained crash/airflow structure, pipe compatibility, AZ heat performance. Validation: log charge-air temp before + after under similar ambient/gear/load; a good system recovers between pulls and avoids rapid heat soak; don't compare different days without noting weather.
+
+### Intake
+On the stock turbo, intake changes usually provide sound + reduced restriction at higher airflow; gains depend on complete system/tune. Before retaining the current large intake: identify brand + MAF housing dimensions; verify tune requirement; inspect filter sealing + support; isolate from hot air; ensure no rubbing/unsupported mass; inspect fuel trims + drivability. An oversized/incorrect MAF housing alters reported airflow and requires calibration.
+
+### Exhaust and downpipe
+- **Cat-back:** primarily sound/weight/packaging on a stock-turbo street car; evaluate drone, hanger alignment, ground clearance, heat shielding, leaks.
+- **Downpipe:** can reduce turbine-outlet restriction but introduces tune dependency, catalyst-efficiency codes, emissions/inspection consequences, heat + O₂ wiring concerns, increased noise/odor. Don't buy before defining power target + legal requirements; a high-flow catted unit is not automatically compliant.
+- **Crackle calibrations:** aggressive pops/bangs raise exhaust temperature and stress catalysts/turbine/exhaust — excluded from the reliability-first roadmap.
+
+### Fuel system and ethanol blends
+- **Pump-gas path:** start with a conservative custom calibration for consistent AZ fuel; a 91-octane tune calibrated as 91, not with 93 assumptions.
+- **E30 path:** reputable tuners offer E30 on otherwise stock fuel hardware at stock-turbo airflow, but safe use requires a tuner-approved calibration, measured ethanol content of both fuels, correct blend calculation, adequate fuel level/mixing, datalogged rail pressure + trims, and no accidental full E85 fill on an E30 map. Seasonal pump ethanol varies — "three gallons of E85" is not a universal recipe.
+- **Stock fueling limits:** tuner estimates vary; frequently cited stock DI limits are roughly mid-300 whp, while auxiliary/upgraded fueling becomes necessary around the 400-whp region. Planning estimates, not guaranteed thresholds. Build fueling margin before reaching the limit.
+
+### PCV, crankcase ventilation, catch cans
+Inspect first: factory PCV valve/separator function; hoses + check valves; vacuum/boost routing; oil consumption + leaks; intake-valve deposits when symptoms warrant. A catch can is an optional engineered separator — not mandatory insurance and not a cure for a failed PCV system. Requirements: correct pressure direction + check valves; no freezing concern for the climate; accessible drain schedule; secure heat-safe mounting; no vacuum leak; no vent-to-atmosphere odor/emissions issue unless deliberately designed + legal.
+
+### Cooling (Arizona)
+Keep condenser/radiator/intercooler airflow paths clean; retain proper ducting + undertray; verify fan operation; inspect reservoir/cap + hose aging; establish coolant history now; monitor charge temperature as well as coolant temperature. An intercooler doesn't replace coolant maintenance; a lower thermostat doesn't repair an inadequate radiator, fan or tune.
+
+### MMT6 transmission
+Shift-quality diagnostic order: driver technique + clutch release → correct fluid level/condition/spec → shifter cable ends + bracket bushings → cable alignment/adjustment → engine/transmission/rear mount condition → clutch hydraulic release → clutch/dual-mass flywheel → internal synchro/gear/bearing. Common practical improvements: quality cable-end/bracket bushings; correct cable alignment; weighted/shorter shift lever for feel; rear motor mount selected for acceptable NVH; fresh correct fluid. A short shifter reduces lever travel but doesn't repair clutch drag or worn synchros; excessively stiff mounts make engagement harsher + add cabin vibration. Reverse-to-first: fully depress clutch, pause in neutral, allow shafts to stop, select first without force.
+
+### Clutch and dual-mass flywheel
+Slip indicators: engine speed rises without proportional acceleration under controlled load; higher gears slip first; burning odor / worsening hot behavior; distinguish contamination/hydraulic fault from worn friction. Don't lug the engine to test slip. Shared reservoir → inspect level/condition, master/pedal area, hydraulic line, bellhousing (concentric slave), bleed correctly; a pedal problem isn't automatically the disc. Higher-power planning: choose clutch capacity with reasonable margin (not the highest advertised clamp load) considering torque curve, street drivability, pedal effort, dual- vs single-mass NVH, flywheel serviceability, hydraulic components + rear main seal while accessible.
+
+### Mounts
+Car has a Torque Solutions component — identify exact location + durometer before buying another. Rear motor mount: benefits (reduced engine roll, more consistent shift feel, less wheel hop) vs tradeoffs (idle/AC vibration, dashboard/interior buzz, more impact to drivetrain, reduced daily refinement if too stiff). Inspect all three primary mount positions as a system; a stiff rear mount can reveal a collapsed hydraulic side mount.
+
+### Modification dependency table
+| Modification | Required first | Validate after | Common conflict |
+|---|---|---|---|
+| Custom pump-gas tune | Healthy baseline, correct plugs/fuel | Datalog, boost/fuel pressure, misfire | Unknown intake/downpipe or poor fuel |
+| E30 tune | Proven pump tune, measured ethanol | Rail pressure, trims, mixture | Wrong blend/full E85 |
+| Intercooler | Fitment/duct plan | IAT recovery, leaks | Poor crash-bar/pipe fit |
+| Intake | Identify MAF housing/tune need | Trims, drivability | Incorrect calibration/hot-air leak |
+| Downpipe | Legal/tune plan | Leaks, O₂, boost control | Emissions/CEL/heat |
+| Big turbo | Engine health, clutch, cooling, fueling plan | Full professional calibration | Stock fuel/clutch/traction limits |
+| Catch can | Healthy PCV, correct routing | Vacuum, leaks, collected volume | Misrouting/freeze/neglected drain |
+| RMM | Inspect other mounts | NVH, clearance, shift feel | Excessive stiffness/cabin buzz |
 
 ### Related
 [[powertrain]] · [[09 Mods & Tuning]] · [[05 Diagnostics & DTC]] · [[02 Maintenance Master]] · [[_KB-Home|KB Home]]
@@ -581,27 +683,75 @@ technique → fluid → cable ends/bushings → alignment → mounts → clutch 
 
 # 11 · KB · Chassis Manual
 
-## 07 · Chassis, Brakes, Wheels & Alignment
+## 07 · Chassis, Brakes, Wheels and Alignment Manual
 
-> Order: baseline → tires+pressures → alignment → brake fluid/pads → dampers/springs/bushings → roll stiffness → coilovers/diff. Full version → [Google Doc](https://docs.google.com/document/d/1JC2wLA4wX-8M0iVYaPP0YuNkO4VG_BIIeibqI-MImKw). Build → [[handling-brakes]].
+> Full text (merged from the FFST vault). Build → [[handling-brakes]].
 
-**Factory (verified):** front MacPherson w/ ST knuckle · rear control-blade multilink · wheel **18×8 ET55 5×108** · **235/40R18** · front bar ~24 mm · rear ~22 mm · lug 100 lb-ft.
+### Chassis philosophy
+Power is useful only when the car can repeatedly put it down, stop, rotate predictably and preserve its tires. Order: (1) baseline inspection + repair, (2) correct tires + pressures, (3) alignment matched to use, (4) brake fluid/pads matched to temperature, (5) dampers/springs/bushings based on measured deficiency, (6) roll-stiffness + camber based on tire data, (7) coilovers/differential/major geometry only after target use is defined. The factory ST chassis is already substantially different from a regular Focus — don't replace functioning ST parts just because a catalog calls stock inadequate.
 
-### Wheel fitment (any non-OEM)
-Compare width+offset vs 18×8 +55; inner/outer clearance at **full lock + full compression, loaded**; **RS Brembo caliper clearance** (spoke profile); tire measured width/dia; hub-centric + correct seat type; no stacked spacers.
+### Factory reference
+Front MacPherson strut with ST-specific knuckle/geometry; rear independent control-blade multilink. Factory wheel **18 × 8", +55 mm offset**; factory tire **235/40R18**; front stabilizer bar ~24 mm hollow; rear ~22 mm; U.S. wheel nuts M12 × 1.5, **100 lb-ft / 135 N·m** on clean dry undamaged threads. Use the driver's B-pillar placard for original cold tire pressure + load data.
 
-### Alignment starting targets (NOT Ford spec)
-| Use | F camber | R camber | F toe | R toe |
-|-----|----------|----------|-------|-------|
-| Daily | -1.0/-1.5 | -1.3/-1.8 | ~0/in | in |
-| Fast street | -1.5/-2.2 | -1.3/-1.8 | ~0 | in |
-| Track | -2.2/-3.0 | -1.5/-2.0 | 0/out | in |
+### Baseline chassis inspection
+- **Steering + front:** struts (leak/bent/damping); upper mounts/bearings; springs (breakage/corrosion/seating); LCA rear bushings + ball joints; inner + outer tie rods; sway-bar links + bushings; wheel bearings + hubs; steering rack boots/connectors/mounting; subframe position + impact evidence.
+- **Rear:** shocks + upper/lower mounts; springs + isolators; control-blade + toe/camber link bushings; rear bar links/bushings; wheel bearings; alignment eccentrics/fasteners; curb/collision evidence.
+- **Tires/wheels:** wheel width/diameter/offset/brand/load rating; spacers + effective offset; tire size/model/load/speed rating; date code; tread inner/center/outer; heat/feathering; sidewall bulges/repairs/cracking; hub-centric engagement + stud threads. Don't align around a damaged tire, bent wheel, worn bushing or failing bearing.
+
+### Tire selection
+- **Daily street:** strong wet/dry braking; predictable breakaway; AZ heat tolerance; acceptable noise/ride; correct load/speed ratings; replacement availability.
+- **Performance/autocross:** repeatable hot grip; sidewall support; heat-cycle behavior; wet limits understood; clearance at full lock + compression.
+A wider tire isn't automatically faster — it must reach temperature, fit the wheel, clear the chassis, keep geometry. Use measured section/tread width, not nominal size.
+- **Pressure workflow:** start at placard cold pressure → record ambient + cold → measure hot after the same route → inspect shoulder wear (and use tire temperatures inner/middle/outer for motorsport) → change in small increments + document. Don't use arbitrary internet pressures.
+
+### Wheel fitment engineering
+For every proposed wheel calculate + record: width + offset; inner-clearance change vs 18×8 +55; outer-position change; tire measured width/diameter; spacer thickness + effective offset; hub-bore + centering method; stud/thread engagement; brake-caliper clearance; strut/liner/fender clearance at full lock + compression; effect on scrub radius, steering effort, bearing load. Rules: prefer hub-centric wheels/spacers with verified load rating; don't stack spacers; don't mix tapered-seat + ball-seat; don't assume an 18" clears the ST brake package (spoke profile matters); verify tire diameter (speedo/ABS/clearance); recheck fit loaded, not on a lift.
+
+### Alignment (setup starting points, NOT Ford spec)
+Final values depend on ride height, available adjustment, tire, roads, use.
+- **Daily:** front camber ~ -1.0° to -1.5°; rear ~ -1.3° to -1.8°; front toe near zero or slight toe-in; rear slight toe-in; cross-camber + thrust angle symmetrical.
+- **Fast street / canyon:** front ~ -1.5° to -2.2°; rear ~ -1.3° to -1.8°; front toe near zero; rear slight toe-in.
+- **Autocross / track:** front ~ -2.2° to -3.0°; rear ~ -1.5° to -2.0°; front toe zero to slight toe-out; rear stable slight toe-in.
+Tire temps/wear/lap behavior/braking stability decide the final setting. Aggressive front toe-out causes tramlining + wear; excessive rear rotation makes lift-off abrupt. Save the before/after printout with odometer, tire/wheel setup, ride height, ballast, suspension parts, cold pressures, intended use, resulting wear/handling notes.
+
+### Springs, dampers, coilovers
+- **Springs:** must match damper travel + rate; evaluate actual drop front/rear, remaining bump travel, damper compatibility, alignment range, roll-center/bump-steer, tire clearance, spring-seat fit/noise.
+- **Dampers:** replace on leakage, poor control, mileage/heat history or a defined objective; an excessively stiff damper reduces grip on rough roads.
+- **Coilovers:** select for serviceability/rebuild support, corrosion resistance, spring-rate suitability, usable adjustment range, independent height/preload where appropriate, top-mount + bearing quality, replacement-part availability, documented alignment + corner-weight capability. Don't lower for appearance until bump travel, axle angle, roll center, tire clearance + alignment are checked.
+
+### Stabilizer bars + rotation
+A larger rear bar reduces understeer + improves rotation but can increase inside-rear unloading + lift-off oversteer. Progression: quality tires + baseline alignment → verify dampers/bushings → add rear bar at its softest useful setting → test in a controlled environment → record entry/mid-corner/lift-off → increase stiffness only if needed. Don't combine a large rear bar + aggressive rear toe + stiff rear springs + abrupt driving changes without staged testing.
+
+### Bushings and mounts
+Stiffer bushings improve precision but add noise, vibration, harshness, binding. Prioritize replacing failed OEM rubber; targeted shifter/cable or control-arm improvements; avoiding full-solid conversion on a street car; servicing polyurethane only as its manufacturer requires. Any bushing installed at ride-height position must be tightened per the proper service procedure to avoid preloading bonded rubber.
 
 ### Brakes
-Bleed farthest-first (RR→LR→RF→LF; verify ABS proc). Street: OEM-size rotors + street-perf pads + DOT 4 LV. Track: temp-matched pads + high-boil fluid + ducting. BBK only for real heat/consumable needs.
+- **Street package:** healthy OEM-size rotors; quality street-performance pads; fresh DOT 4 LV or compatible performance fluid; clean free caliper sliders; intact hoses/boots; correct bedding.
+- **Track package:** pad compound chosen for actual temperature; high-boiling fluid with documented interval; rotor inspection before/after events; heat management/ducting; spare pads + measurement tools; post-session inspection.
+- **BBK gate:** justified by repeated heat-capacity/pedal-consistency/consumable/endurance needs, not appearance. Verify master-cylinder/ABS compatibility, front/rear balance, wheel-clearance template, replacement rotor/pad availability, unsprung mass, legal/service implications.
+
+| Symptom | First checks |
+|---|---|
+| Steering shake under braking | Rotor/hub runout, wheel torque, control-arm bushings, deposits, tire/wheel condition |
+| Long pedal | Fluid condition/air, hose expansion, caliper movement, master cylinder, pad knockback |
+| Pulling | Tire pressure/grip, caliper drag, hose restriction, pad contamination, alignment |
+| One wheel hot | Slider/piston/hose/parking-brake drag, bearing |
+| Noise | Pad hardware, bedding, rotor condition, backing plate, bearing — not pad brand alone |
+
+### Chassis modification compatibility
+| Change | Verify first | Required after |
+|---|---|---|
+| Wider/lower-offset wheels | Inner/outer math, tire measured width, hub + brake clearance | Full-lock/compression inspection, alignment |
+| Spacers | Hub lip, stud engagement, wheel-pocket clearance | Torque check per manufacturer, bearing/clearance inspection |
+| Lowering springs | Damper health/travel, alignment range | Alignment, bump-stop/clearance check |
+| Coilovers | Use case, spring rates, top mounts | Corner/ride-height setup, alignment, clearance |
+| Rear sway bar | Tires, dampers, rear toe | Controlled handling test |
+| Camber plates/arms | Adjustment need + legality | Alignment + fastener inspection |
+| Track pads | Operating temperature + street use | Bedding, rotor/fluid monitoring |
+| BBK | Heat evidence, balance, wheel template | Bedding, leak + ABS/brake-balance test |
 
 ### Related
-[[handling-brakes]] · [[VEHICLE]] · [[10 Forum Consensus]] · [[_KB-Home|KB Home]]
+[[handling-brakes]] · [[VEHICLE]] · [[10 Forum Consensus]] · [[03 OEM Specifications]] · [[_KB-Home|KB Home]]
 
 ---
 
@@ -609,26 +759,64 @@ Bleed farthest-first (RR→LR→RF→LF; verify ABS proc). Street: OEM-size roto
 
 # 12 · KB · Electronics & Interior
 
-## 08 · Electronics, Infotainment & Interior
+## 08 · Electronics, Infotainment and Interior Modernization Manual
 
-> Reversible, serviceable 2030 cabin without network faults. Full version → [Google Doc](https://docs.google.com/document/d/1yD_tvzCRSEhMDMYUTIB9jesPTTHVZ5c6v3wePrqOr50). Build → [[cockpit-electronics]].
+> Full text (merged from the FFST vault). Build → [[cockpit-electronics]].
 
-Start: 4" SYNC 1, factory steering controls + gauge pod, OBDLink MX+. Planned: head unit + **iDatalink Maestro RR2**, wireless Android Auto, blue ambient, wireless charging, spare-well sub.
+### Objective
+Modernize the ST1 cabin to a reversible, serviceable 2030-style system while retaining vehicle functions, preventing network faults and avoiding aftermarket clutter. Start: 4" SYNC 1 display, factory steering-wheel controls, factory center gauge pod, OBDLink MX+. Planned: aftermarket head unit, iDatalink Maestro RR2 + Focus integration hardware, wireless Android Auto, blue accent lighting, wireless charging, spare-well subwoofer.
 
 ### Electrical rules
-Record DTCs/as-built before disconnecting · regulated supply for programming · never probe SRS w/ test light · fuse every added circuit at source · size wire for current/length/heat · one engineered ground · label both ends · document every fuse/splice.
+1. Disconnect power only after recording codes/radio-module state/required procedures. 2. Use a regulated support supply for programming/long sessions. 3. Never probe an airbag/SRS circuit with a test light/ordinary meter. 4. Fuse every added circuit as close to its source as practical. 5. Size wire for current/length/temperature/voltage-drop, not connector appearance. 6. Proper crimp tooling, sealed connectors where exposed, strain relief, abrasion protection. 7. Never use strand-cutting taps as the permanent standard. 8. Keep audio power wiring separated from signal/CAN where practical. 9. Preserve service loops + access to factory connectors. 10. Document every fuse/splice/ground/module.
 
-### RR2 integration
-Retains steering controls/chimes/vehicle info + OBD gauges (radio/firmware dependent). **Build from iDatalink's Focus RR2 compatibility list for the exact radio.** Bench-program RR2 first; verify sleep-draw + full module scan after.
+### Baseline module inventory (before removing SYNC)
+Run a full FORScan scan; save every module DTC; record APIM, ACM, IPC, BCM, FCIM + steering-control configuration; save as-built data by module; photograph every connector + pin-lock position; record factory functions (chimes, steering controls, clock, Bluetooth, USB, backup camera if present, vehicle settings, display behavior). Don't assume all ST1 cars share identical harnesses/options.
 
-### Wireless charger / ambient / audio
-Qi at phone's coil location, switched fused 12V, ventilation (AZ heat), wired USB-C backup. Blue = accent only, dimmable, no bare LEDs, no SRS interference. Audio: diagnose→treat→front speakers→DSP/amp→spare-well sub (heat/water/cargo/roadside plan).
+### Head-unit + Maestro RR2 architecture
+Depending on the final radio, Maestro firmware + vehicle compatibility, RR2 can support steering-wheel controls, retained factory features + warning chimes, vehicle information, gauges + OBD-derived data, tire-pressure/check-engine info where supported, programmable control behavior. Availability is radio-, firmware-, vehicle- + configuration-dependent — build from the current iDatalink compatibility page + installation guide for the exact radio model, not a generic video.
+**Bench-planning (before dash disassembly):** exact radio model + firmware; RR2 serial/firmware; exact Focus harness/kit; antenna adapter; USB retention/replacement; microphone location; backup-camera plan; amp/speaker architecture; OBD connection strategy; steering-control button assignment; chime + vehicle-info behavior; parking-brake/reverse/speed-signal requirements; ventilation + screen-clearance.
+**Install sequence:** update/program Maestro on the bench → label every harness branch → verify pin locks + grounds → dry-fit bezel/radio/USB → connect + test before final assembly → test ignition states, sleep/wake, battery draw → test every retained function → scan all modules → then secure, dress + close the dash.
+**Final function test:** key-on/start/shutdown + retained accessory power; all steering buttons (incl. long-press); front/rear speakers + balance/fader; microphone/call quality; Android Auto connect/reconnect; GPS/Wi-Fi/BT coexistence; dimmer/illumination; reverse camera + trigger; chimes/alerts; gauges + OBD data; no parasitic wake cycle; no new U-codes or module faults.
 
-### Ergonomics (user ~6ft/215lb)
-Optimize seat/wheel first; retained-airbag wheel only if clearance stays poor; never resistor-mask a restraint fault.
+### OBDLink MX+ + gauge integration
+Use the MX+ primarily for diagnostics + logging. A radio's Maestro gauge screen + the OBDLink app may compete for the diagnostic connection. Rules: verify whether the final radio uses Maestro's dedicated OBD connection; don't run multiple active adapters that load the bus; remove/disable continuous polling when diagnosing sleep/battery draw; record PID names/units/sampling rate; treat calculated values as estimates; don't mount a bright diagnostic display where it distracts the driver. Display hierarchy: safety warning from factory IPC → coolant/charge temperature trend → boost/load → fuel-pressure or ignition data only during diagnosis/tuning → entertainment last. Don't turn the daily screen into an alarm wall.
+
+### FORScan configuration control
+FORScan exposes configuration + module as-built, but incorrect edits create lighting/communication/battery/feature faults. Workflow: fully charge/test battery + regulated support → known-compatible adapter + current software → save original config/as-built per module separately → record exact address/value changed → one change at a time → cycle ignition exactly as directed → scan modules + test affected functions → revert immediately if abnormal. Classes worth evaluating: convenience lighting; lock/unlock; global windows where supported; splash screens/themes where compatible; audio config after hardware changes; backup camera/parking-assist if adding supported OEM hardware. No raw hex stored as universal instructions — match module/software/equipment. Forum reports include incorrect edits causing lights to stay on or other unexpected behavior.
+
+### Power distribution for accessories
+Categories: radio/Maestro/USB; wireless charging; ambient lighting; dash camera; amplifier/subwoofer; optional auxiliary display. Rules: dedicated fused distribution rather than many unrelated add-a-fuse taps; deliberate ignition-switched vs constant power; verify circuit capacity + sleep behavior; one high-quality chassis ground or engineered distribution (not random sheet-metal screws); protect wiring through bulkheads + moving panels; label both ends. Parasitic-draw validation: let modules sleep → measure total draw without waking the vehicle → compare with baseline → isolate accessories by fuse if excessive → verify Bluetooth/Wi-Fi accessories aren't repeatedly waking modules.
+
+### Wireless charging tray
+Requirements: Qi2/current high-quality Qi where compatible; secure phone under accel/braking; no interference with shifter/parking brake/cup holders/HVAC; serviceable removable insert; hidden fused power; thermal path + ventilation; wired USB-C backup; indicator light without nighttime glare. Build: removable ABS/PETG/automotive insert; mount the coil at the phone's actual coil location with minimal material gap; non-slip silicone + adjustable alignment; quality automotive 12V→USB-C PD/Qi controller with over-temp + over-current protection; airflow beneath the coil (AZ cabin temps reduce/stop charging); avoid enclosing lithium battery packs. Validation: test with the phone case installed; wired vs wireless Android Auto; measure charging stability during navigation + high cabin temperature; verify no radio noise, touch-screen interference, or battery draw after shutdown.
+
+### Ambient lighting — blue accent
+Use blue as an accent only: door-pocket/handle glow; center-console edge; footwell indirect light; restrained dash line without visible hotspots. Electrical: dimmable; tied to an appropriate illumination/ignition strategy; separately fused; no visible bare LED points; no interference with airbags/door movement/window regulators; connectors at removable panels; no exterior-facing blue light that could violate law or resemble emergency lighting. Set a maximum nighttime brightness + lock a default blue shade; no flash/chase/distraction while driving.
+
+### Audio architecture
+Improve clarity, midbass + low-frequency extension without sacrificing cargo utility or service access. Order: diagnose existing speakers + rattles → treat doors + cargo panels selectively → choose front speakers by mounting depth/sensitivity/amp plan → add DSP/amplification when tuning control is needed → add spare-well subwoofer + enclosure → tune crossover/polarity/delay/level by measurement, not bass boost. Sound treatment: constrained-layer damping on resonant metal; closed-cell foam for decoupling; mass barrier only where weight/water/attachment are managed; fabric tape/foam at trim contact. Don't block door drains, seal moisture inside panels, or cover service fasteners permanently.
+**Spare-tire-well subwoofer:** enclosure volume matched to the driver; rigid mounting + sealed cable pass-through; amplifier ventilation; access to fuel-pump/service areas; water-intrusion inspection + drainage strategy; cargo-floor load support; removable quick-disconnect design; documented spare/roadside plan. A shallow truck-style 10" is acceptable only if its enclosure/excursion/efficiency/thermal needs fit the actual available volume. **Underbody spare:** don't fabricate without evaluating exhaust heat, suspension travel, ground clearance, crash behavior, water/debris, structural attachment — prefer a compact spare inside cargo, an engineered false-floor, or a repair-kit + roadside coverage.
+
+### Interior ergonomics (user ~6 ft, 215 lb, knee/thigh clearance)
+Order: optimize seat height/back/telescoping-wheel position → inspect seat-track travel + obstructions → use a professionally built retained-airbag + controls wheel if changing shape/thickness → avoid unsafe quick-release/non-airbag conversion on a street car → lower-profile console/phone solutions → route cables away from knees/pedals → seat swap only with SRS/occupancy/buckle/legal addressed. **Steering emblem:** part of the airbag cover environment — no rigid/sharp/heavy badge over the deployment surface; only a thin correctly-sized overlay; never disassemble the airbag module for appearance. **Recaro/seat retrofit:** compare connectors + module config; preserve side airbags + occupancy classification; preserve belt pretensioner + buckle sensing; scan SRS before + after; never resistor-mask an active restraint fault.
+
+### Interior modernization dependency matrix
+| Upgrade | Required first | Validate after |
+|---|---|---|
+| Head unit + RR2 | Module backup, exact compatibility, harness plan | Retained functions, sleep draw, full scan |
+| Wireless charger | Power budget + tray dimensions | Heat, charge rate, radio noise, shutdown |
+| Ambient lighting | Airbag/panel/wiring route plan | Dimmer, no glare, no module wake |
+| DSP/amplifier | Signal-source architecture + load plan | Noise floor, clipping, crossover/polarity |
+| Spare-well sub | Volume, water, cargo + spare plan | Enclosure leaks, heat, rattles, floor load |
+| Seat retrofit | SRS/occupancy/buckle compatibility | SRS scan + restraint function |
+| Steering wheel | Airbag/control compatibility | SRS, controls, clockspring, alignment |
+| FORScan change | Original backup + exact module match | Full functional test + scan |
+
+### Final acceptance
+Complete only when: no SRS/BCM/APIM/ACM/network fault introduced; all factory safety functions operational; added circuits fused/documented/serviceable; the car sleeps normally; no visible loose wiring/sharp attachment; every removed panel fits without new rattle; every modification diagnosable without dismantling unrelated systems.
 
 ### Related
-[[cockpit-electronics]] · [[exterior-lighting]] · [[forscan-master-reference]] · [[_KB-Home|KB Home]]
+[[cockpit-electronics]] · [[exterior-lighting]] · [[forscan-master-reference]] · [[05 Diagnostics & DTC]] · [[_KB-Home|KB Home]]
 
 ---
 
@@ -636,29 +824,63 @@ Optimize seat/wheel first; retained-airbag wheel only if clearance stays poor; n
 
 # 13 · KB · Mods & Tuning
 
-## 09 · Modifications & Tuning Master Plan
+## 09 · Modifications and Tuning Master Plan
 
-> Improve repeatability/response/comfort before peak dyno. Every mod answers: problem solved? supporting parts? tradeoff? validation? reversibility? Full version → [Google Doc](https://docs.google.com/document/d/1TLBMIhU1LI8r6QUabcQg7v3GyJFe9IkRAxWrYhik5N0). Build → [[powertrain]].
+> Full text (merged from the FFST vault). Build → [[powertrain]].
 
-### Stages
-- **R0** health+evidence (recalls, scan, fluids, plugs, EVAP, charge-air) → gain none, prevents disaster.
-- **R1** intercooler (done) + fresh plugs + clean airflow + conservative 91.
-- **P1** stock-turbo pump-gas ~mid-250s–270s whp; torque higher.
-- **P2** E30 ~upper-200s–300 whp (measured blend, never full E85).
-- **P3** full bolt-on; stock turbo best < ~300 whp (~280 strong target).
-- **BT1/BT2** big turbo = full system; ~400 whp practical stock-engine ceiling (not a guarantee).
+### Build philosophy
+A long-term daily-driven 2017 ST. Improve repeatability, response, comfort + integration before chasing a peak dyno figure. Every modification answers: (1) what measured problem does it solve? (2) what supporting parts/calibration does it require? (3) what reliability/NVH/emissions/service tradeoff does it introduce? (4) how will success be validated? (5) how is it reversed/serviced later?
 
-### Calibration
-Custom pump-gas first (91 as 91). Off-the-shelf only if hardware matches (COBB Stage 2 needs upgraded IC). Most "E30" tunes are fixed-blend, not flex.
+### Performance stages (project categories, not universal standards)
+- **R0 — health + evidence** (required before performance tuning): VIN recall status documented; complete module scan; current calibration/tune identified; fluids established (oil, coolant, brake/clutch, MMT6); plugs/coils inspected; charge-air sealed; purge/EVAP healthy; brakes/tires/mounts safe; no unresolved misfire/fuel-pressure/boost-control/overheating fault. Gain: none. Value: prevents expensive misdiagnosis + tune-related failure.
+- **R1 — reliability + thermal:** quality high-capacity intercooler; correct fresh plugs for the intended tune; charge-pipe clamp/O-ring inspection/upgrade where justified; clean radiator/condenser/intercooler airflow; conservative custom 91-octane calibration; tires + brake service appropriate to power. Intercooler prioritized (stock heat-soaks even tuned).
+- **P1 — stock-turbo pump-gas street:** healthy/calibrated intake; upgraded intercooler; optional cat-back; optional RMM; custom 91/93 tune. Responsible planning range ~mid-250s to high-270s whp; torque often substantially higher. Not a guarantee. Control low-RPM torque + charge temperature over the first dyno pull.
+- **P2 — stock-turbo E30:** measured E30 blend; tuner-specific E30 calibration; fuel-pressure + mixture logging; repeatable blending. Published examples ~upper-200-whp, some ~290–300 whp. Don't load E30 on gasoline, fill full E85 on stock fueling, assume pump E85 = 85%, or use a fixed gallon recipe without measuring.
+- **P3 — stock-turbo full bolt-on:** intercooler; intake; downpipe where legal; cat-back; charge pipes/BPV; custom pump/E30 calibration. Stock turbo generally most useful below ~300 whp; ~280 whp a strong repeatable target. Don't expect linear gains from every bolt-on.
+- **BT1 — responsive big-turbo street:** define target first; plan compression/leakdown + engine health; turbo sizing + response; exhaust manifold/head outlet compatibility; intercooler + charge pipes; intake/MAF strategy; downpipe/catalyst; wastegate + boost control; clutch/flywheel torque capacity; tire/traction + differential; fuel-system capacity; professional custom calibration; emissions/legal status. A responsive ~330–380 whp may fit stock fueling depending on fuel/calibration; maintain pressure margin.
+- **BT2 — ~400+ whp:** a system build, not a turbo swap. Upgraded HPFP/auxiliary port fuel; clutch/flywheel; traction/differential; engine-health verification + realistic stock-internal risk acceptance; cooling + oil monitoring; stronger charge/exhaust hardware; professional calibration + fail-safes. ~400 whp is a practical stock-engine planning ceiling; failures can occur below it, some survive above. Not an engineering guarantee.
 
-### Datalog
-Channels: RPM/throttle, commanded/actual boost, load, wastegate duty, lambda/trims, commanded/actual rail pressure, timing/corrections, coolant/charge temp, misfire. **Abort:** flashing MIL, rail pressure below target, overboost, abnormal knock, overheat, noise. Never repeat WOT "to see if it clears."
+### Calibration paths
+- **Factory:** baseline diagnosis, emissions/dealer work, unknown-hardware verification, max OEM behavior. Don't flash stock software blindly if incompatible hardware (altered MAF housing, downpipe) needs calibration.
+- **Off-the-shelf:** only when hardware exactly matches map requirements, fuel meets the minimum, the map is current for the model year/strategy, logs show normal operation. COBB Stage 2 requires an upgraded intercooler; a stage label is not interchangeable across tuners.
+- **Custom pump-gas (preferred first):** AZ-safe 91-octane map unless reliable 93 is consistently available; conservative low-RPM torque; stock-turbo thermal awareness; optional lower-torque/valet map slots; datalog revision process.
+- **E30:** only after the pump-gas tune is mechanically proven; maintain a blend calculator + fuel log; verify ethanol content where practical.
+- **Flex-fuel warning:** a true flex-fuel system adjusts to measured ethanol via appropriate hardware/software. Many ST "E30" tunes are fixed-blend maps, not automatic flex fuel — don't use the terms interchangeably.
 
-### Ranking
-service+recalls → tires → intercooler → conservative tune → plugs → brake fluid/pads → alignment → feel/quality (bushings, RMM, sound, RR2) → conditional (intake/exhaust/downpipe/catch can) → avoid (crackle, launch abuse, eBay parts).
+### Tuner-selection criteria
+Platform history + technical transparency; hardware/fuel questionnaire quality; datalog review process; response to knock/fuel-pressure/boost-control concerns; emissions/legal policy; revision + support terms; whether torque is shaped for the stock engine/clutch + intended use; whether the tuner explains limits rather than only advertising peak power. Commonly researched: Stratified Automotive Controls, Edge Autosport, JST Performance, Mountune, Panda Motorworks, COBB-supported calibrators — verify current service, policies, support before purchase (not an endorsement ranking).
+
+### Datalogging protocol
+**Pre-log:** no active safety-critical DTC; correct fuel + map confirmed twice; oil/coolant correct; tires/brakes/road safe; engine fully warmed; no passenger distraction; tuner-prescribed gear/RPM range only. **Record with every log:** date/time; ambient temp + elevation; fuel brand/octane + measured ethanol; map revision; hardware list; gear + start/end RPM; recent maintenance; symptom/tuning purpose. **Channels:** RPM/throttle/accelerator; commanded/actual boost or manifold pressure; load/torque request; wastegate duty; lambda/equivalence + fuel trims; commanded/actual rail pressure; ignition timing + cylinder corrections; coolant + charge-air temperature; misfire counters. **Abort:** flashing MIL/misfire; actual fuel pressure materially below target; uncontrolled overboost; severe/repeated abnormal knock outside tuner instruction; overheating; mechanical noise/smoke/fluid warning; unsafe traffic. Don't repeatedly WOT-log "to see if it clears up."
+
+### Modification ranking
+- **Highest value:** baseline service + recall verification → tires → intercooler → conservative custom tune → correct plugs + inspection interval → brake fluid/pads matched to use → alignment.
+- **High-value feel/quality:** shifter cable-end/bracket bushings after inspection; correct cable alignment; targeted rear motor mount if wheel hop/engine movement justifies NVH; sound treatment; modern head unit/RR2 integration; wireless charging + audio improvements.
+- **Conditional:** intake (sound/airflow at higher power — verify MAF/tune); cat-back (sound, little stock-turbo power alone); downpipe (power/response but legal/heat/tune consequences); catch can (optional vapor management); BOV (sound — preserve metering/control); larger rear sway bar (balance, not automatically safer); coilovers (only with a clear geometry/ride objective).
+- **Low-priority/avoid:** aggressive crackle tune; repeated launch-control/flat-foot-shift abuse; unverified eBay charge/fuel/suspension parts; vent-to-atmosphere systems causing poor drivability/legal issues; quick-release steering wheel without airbag on a street car; rigid emblem on the airbag cover; extreme lowering without a travel/geometry plan; parts bought solely because a forum calls them "stage required."
+
+### Compatibility matrix
+| Component | Stock tune | Custom pump | E30 | Big turbo | Cautions |
+|---|---|---|---|---|---|
+| Large intercooler | Yes | Strongly recommended | Strongly recommended | Required | Fit, pressure drop, ducting |
+| Aftermarket intake | Often | Yes if calibrated | Yes | Usually required | MAF housing + hot-air sealing |
+| Cat-back | Yes | Yes | Yes | Yes | Drone, leaks, hanger fit |
+| Downpipe | Not without a plan | Tune/legal dependent | Tune/legal dependent | Usually part of system | Catalyst/CEL/emissions/heat |
+| Colder plugs | Not automatically | Tuner dependent | Common recommendation | Tuner dependent | Fouling/incorrect heat range |
+| RMM | Yes | Yes | Yes | Yes | NVH + other mount condition |
+| Catch can | Optional | Optional | Optional | Optional/engine-build dependent | Routing, drain, vacuum leak |
+| Stock clutch | Yes | Torque dependent | Often limiting | Commonly limiting | Slip + DMF condition |
+| Stock fueling | Yes | Yes | Common at stock-turbo E30 | Limited by target/fuel | Pressure margin |
+| Aux/HPFP fueling | No | No | Target dependent | Required near higher power | Calibration, failsafe, install |
+
+### Parts-purchase gate
+Before ordering any performance part, enter into the project database: exact part number + year fitment; problem/objective; required tune/supporting hardware; installation instructions + torque source; emissions/warranty implications; expected measurable result; competing options; total installed cost; return/service policy; validation test. A part without a validation plan is not approved.
+
+### Final recommended roadmap
+1. Complete R0 baseline + recalls. 2. Identify current intake, mount, intercooler, exhaust, ECU tune. 3. Service fluids/plugs + repair any EVAP/charge fault. 4. Install tires/brake service/alignment as needed. 5. Install a proven intercooler. 6. Obtain a conservative custom 91 tune + validate logs. 7. Complete RR2/head-unit, wireless charger, sound treatment, spare-well audio. 8. Evaluate E30 only after the pump tune + blending process are proven. 9. Decide whether stock-turbo response is sufficient before buying a downpipe or big turbo. 10. If higher power is desired, set a wheel-horsepower/response budget and design fueling, clutch, cooling, traction together.
 
 ### Related
-[[powertrain]] · [[06 Powertrain]] · [[10 Forum Consensus]] · [[12 Sources]] · [[_KB-Home|KB Home]]
+[[powertrain]] · [[06 Powertrain]] · [[10 Forum Consensus]] · [[12 Sources]] · [[11 Build Roadmap]] · [[_KB-Home|KB Home]]
 
 ---
 
