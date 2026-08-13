@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FOST Garage — 2017 Focus ST</title>
+<meta name="theme-color" content="#0a0a0b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230a0a0b'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='bold' fill='%23e8000d' text-anchor='middle'%3EST%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a0b; --bg2:#101014; --panel:#141419; --panel2:#1a1a21;
+  --line:#26262f; --line2:#33333f;
+  --ink:#e8e8ee; --ink2:#9a9aa8; --ink3:#6a6a78;
+  --red:#e8000d; --red2:#ff2b38; --amber:#ffb020; --green:#35c46a; --blue:#3aa0ff;
+  --disp:'Chakra Petch',ui-sans-serif,system-ui,'Arial Narrow',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono','Cascadia Code',Menlo,Consolas,monospace;
+  --body:'IBM Plex Sans',ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --nav:76px; --side:230px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+   radial-gradient(900px 500px at 78% -10%,rgba(232,0,13,.14),transparent 60%),
+   radial-gradient(700px 500px at -5% 110%,rgba(58,160,255,.06),transparent 60%),
+   linear-gradient(0deg,var(--bg),var(--bg));}
+body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.4;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:44px 44px;mask-image:radial-gradient(circle at 70% 0%,#000,transparent 75%);}
+a{color:inherit;text-decoration:none}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:600;letter-spacing:.01em;margin:0}
+.mono{font-family:var(--mono)}
+.tag{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink3)}
+
+/* layout */
+.wrap{position:relative;z-index:1;display:flex;min-height:100vh}
+aside{position:fixed;left:0;top:0;bottom:0;width:var(--side);border-right:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(20,20,25,.9),rgba(10,10,11,.9));backdrop-filter:blur(8px);
+  padding:22px 16px;display:flex;flex-direction:column;gap:6px;z-index:20}
+.brand{display:flex;align-items:center;gap:11px;padding:4px 6px 20px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.badge{width:38px;height:38px;border-radius:9px;background:#000;border:1px solid var(--line2);
+  display:grid;place-items:center;font-family:var(--disp);font-weight:700;color:var(--red);font-size:16px;
+  box-shadow:0 0 0 1px rgba(232,0,13,.25),0 6px 18px rgba(232,0,13,.18)}
+.brand b{font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.04em;display:block;line-height:1}
+.brand span{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--ink3);text-transform:uppercase}
+nav a{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;color:var(--ink2);
+  font-size:14px;font-weight:500;border:1px solid transparent;transition:.16s;cursor:pointer}
+nav a .ic{width:18px;text-align:center;font-size:14px;opacity:.85}
+nav a:hover{background:var(--panel);color:var(--ink);border-color:var(--line)}
+nav a.on{background:linear-gradient(90deg,rgba(232,0,13,.16),rgba(232,0,13,.03));color:#fff;border-color:rgba(232,0,13,.35)}
+nav a.on .ic{color:var(--red)}
+.side-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10.5px;color:var(--ink3);line-height:1.7}
+.side-foot a{color:var(--ink2);border-bottom:1px dotted var(--line2)}
+
+main{margin-left:var(--side);flex:1;min-width:0;padding:34px clamp(18px,4vw,54px) 90px}
+section.view{display:none;animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+section.view.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.stagger>*{animation:rise .5s cubic-bezier(.2,.7,.2,1) both}
+.stagger>*:nth-child(1){animation-delay:.02s}.stagger>*:nth-child(2){animation-delay:.06s}
+.stagger>*:nth-child(3){animation-delay:.10s}.stagger>*:nth-child(4){animation-delay:.14s}
+.stagger>*:nth-child(5){animation-delay:.18s}.stagger>*:nth-child(6){animation-delay:.22s}
+.stagger>*:nth-child(7){animation-delay:.26s}.stagger>*:nth-child(8){animation-delay:.30s}
+
+/* header block */
+.head{margin-bottom:26px}
+.head .tag{display:block;margin-bottom:8px}
+.head h1{font-size:clamp(26px,4vw,40px);line-height:1.02;letter-spacing:.01em}
+.head p{color:var(--ink2);max-width:70ch;margin:10px 0 0}
+
+/* hero */
+.hero{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+  background:linear-gradient(120deg,var(--panel),var(--bg2) 70%);padding:28px;margin-bottom:22px}
+.hero::before{content:"";position:absolute;right:-60px;top:-60px;width:340px;height:340px;
+  background:radial-gradient(circle,rgba(232,0,13,.22),transparent 60%);pointer-events:none}
+.brk{position:absolute;width:16px;height:16px;border:2px solid var(--red);opacity:.7}
+.brk.tl{top:12px;left:12px;border-right:0;border-bottom:0}.brk.tr{top:12px;right:12px;border-left:0;border-bottom:0}
+.brk.bl{bottom:12px;left:12px;border-right:0;border-top:0}.brk.br{bottom:12px;right:12px;border-left:0;border-top:0}
+.hero h2{font-size:clamp(24px,3.5vw,34px);letter-spacing:.02em}
+.hero .vin{font-family:var(--mono);color:var(--red2);font-size:13px;letter-spacing:.22em;margin-top:6px}
+.hero .sub{color:var(--ink2);font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;margin-top:4px}
+
+/* grids & cards */
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;transition:.18s}
+.card:hover{border-color:var(--line2);transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.tile .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink3)}
+.tile .v{font-family:var(--disp);font-weight:700;font-size:26px;line-height:1.1;margin-top:8px}
+.tile .n{color:var(--ink2);font-size:12.5px;margin-top:3px}
+.tile .v .u{font-size:13px;color:var(--ink3);font-family:var(--mono);font-weight:500}
+
+/* section titles */
+.sect{display:flex;align-items:baseline;gap:12px;margin:30px 0 14px}
+.sect .num{font-family:var(--mono);color:var(--red);font-size:12px;letter-spacing:.1em}
+.sect h3{font-size:19px;letter-spacing:.03em}
+.sect .ln{flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+
+/* status */
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+.s-good{background:var(--green);box-shadow:0 0 8px rgba(53,196,106,.6)}
+.s-warn{background:var(--amber);box-shadow:0 0 8px rgba(255,176,32,.6)}
+.s-crit{background:var(--red2);box-shadow:0 0 10px rgba(255,43,56,.7);animation:pulse 1.6s infinite}
+.s-off{background:var(--ink3)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.pill{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;
+  padding:4px 10px;border-radius:999px;border:1px solid var(--line2);background:var(--panel2);color:var(--ink2);white-space:nowrap}
+
+/* systems grid */
+.sys{display:flex;align-items:center;gap:12px;padding:13px 15px;background:var(--panel);border:1px solid var(--line);border-radius:11px}
+.sys .nm{font-family:var(--disp);font-weight:600;font-size:14px;letter-spacing:.02em}
+.sys .ds{font-size:12px;color:var(--ink2);margin-top:1px}
+.sys .r{margin-left:auto;text-align:right}
+
+/* project cards */
+.proj{position:relative;overflow:hidden}
+.proj .letter{position:absolute;right:14px;top:8px;font-family:var(--disp);font-weight:700;font-size:52px;color:#fff;opacity:.05}
+.proj h4{font-size:16.5px;letter-spacing:.02em;display:flex;align-items:center;gap:9px}
+.proj .meta{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.proj .desc{color:var(--ink2);font-size:13.5px}
+.proj .cost{font-family:var(--mono);color:var(--green);font-size:13px}
+.bar{height:6px;border-radius:4px;background:var(--panel2);overflow:hidden;margin-top:14px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--red2))}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink3);
+  text-align:left;padding:10px 12px;border-bottom:1px solid var(--line2)}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:rgba(255,255,255,.015)}
+.tbl-wrap{border:1px solid var(--line);border-radius:13px;overflow:hidden;overflow-x:auto}
+td .mono,.mono-td{font-family:var(--mono)}
+.kv{display:grid;grid-template-columns:180px 1fr;gap:0}
+.kv>div{padding:11px 14px;border-bottom:1px solid var(--line)}
+.kv .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);background:var(--bg2)}
+.kv .v{color:var(--ink)}
+
+/* chart */
+.chart{display:flex;flex-direction:column;gap:11px}
+.crow{display:grid;grid-template-columns:150px 1fr 90px;align-items:center;gap:12px}
+.crow .cl{font-family:var(--mono);font-size:12px;color:var(--ink2)}
+.ctrack{height:22px;border-radius:6px;background:var(--panel2);overflow:hidden;position:relative}
+.ctrack>i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,rgba(232,0,13,.85),var(--red2))}
+.crow .cv{font-family:var(--mono);font-size:12px;color:var(--ink);text-align:right}
+
+/* KB */
+.acc{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px;background:var(--panel)}
+.acc>summary{list-style:none;cursor:pointer;padding:15px 18px;display:flex;align-items:center;gap:12px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary .n{font-family:var(--mono);color:var(--red);font-size:12px;width:26px}
+.acc>summary h4{font-size:15px}
+.acc>summary .chev{margin-left:auto;color:var(--ink3);transition:.2s}
+.acc[open]>summary .chev{transform:rotate(90deg)}
+.acc .body{padding:0 18px 18px 56px;color:var(--ink2);font-size:13.5px}
+.acc .body a{color:var(--blue);border-bottom:1px solid rgba(58,160,255,.3)}
+.search{width:100%;background:var(--panel);border:1px solid var(--line2);border-radius:11px;color:var(--ink);
+  font-family:var(--mono);font-size:13px;padding:12px 15px;margin-bottom:16px}
+.search::placeholder{color:var(--ink3)}
+.search:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(232,0,13,.15)}
+
+.note{border-left:2px solid var(--red);background:rgba(232,0,13,.06);padding:12px 15px;border-radius:0 10px 10px 0;
+  font-size:13.5px;color:var(--ink2);margin:14px 0}
+.note b{color:var(--ink)}
+.linkrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.lnk{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;border:1px solid var(--line2);border-radius:10px;
+  font-family:var(--mono);font-size:12px;color:var(--ink2);transition:.16s}
+.lnk:hover{border-color:var(--red);color:#fff}
+
+/* mobile */
+.mtop{display:none}
+@media(max-width:860px){
+  :root{--side:0px}
+  aside{transform:translateX(-100%);transition:.25s;width:250px;--side:250px}
+  aside.open{transform:none}
+  main{margin-left:0;padding:16px 16px 96px}
+  .mtop{display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:15;margin:-16px -16px 14px;
+    padding:12px 16px;background:rgba(10,10,11,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .burger{width:40px;height:40px;border:1px solid var(--line2);border-radius:9px;background:var(--panel);color:var(--ink);font-size:18px}
+  .g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}
+  .kv{grid-template-columns:120px 1fr}
+  .crow{grid-template-columns:96px 1fr 68px}
+  .scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:19;display:none}
+  .scrim.on{display:block}
+}
+@media(max-width:520px){.g4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="scrim" id="scrim"></div>
+  <aside id="side">
+    <div class="brand">
+      <div class="badge">ST</div>
+      <div><b>FOST GARAGE</b><span>Focus ST · Digital Twin</span></div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="side-foot">
+      REPO · <a href="https://github.com/2smok3d/focus-st" target="_blank">github</a><br>
+      APP · <a href="https://2smok3d.github.io/focus-st/add.html" target="_blank">parts tracker</a><br>
+      VAULT · Obsidian / FOST<br>
+      <span style="color:var(--ink3)">rev 2026.08 · v1</span>
+    </div>
+  </aside>
+
+  <main>
+    <div class="mtop">
+      <button class="burger" id="burger">≡</button>
+      <div style="font-family:var(--disp);font-weight:700;letter-spacing:.04em">FOST GARAGE</div>
+      <div class="tag" style="margin-left:auto" id="mtitle">OVERVIEW</div>
+    </div>
+    <div id="app"></div>
+  </main>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const DATA = {
+  car:{ name:"2017 Ford Focus ST", trim:"ST1 · MK3.5", vin:"1FADP3L94HL223134",
+    sub:"2.0L EcoBoost · Getrag MMT6 6-spd · Phoenix, AZ", loc:"Phoenix, AZ" },
+  stats:[
+    {k:"Power",v:"252",u:"hp",n:"270 lb-ft · stock"},
+    {k:"Odometer",v:"86,390",u:"mi",n:"at purchase"},
+    {k:"Open projects",v:"30",u:"",n:"7 bundles"},
+    {k:"Logged spend",v:"$11",u:"+",n:"3 receipts · radiator pending"},
+  ],
+  nextActions:[
+    {t:"VIN recall check (Ford + NHTSA)", n:"Free · likely explains the EVAP line — purge-valve recall 18S32 / 26S40", s:"crit"},
+    {t:"🅲 Cooling & Oil service", n:"Radiator has a through-hole — priority 1", s:"crit"},
+    {t:"🅳 FORScan session", n:"MyKey reset + program 2nd key + starter-pack tweaks", s:"warn"},
+    {t:"🅱 Lighting → 🅐 Cockpit(RR2) → 🅖 Powertrain → 🅔 Handling", n:"Staged after the above", s:"off"},
+  ],
+  systems:[
+    {nm:"Engine",ds:"2.0 EcoBoost · possible oil leak",s:"warn"},
+    {nm:"Forced induction",ds:"Depo 'Beast' FMIC · pressure-tested OK",s:"good"},
+    {nm:"Cooling",ds:"Radiator HOLE · AGS deleted · AZ heat",s:"crit"},
+    {nm:"Exhaust",ds:"Stock catted DP + resonated cat-back",s:"good"},
+    {nm:"Drivetrain",ds:"MMT6 · 240mm clutch · TS mounts",s:"good"},
+    {nm:"Suspension",ds:"Stock MacPherson / Control Blade",s:"good"},
+    {nm:"Brakes",ds:"320 front / 302 rear · single-piston",s:"good"},
+    {nm:"Wheels/Tires",ds:"18×8 ET55 · 235/40R18",s:"good"},
+    {nm:"Electrical",ds:"Upgraded battery · 0 admin keys",s:"warn"},
+    {nm:"Lighting",ds:"Halogen H11/H1 · LED plan",s:"good"},
+    {nm:"Interior",ds:"SYNC1 4\" · head-unit + RR2 plan",s:"good"},
+    {nm:"Modules",ds:"BCM/IPC/APIM/ACM/ABS · OBDLink MX+",s:"good"},
+  ],
+  issues:[
+    {t:"Radiator cracked → hole",s:"crit",n:"Front-left of aluminum core; decided fix: Mishimoto. Do first."},
+    {t:"Possible oil leak",s:"warn",n:"After aggressive driving. Suspects: valve cover, turbo lines, filter housing, oil pan RTV."},
+    {t:"Floating/uncapped vacuum line",s:"warn",n:"EVAP-related, no codes. Check vs purge-valve recall by VIN, then cap."},
+    {t:"0 admin keys / 3 MyKeys",s:"warn",n:"Ex-auction. Program 2nd key + MyKey reset via FORScan PATS."},
+  ],
+  mods:[
+    ["Injen cold air intake","Intake","installed"],["Ram-air / hood-scoop feed","Intake","installed"],
+    ["Depo 'Beast' FMIC","Forced induction","installed"],["Torque Solutions rear + pass mounts","Drivetrain","installed"],
+    ["Upgraded battery","Electrical","installed"],["Trunk storage box","Interior","installed"],
+    ["Active Grille Shutters","Cooling","REMOVED"],["OBDLink MX+ · FORScan Ext.","Tools","owned"],
+  ],
+  bundles:[
+    {L:"C",name:"Cooling & Oil-Leak Service",pr:1,s:"planned",lo:350,hi:600,time:"4–6 h",
+     desc:"Radiator (Mishimoto) + coolant flush + valve-cover gasket + oil-leak diagnosis + oil change + cap vacuum line. One coolant drain.",
+     items:["Radiator (Mishimoto)","Coolant flush","Valve-cover gasket / oil leak","Oil change","Cap floating vacuum line"]},
+    {L:"D",name:"FORScan / Digital Session",pr:2,s:"planned",lo:0,hi:47,time:"2–3 h",
+     desc:"MyKey reset + program 2nd IA key (PATS) + starter-pack tweaks (Bambi mode, global windows, shift-light, TPMS→DDS, SYNC splash).",
+     items:["Extended license","Module .abt backups","Starter-pack tweaks","2nd key (PATS)","MyKey reset"]},
+    {L:"B",name:"Exterior Lighting",pr:3,s:"researched",lo:120,hi:260,time:"2–4 h",
+     desc:"ST1-specific LED conversion: rear 3157, front 7440, fogs, reverse/trunk. Headlights stay halogen (reflector housings). Pair with FORScan.",
+     items:["Rear 3157 LED","Front 7440 LED","Fog LED (verify size)","Reverse/trunk LED","Osram halogen headlights"]},
+    {L:"A",name:"Cockpit Electronics + Maestro RR2",pr:4,s:"researching",lo:150,hi:800,time:"6–10 h",
+     desc:"Aftermarket head unit + iDatalink Maestro RR2 (wireless Android Auto, retained controls/chimes/OBD gauges) + Qi charger + interior LEDs + blue ambient + shift knob.",
+     items:["Head unit + RR2","Focus T-harness/kit","Qi wireless charger","Interior + ambient LEDs","Shift knob"]},
+    {L:"F",name:"Key Fob & Security",pr:5,s:"researching",lo:30,hi:70,time:"1–2 h",
+     desc:"Spare IA key + PATS program + MyKey reset; optional fob PCB transplant into a slim shell (fit unconfirmed).",
+     items:["M3N5WY8609 fob","PATS Add Key","MyKey reset","PCB → slim shell (opt)"]},
+    {L:"G",name:"Powertrain / Performance",pr:7,s:"researching",lo:650,hi:3000,time:"phased",
+     desc:"Tune-gated: Cobb AccessPort → charge pipes/BOV → downpipe → catback → clutch. Resolve oil leak + recalls first.",
+     items:["Cobb AccessPort","Charge pipes / BOV","Downpipe (legal-gated)","Catback","Clutch (when it slips)"]},
+    {L:"E",name:"Handling & Brakes",pr:6,s:"researching",lo:900,hi:4000,time:"8–14 h",
+     desc:"Sequence: wheels → RS→ST Brembo (M-2300-W) → sway bars + endlinks → springs/coilovers → alignment last.",
+     items:["Wheels / tires","RS→ST Brembo swap","Sway bars + endlinks","Springs / coilovers","Quaife ATB diff"]},
+  ],
+  maintenance:[
+    ["Oil + filter (5.7 qt 5W-30)","5,000–7,500 mi","3–4k if tuned / AZ heat"],
+    ["Air filter","15,000–30,000 mi",""],
+    ["Cabin filter","Annually","AZ dust → 6–12 mo"],
+    ["MMT6 fluid (WSS-M2C200-D2 / XT-11-QDC · 1.8 qt)","30,000–50,000 mi","baseline now if undocumented"],
+    ["Brake fluid (DOT 4 LV)","2 yr","annually if tracked"],
+    ["Coolant (VC-3-B orange · 5.3 qt)","100k / 6yr then 50k / 3yr","service now if unknown"],
+    ["Spark plugs (SP-537 · gap 0.027–0.031\")","~60,000 mi","sooner if tuned (~0.025–0.026\")"],
+    ["Serpentine belt","inspect 60k / replace 100k",""],
+  ],
+  receipts:[
+    ["2026-07-16","AKM Software","FORScan Lite Android License","D","$11.00"],
+    ["2026-08-08","eBay · racing_champion","Silicone Radiator Hose Kit (Blue) FoST","C","TBD"],
+    ["2026-08-04","Mishimoto","Snap-back Hat (free promo)","—","$0.00"],
+  ],
+  kb:[
+    ["00","Vault Overview","Mission, authority grades (A–X), 10 operating rules.","1YHRrnIKs38urxkOrf0uVs2F5LXQTaYI6OJH1kPnOYHc","document"],
+    ["00","Command Center","Red/amber/green status, first-session checklist, tune decision gate, fast triage.","1huJidL-UIzL_PSUyC630Mxdsgl0FpL1QuKUFRc4N_Ew","document"],
+    ["01","Vehicle Record & Baseline","Identity + the full 12-step baseline inspection procedure + approval criteria.","10awNBARgLI7gXAnDpx5c5tDYI73FJVzy9eszLQ06kz4","document"],
+    ["02","Maintenance Master","Ford + FFST schedules, immediate reset, fluids, intervals, post-mod rules.","101vmqJBHxNubTItKtKKMdRedJH6z2rEv6DaTXOjFI0Q","document"],
+    ["03","OEM Specifications","Verified NA specs: engine, capacities, gear ratios, chassis, wheels.","1q0wj7-nw1z1KK84CIv0Nz10VqQg33KnzfDeMr9vimB4","document"],
+    ["03","Spec Correction","MMT6 4th gear = 1.03 (superseded 1.321).","1IX_SB4AVV53HsII3XJutlVssX3Yye3ZiNZTE3TiS214","document"],
+    ["04","Recalls & TSBs","VIN campaigns — purge valve 18S32 / 26S40, seatback, hatch latch.","1ST38ruAag05CQjkV-UjVsY9rI00baosGt25MbHaM9_0","document"],
+    ["05","Diagnostics & DTC","Symptom-first trees + code library (misfire, EVAP, boost, fuel, cat, U-codes).","1wzPz1STptHvcklTQq1SKwp8MVegl0NOnv_348NzYO9A","document"],
+    ["06","Powertrain Manual","Engine/turbo/fuel/EVAP/cooling/MMT6/clutch + dependency table.","1_9b-292YFsUR6J2Oi32-kgsxP4KZqGHlvERMlB38SBI","document"],
+    ["07","Chassis Manual","Suspension, brakes, wheel fitment, alignment targets.","1JC2wLA4wX-8M0iVYaPP0YuNkO4VG_BIIeibqI-MImKw","document"],
+    ["08","Electronics & Interior","FORScan, RR2 integration, audio, wiring, ergonomics.","1yD_tvzCRSEhMDMYUTIB9jesPTTHVZ5c6v3wePrqOr50","document"],
+    ["09","Mods & Tuning","Stages R0–BT2, calibration paths, datalogging, compatibility matrix.","1TLBMIhU1LI8r6QUabcQg7v3GyJFe9IkRAxWrYhik5N0","document"],
+    ["10","Forum Consensus","Graded owner findings (C1/C2) + myths (X).","1Y_nUsxnhkBx-EDaMUIyuq9Cqt3Vam4ylbVCq3La4lJo","document"],
+    ["11","Build Roadmap","Phased plan P0–P6.","1Wb5i-sSK0vyvD_wqhcb9TkvMZL6oEJ8EyS9NtC5FyeE","document"],
+    ["11","Project Database","Task/service/mod/cost/risk records.","1BtUsEbBBVEgUd3inNjzy0rFFrfN56IX0jO6Ia8_F5bs","spreadsheets"],
+    ["12","Sources & Changelog","Bibliography, evidence grades, changelog.","1ZexXVRjY8EnHkaJAU7X4Bi03t1CXx1_YHtwjYq_QuQM","document"],
+  ],
+  modules:[
+    ["BCM","726","Lighting (Bambi/DRL/cornering), windows, locks, double-honk, MyKey reset"],
+    ["IPC","720","Shift-light disable, TPMS→DDS, gauges"],
+    ["APIM","7D0","SYNC 3 splash, climate, audio, nav"],
+    ["ACM","727","Audio config"],
+    ["ABS","760","Traction options, DDS relearn"],
+    ["PATS","—","Add Key (2nd key w/ 1 existing), no dealer"],
+  ],
+  vehicleSpec:[
+    ["Trim","ST1 · MK3.5 facelift · Central Config platform"],
+    ["Engine","2.0L EcoBoost I4 turbo (GTDI) · 87.5×83.1mm · 9.3:1 · firing 1-3-4-2"],
+    ["Output","252 hp @ 5,500 · 270 lb-ft @ 2,500"],
+    ["Transmission","Getrag-Ford MMT6 6-speed · 240mm clutch + DMF"],
+    ["Gear ratios","3.23 / 1.95 / 1.32 / 1.03 / 1.13 / 0.94 · R 4.60"],
+    ["Oil","5W-30 · 5.7 qt · WSS-M2C946-A · filter FL-910S"],
+    ["Coolant","Motorcraft VC-3-B orange · 5.3 qt · 78°C stat"],
+    ["Trans fluid","WSS-M2C200-D2 / Motorcraft XT-11-QDC · 1.8 qt"],
+    ["Wheels","18×8 · 5×108 · ET55 · 235/40R18 · lug 100 lb-ft"],
+    ["Brakes","320×25 vented front / 302×10 solid rear"],
+    ["Battery","Group 96R · 590 CCA (upgraded)"],
+    ["Purchased","~Jun 2026 · $14,500 · 86,390 mi · ex-auction"],
+    ["Owner","Brandon Berault · Phoenix, AZ 85032"],
+  ],
+  bulbs:[
+    ["Headlight low","H11 halogen","reflector — do NOT LED (glare/inspection)"],
+    ["Headlight high","H1 halogen","verify high beam"],
+    ["Fog","H8 / H11 — verify at car","sources conflict; PARTS.md said H16"],
+    ["Front turn/park","7440 (amber)","ST1-specific, not 3157"],
+    ["Rear tail/turn/brake","3157 (check CK)","CANbus / anti-hyperflash"],
+    ["Interior / reverse","194 / T10","not flasher-monitored"],
+    ["Trunk/cargo","2825",""],
+  ],
+};
+
+/* ---------------- RENDER ---------------- */
+const NAV=[
+  ["overview","◆","Overview"],["vehicle","▣","Vehicle"],["projects","⬢","Projects"],
+  ["maintenance","⚙","Maintenance"],["knowledge","❏","Knowledge Base"],["costs","▤","Costs"],["reference","⌘","Reference"],
+];
+const S={good:"s-good",warn:"s-warn",crit:"s-crit",off:"s-off"};
+const money=n=>typeof n==="number"?"$"+n.toLocaleString():n;
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function statTiles(){return `<div class="grid g4 stagger">`+DATA.stats.map(s=>`
+  <div class="card tile"><div class="k">${s.k}</div>
+  <div class="v">${s.v}<span class="u"> ${s.u}</span></div><div class="n">${s.n}</div></div>`).join("")+`</div>`;}
+
+function views(){
+ const V={};
+ /* OVERVIEW */
+ V.overview=`
+  <div class="hero"><span class="brk tl"></span><span class="brk tr"></span><span class="brk bl"></span><span class="brk br"></span>
+    <div class="tag">Digital Twin · Live Dossier</div>
+    <h2>${DATA.car.name}</h2>
+    <div class="vin">VIN ${DATA.car.vin}</div>
+    <div class="sub">${DATA.car.sub}</div>
+  </div>
+  ${statTiles()}
+  <div class="sect"><span class="num">01</span><h3>NEXT ACTIONS</h3><span class="ln"></span></div>
+  <div class="grid g2 stagger">${DATA.nextActions.map(a=>`
+    <div class="card sys"><span class="dot ${S[a.s]}"></span><div><div class="nm">${a.t}</div><div class="ds">${a.n}</div></div></div>`).join("")}</div>
+  <div class="sect"><span class="num">02</span><h3>SYSTEMS STATUS</h3><span class="ln"></span></div>
+  <div class="grid g3 stagger">${DATA.systems.map(s=>`
+    <div class="sys"><span class="dot ${S[s.s]}"></span><div><div class="nm">${s.nm}</div><div class="ds">${s.ds}</div></div></div>`).join("")}</div>
+  <div class="sect"><span class="num">03</span><h3>OPEN ISSUES</h3><span class="ln"></span></div>
+  <div class="grid g2 stagger">${DATA.issues.map(i=>`
+    <div class="card"><h4 style="display:flex;gap:9px;align-items:center;font-size:15px"><span class="dot ${S[i.s]}"></span>${i.t}</h4>
+    <p style="color:var(--ink2);font-size:13.5px;margin:8px 0 0">${i.n}</p></div>`).join("")}</div>`;
+
+ /* VEHICLE */
+ V.vehicle=`
+  <div class="head"><span class="tag">Section · Vehicle</span><h1>Master Spec</h1>
+    <p>Single source of truth. Fact-checked against Ford/NHTSA sources — corrections applied (18×8 ET55, 252 hp, Getrag MMT6).</p></div>
+  <div class="sect"><span class="num">A</span><h3>IDENTITY & DRIVETRAIN</h3><span class="ln"></span></div>
+  <div class="card" style="padding:0"><div class="kv">${DATA.vehicleSpec.map(r=>`<div class="k">${r[0]}</div><div class="v">${r[1]}</div>`).join("")}</div></div>
+  <div class="sect"><span class="num">B</span><h3>BULB CHART (ST1)</h3><span class="ln"></span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Position</th><th>Bulb</th><th>Note</th></tr></thead><tbody>
+    ${DATA.bulbs.map(b=>`<tr><td>${b[0]}</td><td class="mono-td" style="color:var(--red2)">${esc(b[1])}</td><td style="color:var(--ink2)">${esc(b[2])}</td></tr>`).join("")}</tbody></table></div>
+  <div class="sect"><span class="num">C</span><h3>INSTALLED MODS</h3><span class="ln"></span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Mod</th><th>System</th><th>Status</th></tr></thead><tbody>
+    ${DATA.mods.map(m=>`<tr><td>${m[0]}</td><td style="color:var(--ink2)">${m[1]}</td><td><span class="pill">${m[2]==="REMOVED"?'<span class="dot s-off"></span>':'<span class="dot s-good"></span>'}${m[2]}</span></td></tr>`).join("")}</tbody></table></div>`;
+
+ /* PROJECTS */
+ const bd=[...DATA.bundles].sort((a,b)=>a.pr-b.pr);
+ V.projects=`
+  <div class="head"><span class="tag">Section · Build</span><h1>Projects & Bundles</h1>
+    <p>30 projects grouped into 7 streamlined bundles by shared teardown/session. Priority order shown. Full step-by-step builds with wiring diagrams live in the repo <span class="mono" style="color:var(--ink3)">docs/projects/</span>.</p></div>
+  <div class="grid g2 stagger">${bd.map(b=>{
+    return `<div class="card proj"><div class="letter">${b.L}</div>
+      <h4><span class="pill" style="border-color:rgba(232,0,13,.4);color:#fff">BUNDLE ${b.L}</span></h4>
+      <div style="font-family:var(--disp);font-weight:600;font-size:17px;margin-top:6px">${b.name}</div>
+      <div class="meta"><span class="pill"><span class="dot ${b.pr<=2?'s-crit':b.pr<=4?'s-warn':'s-off'}"></span>Priority ${b.pr}</span>
+        <span class="pill">${b.s}</span><span class="pill">⏱ ${b.time}</span></div>
+      <div class="desc">${b.desc}</div>
+      <div style="margin:12px 0 4px;display:flex;flex-wrap:wrap;gap:6px">${b.items.map(i=>`<span class="pill" style="font-size:10.5px">${esc(i)}</span>`).join("")}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+        <span class="cost">${money(b.lo)} → ${money(b.hi)}</span>
+        <span class="tag">bundle ${b.L}</span></div>
+    </div>`;}).join("")}</div>`;
+
+ /* MAINTENANCE */
+ V.maintenance=`
+  <div class="head"><span class="tag">Section · Service</span><h1>Maintenance</h1>
+    <p>AZ heat + turbo + unknown history → run the shorter end of every interval until the baseline is established.</p></div>
+  <div class="sect"><span class="num">A</span><h3>SERVICE INTERVALS</h3><span class="ln"></span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Interval</th><th>Note</th></tr></thead><tbody>
+    ${DATA.maintenance.map(m=>`<tr><td>${esc(m[0])}</td><td class="mono-td" style="color:var(--ink)">${esc(m[1])}</td><td style="color:var(--ink2)">${esc(m[2])}</td></tr>`).join("")}</tbody></table></div>
+  <div class="note"><b>Immediate reset (unless a dated receipt proves it):</b> oil+filter · full module scan + battery test · brake/clutch fluid · coolant · spark plugs · tires/brakes · MMT6 fluid · air+cabin filters · EVAP/purge + VIN campaign · charge-air leak · alignment.</div>`;
+
+ /* KNOWLEDGE */
+ V.knowledge=`
+  <div class="head"><span class="tag">Section · Reference</span><h1>Knowledge Base</h1>
+    <p>The 16-section FFST mechanic vault. Full text lives in the repo <span class="mono" style="color:var(--ink3)">docs/knowledge-base/</span> &amp; the Obsidian vault; readable Google-Doc mirrors linked below.</p></div>
+  <input class="search" id="kbsearch" placeholder="filter sections… (recall, tune, plug, brake, purge)">
+  <div id="kblist">${DATA.kb.map(k=>`
+    <details class="acc" data-t="${(k[1]+' '+k[2]).toLowerCase()}"><summary><span class="n">${k[0]}</span>
+      <h4>${k[1]}</h4><span class="chev">▸</span></summary>
+      <div class="body">${k[2]}<div class="linkrow"><a class="lnk" target="_blank" href="https://docs.google.com/${k[4]}/d/${k[3]}">↗ open full ${k[4]==='spreadsheets'?'sheet':'doc'}</a></div></div>
+    </details>`).join("")}</div>`;
+
+ /* COSTS */
+ const maxHi=Math.max(...DATA.bundles.map(b=>b.hi));
+ V.costs=`
+  <div class="head"><span class="tag">Section · Ledger</span><h1>Costs & Receipts</h1>
+    <p>Budget envelope per bundle (hardware only) and live receipts from Gmail. Full tracking in the FOST Master Tracker + Receipts Log.</p></div>
+  <div class="sect"><span class="num">A</span><h3>BUDGET BY BUNDLE</h3><span class="ln"></span></div>
+  <div class="card"><div class="chart">${[...DATA.bundles].sort((a,b)=>b.hi-a.hi).map(b=>`
+    <div class="crow"><div class="cl">${b.L} · ${b.name.split(" ")[0]}</div>
+    <div class="ctrack"><i style="width:${Math.max(6,Math.round(b.hi/maxHi*100))}%"></i></div>
+    <div class="cv">${money(b.lo)}–${money(b.hi)}</div></div>`).join("")}</div></div>
+  <div class="sect"><span class="num">B</span><h3>LOGGED RECEIPTS</h3><span class="ln"></span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th>Item</th><th>Bundle</th><th>Total</th></tr></thead><tbody>
+    ${DATA.receipts.map(r=>`<tr><td class="mono-td" style="color:var(--ink2)">${r[0]}</td><td>${esc(r[1])}</td><td style="color:var(--ink2)">${esc(r[2])}</td><td><span class="pill">${r[3]}</span></td><td class="mono-td" style="color:var(--green)">${r[4]}</td></tr>`).join("")}</tbody></table></div>
+  <div class="note">Receipts auto-log to the FOST Receipts Log via a Gmail Apps Script (hourly scan). IFTTT can't watch Gmail, so the native script is the pipeline.</div>`;
+
+ /* REFERENCE */
+ V.reference=`
+  <div class="head"><span class="tag">Section · Tools</span><h1>Reference</h1>
+    <p>FORScan module map + the system's homes. OBDLink MX+ owned · FORScan Extended active.</p></div>
+  <div class="sect"><span class="num">A</span><h3>FORScan MODULES</h3><span class="ln"></span></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Module</th><th>Addr</th><th>Common edits</th></tr></thead><tbody>
+    ${DATA.modules.map(m=>`<tr><td style="font-family:var(--disp);font-weight:600">${m[0]}</td><td class="mono-td" style="color:var(--red2)">${m[1]}</td><td style="color:var(--ink2)">${esc(m[2])}</td></tr>`).join("")}</tbody></table></div>
+  <div class="note"><b>CC platform:</b> use FORScan Module-Config dropdowns, NOT raw Super-Duty As-Built hex. Back up every module (.abt) first; one change at a time; battery &gt; 11.6 V.</div>
+  <div class="sect"><span class="num">B</span><h3>SYSTEM HOMES</h3><span class="ln"></span></div>
+  <div class="linkrow">
+    <a class="lnk" target="_blank" href="https://github.com/2smok3d/focus-st">↗ GitHub repo (vault + app)</a>
+    <a class="lnk" target="_blank" href="https://2smok3d.github.io/focus-st/add.html">↗ Parts-tracker PWA</a>
+    <a class="lnk" target="_blank" href="https://drive.google.com/drive/folders/1dvFqDQr_ZuhvASjCp6e2EdX9AyC0AxOE">↗ FFST Knowledge Base (Drive)</a>
+    <a class="lnk" target="_blank" href="https://docs.google.com/spreadsheets/d/1Y5lDZIvOPDb0Lnn6e575NiTVaS0s_MPTd4s1nyWj_Bw">↗ Receipts Log</a>
+  </div>`;
+ return V;
+}
+
+const app=document.getElementById("app"), navEl=document.getElementById("nav");
+const V=views();
+navEl.innerHTML=NAV.map((n,i)=>`<a data-v="${n[0]}" class="${i===0?'on':''}"><span class="ic">${n[1]}</span>${n[2]}</a>`).join("");
+app.innerHTML=NAV.map((n,i)=>`<section class="view ${i===0?'on':''}" id="v-${n[0]}">${V[n[0]]}</section>`).join("");
+
+function go(v){
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.dataset.v===v));
+  document.getElementById("mtitle").textContent=(NAV.find(n=>n[0]===v)[2]||"").toUpperCase();
+  window.scrollTo({top:0,behavior:"instant"});
+  closeSide();
+}
+navEl.addEventListener("click",e=>{const a=e.target.closest("a");if(a)go(a.dataset.v);});
+
+/* KB search */
+app.addEventListener("input",e=>{
+  if(e.target.id!=="kbsearch")return;const q=e.target.value.toLowerCase();
+  document.querySelectorAll("#kblist .acc").forEach(d=>{d.style.display=d.dataset.t.includes(q)?"":"none";});
+});
+
+/* mobile */
+const side=document.getElementById("side"),scrim=document.getElementById("scrim");
+function closeSide(){side.classList.remove("open");scrim.classList.remove("on");}
+document.getElementById("burger").onclick=()=>{side.classList.toggle("open");scrim.classList.toggle("on");};
+scrim.onclick=closeSide;
+</script>
+</body>
+</html>
