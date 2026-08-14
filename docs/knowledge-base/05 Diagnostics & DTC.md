@@ -36,7 +36,14 @@ tags: [focus-st, kb, diagnostics, dtc]
 | P013x/P014x | O2 sensor/heater | Wiring, exhaust leaks, power/ground/heater test, contamination, tune/downpipe |
 | P2196 | Front O2 biased/stuck rich | Purge stuck open, injector leakage, fuel pressure, O2 circuit, tune |
 | P0106/P0068/P061A | Airflow/load/torque | MAP/TMAP/throttle data, vacuum/charge leaks, intake changes, calibration |
+| **P04DB** | PCV / crankcase ventilation | Crankcase-vent plumbing integrity/routing/leaks, PCV architecture vs calibration, smoke/pressure test, fuel trims |
 | U-codes | Network communication | Battery voltage, grounds, connectors, recent radio/FORScan work, module topology |
+
+## P04DB (crankcase ventilation) — treat as a case, not a parts order
+Inspect crankcase-vent plumbing, connection integrity, routing, restrictions, leaks and modifications. Confirm the current calibration expects the installed PCV architecture. Smoke/pressure-test appropriately. Record fuel trims, crankcase behavior, oil leakage/smoke and related codes. Correct physical faults before calibration work. A **permanent** DTC can remain after a successful repair until the monitor completes enough qualifying cycles.
+
+## Verification states (evidence maturity)
+Tag every claim/finding with its maturity: **UNVERIFIED** (legacy/community only) → **CORROBORATED** (multiple credible sources) → **OEM-VERIFIED** (exact applicable Ford/authoritative source located) → **VEHICLE-VERIFIED** (confirmed on THIS car during actual work). Lower states can raise hypotheses but never silently override a higher one.
 
 ## Misfire (P0300–P0304)
 Patterns: cold-start stumble only; idle misfire; misfire under boost; one-cylinder recurring; random after bad fuel/tune/charge-pipe work.
