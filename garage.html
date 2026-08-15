@@ -2568,6 +2568,18 @@ function liveDueBlock(){
    <div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Status</th><th>Remaining</th></tr></thead><tbody>${rows}</tbody></table></div>
    <div class="note">Live from <span class="mono">garage.json</span> · odometer ${od} · generated ${esc((LIVE.generated_at||"").slice(0,16).replace("T"," "))} UTC. Overdue/soon computed from recorded service history.</div>`;
 }
+function liveRecallBlock(){
+  if(!LIVE||!LIVE.recalls||!LIVE.recalls.length)return "";
+  const dot={completed:"s-good",open:"s-crit",unknown:"s-warn"};
+  const cards=LIVE.recalls.map(r=>`
+    <div class="card sys"><span class="dot ${dot[r.status]||'s-warn'}"></span>
+      <div><div class="nm">${esc(r.campaign_number)} · ${esc(r.component||"")}
+        <span class="pill" style="font-size:9.5px;margin-left:6px">${esc(r.status)}</span></div>
+      <div class="ds">${esc((r.summary||"").slice(0,150))}${r.note?` — <i>${esc(r.note)}</i>`:""}</div></div></div>`).join("");
+  return `<div class="sect"><span class="num">●</span><h3>RECALL CAMPAIGNS — VERIFY BY VIN</h3><span class="ln"></span></div>
+    <div class="grid g2 stagger">${cards}</div>
+    <div class="note">Baseline from the KB; refresh against NHTSA via <span class="mono">digital-garage</span>. Per-VIN completion isn't in the free API — confirm ⚪ unknown items at a Ford dealer or nhtsa.gov/recalls.</div>`;
+}
 function liveCostBlock(){
   if(!LIVE||!LIVE.costs)return "";
   const c=LIVE.costs;
@@ -2593,6 +2605,7 @@ function views(){
     <div class="sub">${DATA.car.sub}</div>
   </div>
   ${statTiles()}
+  ${liveRecallBlock()}
   <div class="sect"><span class="num">01</span><h3>NEXT ACTIONS</h3><span class="ln"></span></div>
   <div class="grid g2 stagger">${DATA.nextActions.map(a=>`
     <div class="card sys"><span class="dot ${S[a.s]}"></span><div><div class="nm">${a.t}</div><div class="ds">${a.n}</div></div></div>`).join("")}</div>

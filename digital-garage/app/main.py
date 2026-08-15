@@ -150,6 +150,40 @@ def export_snapshot(miles: int | None = Query(None, ge=0), s: Session = Depends(
     return build_snapshot(s, v.id, current_miles=miles)
 
 
+@app.get("/recalls")
+def recalls(s: Session = Depends(get_session)):
+    """Known + fetched recall campaigns for this vehicle."""
+    v = service.get_vehicle(s)
+    return service.list_recalls(s, v.id)
+
+
+@app.post("/recalls/refresh")
+def recalls_refresh(live: bool = True, s: Session = Depends(get_session)):
+    """Re-seed the known baseline and (by default) fetch from NHTSA. Live-fetch
+    failure is reported in the response but non-fatal."""
+    v = service.get_vehicle(s)
+    res = service.refresh_recalls(s, v, live=live)
+    _commit(s)
+    return res
+
+
+class RecallStatusIn(BaseModel):
+    status: str = Field(..., examples=["completed"])
+
+
+@app.post("/recalls/{campaign}/status")
+def recall_status(campaign: str, body: RecallStatusIn, s: Session = Depends(get_session)):
+    v = service.get_vehicle(s)
+    try:
+        res = service.set_recall_status(s, v.id, campaign, body.status)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+    _commit(s)
+    return res
+
+
 @app.get("/sources")
 def sources(s: Session = Depends(get_session)):
     rows = s.scalars(select(Source).order_by(Source.authority)).all()

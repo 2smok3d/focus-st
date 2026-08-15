@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T10:34:20.874277+00:00",
+  "generated_at": "2026-08-15T10:41:13.347601+00:00",
   "current_miles": 86390,
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -408,6 +408,56 @@
       "last_date": null,
       "detail": "No service on record for an item with a defined interval.",
       "verification": "CORROBORATED"
+    }
+  ],
+  "recalls": [
+    {
+      "campaign_number": "18S32",
+      "origin": "ford-known",
+      "component": "Fuel system \u2014 EVAP purge valve",
+      "summary": "EVAP purge valve can stick open, drawing excess vacuum on the tank (rough idle/stall after refueling, possible P1450). Ford customer program.",
+      "remedy": "Purge valve inspection/replacement + PCM calibration per program.",
+      "consequence": null,
+      "status": "unknown",
+      "report_date": null,
+      "verification": "VEHICLE_VERIFIED",
+      "note": "Verify completion against THIS VIN at nhtsa.gov/recalls or a Ford dealer."
+    },
+    {
+      "campaign_number": "26S40",
+      "origin": "ford-known",
+      "component": "Fuel system \u2014 EVAP purge (follow-up)",
+      "summary": "Related EVAP purge-valve campaign referenced alongside 18S32.",
+      "remedy": "Per Ford program \u2014 inspection/replacement + calibration as specified.",
+      "consequence": null,
+      "status": "unknown",
+      "report_date": null,
+      "verification": "CORROBORATED",
+      "note": "Confirm applicability and completion for this VIN; numbers vary by market/year."
+    },
+    {
+      "campaign_number": "ST-HATCH-LATCH",
+      "origin": "ford-known",
+      "component": "Latches \u2014 hatch/liftgate",
+      "summary": "Hatch-latch campaign noted for the platform in the KB.",
+      "remedy": "Per applicable Ford bulletin/recall.",
+      "consequence": null,
+      "status": "unknown",
+      "report_date": null,
+      "verification": "CORROBORATED",
+      "note": "Community/KB-noted \u2014 verify the exact campaign and applicability by VIN."
+    },
+    {
+      "campaign_number": "ST-SEATBACK",
+      "origin": "ford-known",
+      "component": "Seats \u2014 seatback frame",
+      "summary": "Seatback-related campaign noted for the platform in the KB.",
+      "remedy": "Per applicable Ford bulletin/recall.",
+      "consequence": null,
+      "status": "unknown",
+      "report_date": null,
+      "verification": "CORROBORATED",
+      "note": "Community/KB-noted \u2014 verify the exact campaign and applicability by VIN."
     }
   ],
   "costs": {

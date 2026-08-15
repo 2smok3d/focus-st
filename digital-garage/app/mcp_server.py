@@ -99,6 +99,19 @@ def parts_search(query: str, part_number: str | None = None) -> dict:
 
 
 @mcp.tool
+def check_recalls(refresh: bool = False) -> list[dict]:
+    """List recall / safety campaigns for the vehicle. With refresh=True, re-seed
+    the known baseline and try a live NHTSA fetch first (non-fatal if the network
+    is unavailable). Per-VIN completion isn't in the free API — 'unknown' status
+    means confirm at a dealer."""
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        if refresh:
+            service.refresh_recalls(s, v, live=True)
+        return service.list_recalls(s, v.id)
+
+
+@mcp.tool
 def list_sources() -> list[dict]:
     """List evidence sources with their authority rank (1 best .. 6 unknown)."""
     with session_scope() as s:

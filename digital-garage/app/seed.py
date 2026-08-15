@@ -188,6 +188,10 @@ def seed(session: Session, *, if_empty: bool = False) -> str:
         session.add(OdometerReading(vehicle_id=vehicle.id, miles=ODOMETER_AT_PURCHASE,
                                     note="At purchase (ex-auction)."))
 
+    from . import service  # lazy: seed the known recall baseline
+    recalls_n = service.seed_known_recalls(session, vehicle.id)
+
     session.flush()
     return (f"Seeded vehicle {vehicle.vin}: {len(SPECS)} specs, {len(INTERVALS)} "
-            f"intervals, {len(ISSUES)} issues, {len(MODS)} mods, {len(SOURCES)} sources.")
+            f"intervals, {len(ISSUES)} issues, {len(MODS)} mods, {recalls_n} recalls, "
+            f"{len(SOURCES)} sources.")

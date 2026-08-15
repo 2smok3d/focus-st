@@ -84,6 +84,7 @@ def build_snapshot(session: Session, vehicle_id: int,
                              "miles": s.miles, "cost": _f(s.cost), "vendor": s.vendor}
                             for s in services],
         "maintenance_due": service.due_list(session, vehicle_id, current_miles=current_miles),
+        "recalls": service.list_recalls(session, vehicle_id),
         "costs": {"mods": round(mod_cost, 2), "service": round(service_cost, 2),
                   "parts": round(parts_cost, 2),
                   "total": round(mod_cost + service_cost + parts_cost, 2),

@@ -94,6 +94,21 @@ python -m app.cli approve 1 --by "Brandon" # → lands as parts/service_event
 python -m app.cli export --miles 62000     # → MODS.md + garage.json
 ```
 
+## Recall checker
+
+The store seeds the Focus ST's known safety campaigns (EVAP purge 18S32 / 26S40,
+seatback, hatch-latch) as a baseline and can refresh against the free **NHTSA**
+recallsByVehicle API:
+
+```bash
+python -m app.cli recalls --refresh          # re-seed known + fetch NHTSA
+python -m app.cli recall-status 18S32 completed   # once confirmed at a dealer
+```
+
+Per-VIN completion isn't in the free API, so campaigns stay `unknown` until you
+confirm them — the dashboard shows them as ⚪ "verify by VIN". Also at
+`GET /recalls`, `POST /recalls/refresh`, and the `check_recalls` MCP tool.
+
 ## The approval boundary
 
 Reads never require approval. Writes that change the vehicle's record — a new

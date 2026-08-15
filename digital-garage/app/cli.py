@@ -135,6 +135,34 @@ def cmd_receipt(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_recalls(args: argparse.Namespace) -> int:
+    icon = {"completed": "✅", "open": "🔴", "unknown": "⚪"}
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        if args.refresh:
+            res = service.refresh_recalls(s, v, live=not args.offline)
+            print(f"Refreshed: known={res['known_seeded']} nhtsa={res['nhtsa_fetched']}"
+                  + (f" (NHTSA: {res['error']})" if res["error"] else ""))
+        for r in service.list_recalls(s, v.id):
+            print(f"  {icon.get(r['status'], '·')} [{r['campaign_number']}] "
+                  f"{r['component'] or ''} — {r['status']} ({r['origin']})")
+            if r["summary"]:
+                print(f"      {r['summary'][:110]}")
+    return 0
+
+
+def cmd_recall_status(args: argparse.Namespace) -> int:
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        try:
+            service.set_recall_status(s, v.id, args.campaign, args.status)
+        except (LookupError, ValueError) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+    print(f"{args.campaign} → {args.status}")
+    return 0
+
+
 def cmd_export(args: argparse.Namespace) -> int:
     from pathlib import Path as _P
 
@@ -227,6 +255,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("receipt", help="file a receipt (.txt/.json) as a proposal")
     sp.add_argument("file")
     sp.set_defaults(fn=cmd_receipt)
+
+    sp = sub.add_parser("recalls", help="list/refresh recall campaigns")
+    sp.add_argument("--refresh", action="store_true", help="re-seed known + fetch NHTSA")
+    sp.add_argument("--offline", action="store_true", help="with --refresh, skip the NHTSA fetch")
+    sp.set_defaults(fn=cmd_recalls)
+
+    sp = sub.add_parser("recall-status", help="mark a recall completed/open/unknown")
+    sp.add_argument("campaign")
+    sp.add_argument("status", choices=["unknown", "open", "completed"])
+    sp.set_defaults(fn=cmd_recall_status)
 
     sp = sub.add_parser("export", help="export DB → MODS.md + garage.json")
     sp.add_argument("--miles", type=int, default=None)
