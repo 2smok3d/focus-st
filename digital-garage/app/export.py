@@ -143,12 +143,14 @@ def write_export(session: Session, vehicle_id: int, *, current_miles: int | None
     """Write MODS.md (repo root) and garage.json (data/export/). Returns paths."""
     snap = build_snapshot(session, vehicle_id, current_miles=current_miles)
     repo_root = repo_root or Path(__file__).resolve().parent.parent.parent  # focus-st/
-    # garage.json defaults to the repo root so GitHub Pages serves it next to
-    # garage.html (the dashboard fetches ./garage.json).
-    json_dir = json_dir or repo_root
+    # garage.json lives beside the dashboard in web/ (garage.html fetches
+    # ./garage.json); the human-readable MODS.md lives with the data in data/.
+    json_dir = json_dir or (repo_root / "web")
     json_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = repo_root / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
 
-    mods_md_path = repo_root / "MODS.md"
+    mods_md_path = data_dir / "MODS.md"
     garage_json_path = json_dir / "garage.json"
     mods_md_path.write_text(render_mods_md(snap))
     garage_json_path.write_text(json.dumps(snap, indent=2))

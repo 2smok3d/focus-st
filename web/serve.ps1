@@ -7,7 +7,7 @@ $mime = @{ '.html'='text/html; charset=utf-8'; '.json'='application/json'; '.js'
 while ($http.IsListening) {
     $ctx  = $http.GetContext()
     $path = $ctx.Request.Url.LocalPath
-    if ($path -eq '/') { $path = '/add.html' }
+    if ($path -eq '/') { $path = '/index.html' }
     $file = Join-Path $root $path.TrimStart('/')
     $res  = $ctx.Response
     if (Test-Path $file -PathType Leaf) {

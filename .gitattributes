@@ -1,0 +1,14 @@
+# Normalize line endings
+* text=auto eol=lf
+*.ps1 text eol=crlf
+
+# Keep GitHub's language stats meaningful: mark generated + docs
+web/garage.json      linguist-generated
+data/MODS.md         linguist-generated
+docs/FOST-COMPLETE.md linguist-generated
+docs/**              linguist-documentation
+*.md                 linguist-documentation
+
+# The app source that should count toward language stats
+web/*.html           linguist-detectable
+digital-garage/**    linguist-detectable

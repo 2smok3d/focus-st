@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent.parent
-PATH = ROOT / "garage.json"
+PATH = ROOT / "web" / "garage.json"
 
 REQUIRED_TOP = {
     "generated_at", "vehicle", "specs", "mods", "issues",
