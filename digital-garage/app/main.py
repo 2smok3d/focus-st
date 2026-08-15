@@ -7,8 +7,10 @@ the same approval boundary the CLI and MCP server honor.
 from __future__ import annotations
 
 import datetime as dt
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -23,6 +25,20 @@ app = FastAPI(
     description="Local truth store for a 2017 Ford Focus ST. Reads open; "
                 "vehicle-record writes require human approval.",
 )
+
+_STATIC = Path(__file__).resolve().parent / "static"
+
+
+@app.get("/", include_in_schema=False)
+def home():
+    return RedirectResponse("/ui")
+
+
+@app.get("/ui", include_in_schema=False)
+def approve_ui():
+    """One-tap approval console for the proposal queue (served same-origin so it
+    talks to this API without CORS). Open on your phone against the running API."""
+    return FileResponse(_STATIC / "approve.html", media_type="text/html")
 
 
 def _commit(s: Session):
