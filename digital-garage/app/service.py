@@ -13,9 +13,13 @@ from sqlalchemy.orm import Session
 
 from . import domain
 from .models import (
+    CanFrame,
     ChangeProposal,
+    DiagnosticSession,
+    Dtc,
     Issue,
     MaintenanceInterval,
+    Measurement,
     Mod,
     Part,
     Recall,
@@ -100,6 +104,41 @@ def propose_change(session: Session, vehicle_id: int, entity: str, patch: dict,
     session.add(prop)
     session.flush()
     return {"proposal_id": prop.id, "status": "pending", "entity": entity, "patch": patch}
+
+
+def list_sessions(session: Session, vehicle_id: int) -> list[dict]:
+    from sqlalchemy import func
+    rows = session.scalars(
+        select(DiagnosticSession).where(DiagnosticSession.vehicle_id == vehicle_id)
+        .order_by(DiagnosticSession.ingested_at.desc())
+    ).all()
+    out = []
+    for ds in rows:
+        dtc_n = session.scalar(select(func.count(Dtc.id)).where(Dtc.session_id == ds.id))
+        meas_n = session.scalar(select(func.count(Measurement.id)).where(Measurement.session_id == ds.id))
+        can_n = session.scalar(select(func.count(CanFrame.id)).where(CanFrame.session_id == ds.id))
+        out.append({"id": ds.id, "kind": ds.kind, "miles": ds.miles,
+                    "captured_at": ds.captured_at.isoformat() if ds.captured_at else None,
+                    "ingested_at": ds.ingested_at.isoformat() if ds.ingested_at else None,
+                    "sha256": ds.sha256, "dtcs": dtc_n, "measurements": meas_n,
+                    "can_frames": can_n, "note": ds.note})
+    return out
+
+
+def session_summary(session: Session, session_id: int) -> dict:
+    from . import analysis
+    ds = session.get(DiagnosticSession, session_id)
+    if ds is None:
+        raise LookupError(f"Diagnostic session {session_id} not found.")
+    meas = [{"pid": m.pid, "value": m.value, "unit": m.unit, "t_offset_s": m.t_offset_s}
+            for m in session.scalars(select(Measurement).where(Measurement.session_id == session_id)
+                                     .order_by(Measurement.id)).all()]
+    dtc_n = len(session.scalars(select(Dtc).where(Dtc.session_id == session_id)).all())
+    can_n = len(session.scalars(select(CanFrame).where(CanFrame.session_id == session_id)).all())
+    summary = analysis.summarize_measurements(meas, dtc_count=dtc_n, can_count=can_n)
+    summary["session_id"] = session_id
+    summary["kind"] = ds.kind
+    return summary
 
 
 def _upsert_recall(session: Session, vehicle_id: int, row: dict) -> None:
@@ -208,6 +247,19 @@ def _coerce(patch: dict) -> dict:
         if isinstance(out.get(f), str) and out[f]:
             out[f] = dt.date.fromisoformat(out[f])
     return out
+
+
+def maybe_autoexport(session: Session, vehicle_id: int) -> dict | None:
+    """Regenerate MODS.md + garage.json after a record change, if enabled. Any
+    failure is swallowed to a dict — a broken export must never fail an approval."""
+    from .config import settings
+    if not settings.auto_export:
+        return None
+    try:
+        from . import export as export_mod
+        return export_mod.write_export(session, vehicle_id)
+    except Exception as e:  # export is a side effect, not part of the approval
+        return {"error": f"{type(e).__name__}: {e}"}
 
 
 def approve_proposal(session: Session, proposal_id: int, approved_by: str) -> dict:

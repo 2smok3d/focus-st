@@ -94,6 +94,32 @@ python -m app.cli approve 1 --by "Brandon" # → lands as parts/service_event
 python -m app.cli export --miles 62000     # → MODS.md + garage.json
 ```
 
+## Datalog analysis
+
+Ingest a FORScan/CSV datalog and get a session summary instead of a wall of rows:
+
+```bash
+python -m app.cli ingest datalog pull.csv --miles 86500
+python -m app.cli sessions          # list ingested sessions
+python -m app.cli summary 1         # channel stats + findings
+```
+
+The summarizer recognizes turbo-relevant channels by name (boost vs. target,
+knock, misfire, fuel-trim drift, coolant/charge-air temps, rail pressure) and
+emits plain-language findings — "Knock activity … correlate with fuel/octane
+before another WOT pull", "Charge/intake air peak 61 C — heat-soak territory".
+Also at `GET /sessions/{id}/summary` and the `session_summary` MCP tool.
+
+## Publishing (auto-export)
+
+After any approval the store re-generates `MODS.md` + `garage.json` so the
+served dashboard stays current (set `DG_AUTO_EXPORT=0` to disable). To push the
+refreshed snapshot to GitHub Pages in one step:
+
+```bash
+python -m app.cli publish --push     # export → git commit → push
+```
+
 ## Recall checker
 
 The store seeds the Focus ST's known safety campaigns (EVAP purge 18S32 / 26S40,

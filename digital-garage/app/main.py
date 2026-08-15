@@ -136,6 +136,22 @@ def maintenance_due(miles: int | None = Query(None, ge=0),
     return service.due_list(s, v.id, current_miles=miles, today=dt.date.today())
 
 
+@app.get("/sessions")
+def sessions(s: Session = Depends(get_session)):
+    """List ingested diagnostic sessions with row counts."""
+    v = service.get_vehicle(s)
+    return service.list_sessions(s, v.id)
+
+
+@app.get("/sessions/{session_id}/summary")
+def session_summary(session_id: int, s: Session = Depends(get_session)):
+    """Datalog summary: channel stats + turbo-relevant findings for a session."""
+    try:
+        return service.session_summary(s, session_id)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+
+
 @app.get("/parts/search")
 def parts_search(q: str, part_number: str | None = None):
     return domain.parts_search_links(q, part_number=part_number)
@@ -228,11 +244,14 @@ def ingest_receipt(body: ReceiptIn, s: Session = Depends(get_session)):
 def approve(proposal_id: int, body: ApproveIn, s: Session = Depends(get_session)):
     try:
         res = service.approve_proposal(s, proposal_id, body.approved_by)
+        export = service.maybe_autoexport(s, service.get_vehicle(s).id)
     except LookupError as e:
         raise HTTPException(404, str(e))
     except ValueError as e:
         raise HTTPException(422, str(e))
     _commit(s)
+    if export:
+        res["exported"] = export
     return res
 
 

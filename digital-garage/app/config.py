@@ -17,6 +17,9 @@ class Settings(BaseSettings):
 
     raw_dir: Path = Path("./data/raw")
     vehicle_vin: str = "1FADP3L94HL223134"
+    # Regenerate MODS.md + garage.json automatically after an approval so the
+    # published dashboard stays current. Set DG_AUTO_EXPORT=0 to disable.
+    auto_export: bool = True
 
     @property
     def database_url(self) -> str:

@@ -133,7 +133,74 @@ def parse_candump(text: str) -> ParseResult:
     return res
 
 
-PARSERS = {"forscan": parse_forscan, "candump": parse_candump}
+# ---------------------------------------------------------------------------
+# Datalog CSV  (FORScan / generic time-series export)
+#   Time,RPM,Boost (psi),Knock,STFT (%),...
+#   0.00,850,-8.1,0,1.2,...
+# First column is time (seconds, or HH:MM:SS[.mmm]); the rest are numeric PIDs.
+# ---------------------------------------------------------------------------
+_TIME_HEADER = re.compile(r"\b(time|timestamp|seconds|elapsed)\b|^t$", re.I)
+_UNIT_IN_HEADER = re.compile(r"[(\[]\s*([^)\]]{1,12})\s*[)\]]")
+_HMS = re.compile(r"^(\d{1,2}):(\d{2}):(\d{2}(?:\.\d+)?)$")
+
+
+def _num(cell: str):
+    try:
+        return float(str(cell).strip().replace(",", ""))
+    except (TypeError, ValueError):
+        return None
+
+
+def _parse_time_cell(cell: str):
+    s = str(cell).strip()
+    v = _num(s)
+    if v is not None:
+        return v
+    m = _HMS.match(s)
+    if m:
+        return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
+    return None
+
+
+def _clean_pid(h: str) -> str:
+    return _UNIT_IN_HEADER.sub("", h).strip() or h.strip()
+
+
+def _unit_from_header(h: str):
+    m = _UNIT_IN_HEADER.search(h)
+    return m.group(1).strip() if m else None
+
+
+def parse_datalog(text: str) -> ParseResult:
+    res = ParseResult()
+    rows = [r for r in csv.reader(io.StringIO(text)) if any(c.strip() for c in r)]
+    if len(rows) < 2:
+        return res
+    header = [h.strip() for h in rows[0]]
+    tidx = next((i for i, h in enumerate(header) if _TIME_HEADER.search(h)), 0)
+    t0 = None
+    for r in rows[1:]:
+        if len(r) <= tidx:
+            continue
+        t = _parse_time_cell(r[tidx])
+        if t is None:
+            continue
+        if t0 is None:
+            t0 = t
+        toff = round(t - t0, 4)
+        for i, cell in enumerate(r):
+            if i == tidx or i >= len(header):
+                continue
+            val = _num(cell)
+            if val is None:
+                continue
+            res.measurements.append({"pid": _clean_pid(header[i]) or f"col{i}",
+                                     "value": val, "unit": _unit_from_header(header[i]),
+                                     "t_offset_s": toff})
+    return res
+
+
+PARSERS = {"forscan": parse_forscan, "candump": parse_candump, "datalog": parse_datalog}
 
 
 # ---------------------------------------------------------------------------

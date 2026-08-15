@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T10:41:13.347601+00:00",
+  "generated_at": "2026-08-15T11:21:05.104432+00:00",
   "current_miles": 86390,
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -420,7 +420,7 @@
       "consequence": null,
       "status": "unknown",
       "report_date": null,
-      "verification": "VEHICLE_VERIFIED",
+      "verification": "CORROBORATED",
       "note": "Verify completion against THIS VIN at nhtsa.gov/recalls or a Ford dealer."
     },
     {
