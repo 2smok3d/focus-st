@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import service
-from .models import Issue, Mod, Part, ServiceEvent, Source, Spec
+from .models import Issue, Mod, OdometerReading, Part, ServiceEvent, Source, Spec
 
 
 def _f(v) -> float | None:
@@ -30,6 +30,14 @@ def build_snapshot(session: Session, vehicle_id: int,
                    current_miles: int | None = None) -> dict:
     from .models import Vehicle
     veh = session.get(Vehicle, vehicle_id)
+
+    # Fall back to the latest odometer reading when no mileage was supplied.
+    if current_miles is None:
+        latest = session.scalar(
+            select(OdometerReading).where(OdometerReading.vehicle_id == vehicle_id)
+            .order_by(OdometerReading.recorded_at.desc(), OdometerReading.id.desc())
+        )
+        current_miles = latest.miles if latest else None
 
     specs = session.scalars(
         select(Spec).where(Spec.vehicle_id == vehicle_id).order_by(Spec.category, Spec.name)
@@ -134,7 +142,9 @@ def write_export(session: Session, vehicle_id: int, *, current_miles: int | None
     """Write MODS.md (repo root) and garage.json (data/export/). Returns paths."""
     snap = build_snapshot(session, vehicle_id, current_miles=current_miles)
     repo_root = repo_root or Path(__file__).resolve().parent.parent.parent  # focus-st/
-    json_dir = json_dir or (Path(__file__).resolve().parent.parent / "data" / "export")
+    # garage.json defaults to the repo root so GitHub Pages serves it next to
+    # garage.html (the dashboard fetches ./garage.json).
+    json_dir = json_dir or repo_root
     json_dir.mkdir(parents=True, exist_ok=True)
 
     mods_md_path = repo_root / "MODS.md"

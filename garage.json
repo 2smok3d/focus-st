@@ -1,0 +1,451 @@
+{
+  "generated_at": "2026-08-15T10:34:20.874277+00:00",
+  "current_miles": 86390,
+  "vehicle": {
+    "vin": "1FADP3L94HL223134",
+    "year": 2017,
+    "make": "Ford",
+    "model": "Focus",
+    "trim": "ST",
+    "engine": "2.0L EcoBoost I4",
+    "transmission": "MMT6 6-speed manual",
+    "notes": "MK3 Focus ST. Phoenix, AZ. Ex-auction acquisition."
+  },
+  "specs": [
+    {
+      "category": "chassis",
+      "name": "Bolt pattern",
+      "value": "5x108",
+      "unit": "mm",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "chassis",
+      "name": "Tire size",
+      "value": "235/40R18",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "chassis",
+      "name": "Wheel offset",
+      "value": "ET55",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "chassis",
+      "name": "Wheels",
+      "value": "18x8",
+      "unit": "in",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "1st gear",
+      "value": "3.31",
+      "unit": ":1",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "2nd gear",
+      "value": "2.13",
+      "unit": ":1",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "3rd gear",
+      "value": "1.48",
+      "unit": ":1",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "4th gear",
+      "value": "1.14",
+      "unit": ":1",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "5th gear",
+      "value": "0.95",
+      "unit": ":1",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "6th gear",
+      "value": "0.76",
+      "unit": ":1",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "Final drive",
+      "value": "3.82",
+      "unit": ":1",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "Layout",
+      "value": "Transverse FWD w/ eLSD (torque vectoring control)",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "drivetrain",
+      "name": "Transmission",
+      "value": "MMT6 (Getrag) 6-speed manual",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "engine",
+      "name": "Compression ratio",
+      "value": "9.3:1",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "engine",
+      "name": "Engine",
+      "value": "2.0L EcoBoost I4 (turbocharged, DI)",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "engine",
+      "name": "Firing order",
+      "value": "1-3-4-2",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "engine",
+      "name": "Rated power",
+      "value": "252",
+      "unit": "hp",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "engine",
+      "name": "Rated torque",
+      "value": "270",
+      "unit": "lb-ft",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "engine",
+      "name": "Spark plug gap",
+      "value": "0.028-0.031",
+      "unit": "in",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "fluids",
+      "name": "Coolant",
+      "value": "Motorcraft Orange (WSS-M97B44-D)",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "fluids",
+      "name": "Engine oil",
+      "value": "Motorcraft 5W-30 synthetic blend (SAE 5W-30, WSS-M2C946-B1)",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "fluids",
+      "name": "Engine oil capacity",
+      "value": "4.3",
+      "unit": "qt",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "fluids",
+      "name": "Transmission fluid",
+      "value": "Motorcraft MTF (WSS-M2C200-D2 spec, MMT6)",
+      "unit": null,
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "category": "torque",
+      "name": "Spark plug",
+      "value": "13",
+      "unit": "lb-ft",
+      "verification": "CORROBORATED"
+    },
+    {
+      "category": "torque",
+      "name": "Wheel lug nut",
+      "value": "100",
+      "unit": "lb-ft",
+      "verification": "OEM_VERIFIED"
+    }
+  ],
+  "mods": [
+    {
+      "slot": "Active Grille Shutters",
+      "part_name": "AGS \u2014 REMOVED (delete)",
+      "part_number": null,
+      "stage": null,
+      "cost": null,
+      "url": null,
+      "installed_on": null,
+      "installed_miles": null,
+      "verification": "VEHICLE_VERIFIED"
+    },
+    {
+      "slot": "Battery",
+      "part_name": "Upgraded battery (Group 96R, 590 CCA)",
+      "part_number": null,
+      "stage": null,
+      "cost": null,
+      "url": null,
+      "installed_on": null,
+      "installed_miles": null,
+      "verification": "VEHICLE_VERIFIED"
+    },
+    {
+      "slot": "Cargo",
+      "part_name": "Trunk storage box",
+      "part_number": null,
+      "stage": null,
+      "cost": null,
+      "url": null,
+      "installed_on": null,
+      "installed_miles": null,
+      "verification": "VEHICLE_VERIFIED"
+    },
+    {
+      "slot": "Engine mounts",
+      "part_name": "Torque Solution rear + passenger mounts",
+      "part_number": null,
+      "stage": "P1",
+      "cost": null,
+      "url": null,
+      "installed_on": null,
+      "installed_miles": null,
+      "verification": "VEHICLE_VERIFIED"
+    },
+    {
+      "slot": "Intake",
+      "part_name": "Injen cold-air intake",
+      "part_number": null,
+      "stage": "P1",
+      "cost": null,
+      "url": null,
+      "installed_on": null,
+      "installed_miles": null,
+      "verification": "VEHICLE_VERIFIED"
+    },
+    {
+      "slot": "Intake feed",
+      "part_name": "Ram-air / hood-scoop feed",
+      "part_number": null,
+      "stage": "P1",
+      "cost": null,
+      "url": null,
+      "installed_on": null,
+      "installed_miles": null,
+      "verification": "VEHICLE_VERIFIED"
+    },
+    {
+      "slot": "Intercooler",
+      "part_name": "Depo 'Beast' FMIC",
+      "part_number": null,
+      "stage": "R1",
+      "cost": null,
+      "url": null,
+      "installed_on": null,
+      "installed_miles": null,
+      "verification": "VEHICLE_VERIFIED"
+    }
+  ],
+  "issues": [
+    {
+      "title": "Radiator cracked \u2192 through-hole (front-left of core)",
+      "status": "open",
+      "severity": "stop",
+      "root_cause": null,
+      "verification": "VEHICLE_VERIFIED",
+      "opened_at": "2026-08-15"
+    },
+    {
+      "title": "Possible oil leak after aggressive driving",
+      "status": "monitoring",
+      "severity": "warn",
+      "root_cause": null,
+      "verification": "CORROBORATED",
+      "opened_at": "2026-08-15"
+    },
+    {
+      "title": "Floating / uncapped vacuum line (EVAP), no codes",
+      "status": "monitoring",
+      "severity": "warn",
+      "root_cause": null,
+      "verification": "VEHICLE_VERIFIED",
+      "opened_at": "2026-08-15"
+    },
+    {
+      "title": "0 admin keys / 3 MyKeys (ex-auction)",
+      "status": "open",
+      "severity": "warn",
+      "root_cause": null,
+      "verification": "VEHICLE_VERIFIED",
+      "opened_at": "2026-08-15"
+    },
+    {
+      "title": "EVAP purge valve campaign (18S32 / 26S40) \u2014 verify status for this VIN",
+      "status": "monitoring",
+      "severity": "warn",
+      "root_cause": null,
+      "verification": "CORROBORATED",
+      "opened_at": "2026-08-15"
+    },
+    {
+      "title": "P04DB crankcase-ventilation sensitivity \u2014 inspect PCV plumbing before parts",
+      "status": "monitoring",
+      "severity": "info",
+      "root_cause": null,
+      "verification": "CORROBORATED",
+      "opened_at": "2026-08-15"
+    }
+  ],
+  "service_history": [],
+  "maintenance_due": [
+    {
+      "item": "Engine oil & filter",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "item": "Tire rotation",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "item": "Cabin air filter",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "CORROBORATED"
+    },
+    {
+      "item": "Engine air filter",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "CORROBORATED"
+    },
+    {
+      "item": "MMT6 transmission fluid",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "CORROBORATED"
+    },
+    {
+      "item": "Spark plugs",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "CORROBORATED"
+    },
+    {
+      "item": "Brake fluid",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "item": "Coolant",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "OEM_VERIFIED"
+    },
+    {
+      "item": "Clutch fluid (shares brake reservoir)",
+      "status": "overdue",
+      "miles_remaining": null,
+      "months_remaining": null,
+      "last_miles": null,
+      "last_date": null,
+      "detail": "No service on record for an item with a defined interval.",
+      "verification": "CORROBORATED"
+    }
+  ],
+  "costs": {
+    "mods": 0,
+    "service": 0,
+    "parts": 0,
+    "total": 0,
+    "by_stage": {
+      "unstaged": 0,
+      "P1": 0,
+      "R1": 0
+    }
+  },
+  "sources": [
+    {
+      "name": "Ford Workshop Manual / owner literature (MK3 Focus ST)",
+      "authority": 1,
+      "kind": "oem_manual"
+    },
+    {
+      "name": "Motorcraft / Ford fluid & part specifications",
+      "authority": 1,
+      "kind": "oem_manual"
+    },
+    {
+      "name": "Ford / NHTSA recall & TSB records",
+      "authority": 1,
+      "kind": "tsb"
+    },
+    {
+      "name": "iDatalink Maestro compatibility documentation",
+      "authority": 2,
+      "kind": "oem_adjacent"
+    },
+    {
+      "name": "Focus ST community consensus (Focusfanatics / forums)",
+      "authority": 4,
+      "kind": "forum"
+    }
+  ]
+}

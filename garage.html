@@ -267,6 +267,7 @@ td .mono,.mono-td{font-family:var(--mono)}
     <div class="mtop">
       <button class="burger" id="burger">≡</button>
       <div style="font-family:var(--disp);font-weight:700;letter-spacing:.04em">FOST GARAGE</div>
+      <span id="livebadge" title="Live data loaded from digital-garage" style="display:none;margin-left:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--green);border:1px solid var(--green);border-radius:20px;padding:2px 8px">● LIVE</span>
       <div class="tag" style="margin-left:auto" id="mtitle">OVERVIEW</div>
     </div>
     <div id="app"></div>
@@ -2550,6 +2551,37 @@ function statTiles(){return `<div class="grid g4 stagger">`+DATA.stats.map(s=>`
   <div class="card tile"><div class="k">${s.k}</div>
   <div class="v">${s.v}<span class="u"> ${s.u}</span></div><div class="n">${s.n}</div></div>`).join("")+`</div>`;}
 
+/* ---- LIVE FEED (digital-garage garage.json) ----
+   The dashboard ships with the inline DATA above as its baseline. When served
+   from GitHub Pages next to a garage.json exported by digital-garage, hydrate()
+   fetches it and refreshes the data-driven views. On an artifact (CSP blocks
+   the fetch) or offline, the inline baseline stands — nothing breaks. */
+let LIVE=null;
+const DUEDOT={overdue:"s-crit","due-soon":"s-warn",ok:"s-good",unknown:"s-off"};
+function liveDueBlock(){
+  if(!LIVE||!LIVE.maintenance_due||!LIVE.maintenance_due.length)return "";
+  const rows=LIVE.maintenance_due.map(d=>`<tr><td>${esc(d.item)}</td>
+    <td><span class="dot ${DUEDOT[d.status]||'s-off'}"></span>${esc(d.status)}</td>
+    <td class="mono-td" style="color:var(--ink2)">${esc(d.detail||"")}</td></tr>`).join("");
+  const od=LIVE.current_miles?esc(String(LIVE.current_miles))+" mi":"—";
+  return `<div class="sect"><span class="num">●</span><h3>LIVE STATUS — DIGITAL GARAGE</h3><span class="ln"></span></div>
+   <div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Status</th><th>Remaining</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="note">Live from <span class="mono">garage.json</span> · odometer ${od} · generated ${esc((LIVE.generated_at||"").slice(0,16).replace("T"," "))} UTC. Overdue/soon computed from recorded service history.</div>`;
+}
+function liveCostBlock(){
+  if(!LIVE||!LIVE.costs)return "";
+  const c=LIVE.costs;
+  const svc=(LIVE.service_history||[]).map(s=>`<tr><td class="mono-td" style="color:var(--ink2)">${esc(s.performed_at||"")}</td><td>${esc(s.item)}</td><td style="color:var(--ink2)">${esc(s.vendor||"—")}</td><td class="mono-td" style="color:var(--green)">${s.cost!=null?money(s.cost):"—"}</td></tr>`).join("");
+  return `<div class="sect"><span class="num">●</span><h3>LIVE SPEND — DIGITAL GARAGE</h3><span class="ln"></span></div>
+   <div class="grid g4 stagger">
+     <div class="card tile"><div class="k">Mods</div><div class="v">${money(c.mods)}</div><div class="n">installed</div></div>
+     <div class="card tile"><div class="k">Parts</div><div class="v">${money(c.parts)}</div><div class="n">purchased</div></div>
+     <div class="card tile"><div class="k">Service</div><div class="v">${money(c.service)}</div><div class="n">logged</div></div>
+     <div class="card tile"><div class="k">Total</div><div class="v">${money(c.total)}</div><div class="n">from receipts</div></div>
+   </div>
+   ${svc?`<div class="tbl-wrap" style="margin-top:14px"><table><thead><tr><th>Date</th><th>Service</th><th>Vendor</th><th>Cost</th></tr></thead><tbody>${svc}</tbody></table></div>`:""}`;
+}
+
 function views(){
  const V={};
  /* OVERVIEW */
@@ -2610,7 +2642,8 @@ function views(){
   <div class="sect"><span class="num">A</span><h3>SERVICE INTERVALS</h3><span class="ln"></span></div>
   <div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Interval</th><th>Note</th></tr></thead><tbody>
     ${DATA.maintenance.map(m=>`<tr><td>${esc(m[0])}</td><td class="mono-td" style="color:var(--ink)">${esc(m[1])}</td><td style="color:var(--ink2)">${esc(m[2])}</td></tr>`).join("")}</tbody></table></div>
-  <div class="note"><b>Immediate reset (unless a dated receipt proves it):</b> oil+filter · full module scan + battery test · brake/clutch fluid · coolant · spark plugs · tires/brakes · MMT6 fluid · air+cabin filters · EVAP/purge + VIN campaign · charge-air leak · alignment.</div>`;
+  <div class="note"><b>Immediate reset (unless a dated receipt proves it):</b> oil+filter · full module scan + battery test · brake/clutch fluid · coolant · spark plugs · tires/brakes · MMT6 fluid · air+cabin filters · EVAP/purge + VIN campaign · charge-air leak · alignment.</div>
+  ${liveDueBlock()}`;
 
  /* KNOWLEDGE */
  V.knowledge=`
@@ -2636,7 +2669,8 @@ function views(){
   <div class="sect"><span class="num">B</span><h3>LOGGED RECEIPTS</h3><span class="ln"></span></div>
   <div class="tbl-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th>Item</th><th>Bundle</th><th>Total</th></tr></thead><tbody>
     ${DATA.receipts.map(r=>`<tr><td class="mono-td" style="color:var(--ink2)">${r[0]}</td><td>${esc(r[1])}</td><td style="color:var(--ink2)">${esc(r[2])}</td><td><span class="pill">${r[3]}</span></td><td class="mono-td" style="color:var(--green)">${r[4]}</td></tr>`).join("")}</tbody></table></div>
-  <div class="note">Receipts auto-log to the FOST Receipts Log via a Gmail Apps Script (hourly scan). IFTTT can't watch Gmail, so the native script is the pipeline.</div>`;
+  <div class="note">Receipts auto-log to the FOST Receipts Log via a Gmail Apps Script (hourly scan). IFTTT can't watch Gmail, so the native script is the pipeline.</div>
+  ${liveCostBlock()}`;
 
  /* REFERENCE */
  V.reference=`
@@ -2798,6 +2832,23 @@ app.addEventListener("input",e=>{if(e.target.id==="mansearch")searchManual(e.tar
 function openManual(q){go("manual");renderManual();const el=document.getElementById("mansearch");if(el){el.value=q;searchManual(q);}}
 window.openManual=openManual;
 renderManual();
+
+/* ---- hydrate data-driven views from garage.json when available ---- */
+async function hydrate(){
+  try{
+    const r=await fetch("garage.json",{cache:"no-store"});
+    if(!r.ok)return;
+    const live=await r.json();
+    if(!live||!live.vehicle)return;
+    LIVE=live;
+    if(live.costs){const t=DATA.stats.find(s=>s.k==="Logged spend");
+      if(t){t.v="$"+Math.round(live.costs.total).toLocaleString();t.u="";t.n="live · digital-garage";}}
+    const NV=views();
+    ["overview","maintenance","costs"].forEach(v=>{const el=document.getElementById("v-"+v);if(el)el.innerHTML=NV[v];});
+    const badge=document.getElementById("livebadge");if(badge)badge.style.display="";
+  }catch(e){/* offline or CSP-blocked (artifact): inline baseline stands */}
+}
+hydrate();
 </script>
 </body>
 </html>
