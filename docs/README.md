@@ -1,8 +1,15 @@
+---
+title: README — FOST vault
+aliases: [README]
+tags: [focus-st, meta]
+---
+
 # FOST — Focus ST Documentation System
 
 Everything about the car: specs, projects, maintenance, records. Version-controlled here, mirrored to **FOST** in Google Drive.
 
 ## Start here
+- **[INDEX.md](INDEX.md)** — 📇 master index of **everything** (repo + Drive vault + sheets), with a site map and cross-reference matrix.
 - **[VEHICLE.md](VEHICLE.md)** — master spec (VIN, trim, all specs, mods, known issues). *Source of truth.*
 - **[PROJECTS.md](PROJECTS.md)** — every project, grouped into streamlined build bundles, with cost/time roll-up.
 - **[MAINTENANCE.md](MAINTENANCE.md)** — chronological service log.

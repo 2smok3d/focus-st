@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DG_DB_NAME:-garage}
+      POSTGRES_USER: ${DG_DB_USER:-garage}
+      POSTGRES_PASSWORD: ${DG_DB_PASSWORD:-garage}
+    ports:
+      - "5433:5432"
+    volumes:
+      - garage_pg:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/10-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DG_DB_USER:-garage} -d ${DG_DB_NAME:-garage}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DG_DB_HOST: db
+      DG_DB_PORT: 5432
+      DG_DB_NAME: ${DG_DB_NAME:-garage}
+      DG_DB_USER: ${DG_DB_USER:-garage}
+      DG_DB_PASSWORD: ${DG_DB_PASSWORD:-garage}
+      DG_RAW_DIR: /app/data/raw
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data/raw:/app/data/raw
+    command: >
+      sh -c "python -m app.cli seed --if-empty &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+volumes:
+  garage_pg:

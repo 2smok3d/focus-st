@@ -1,3 +1,9 @@
+---
+title: FORScan Master Reference
+aliases: [forscan-master-reference, FORScan reference, FORScan cheat-sheet]
+tags: [focus-st, reference, forscan, electronics]
+---
+
 # FORScan Master Reference — 2017 Focus ST (MK3.5, US, Manual, ST1)
 
 > Distilled, version-controlled reference. The **full long-form research doc** (all 9 categories, every As-Built value, all forum sources) lives in FOST → `2017-Ford-Focus-ST/`. This is the working cheat-sheet for the [🅳 FORScan session](../projects/forscan-session.md).
@@ -7,6 +13,21 @@
 - The ST is a **Central Configuration (CC)** car → use FORScan **Module Configuration dropdowns**, *not* raw As-Built hex the way F-150/Super Duty owners do.
 - Powertrain/steering tuning is **NOT** FORScan-editable → use COBB/SCT.
 - Two biggest risks: **SBL load** when opening `BdyCM Central Config (Main)` on 2017–18 cars, and **tire-circumference edits** that cause a stuck **P160A/P2610**.
+
+## Module map
+
+```mermaid
+flowchart TB
+    MX["OBDLink MX+ - MS-CAN + HS-CAN"] --> FORS[FORScan Extended]
+    FORS --> BCM["BdyCM/BCM 726 - lighting, windows, locks, double-honk, MyKey"]
+    FORS --> IPC["IPC 720 - shift light, TPMS/DDS, gauges"]
+    FORS --> APIM["APIM 7D0 - SYNC splash, climate, audio, nav"]
+    FORS --> ACM[ACM 727 - audio]
+    FORS --> ABS["ABS 760 - traction, DDS relearn"]
+    FORS --> PATS["PATS - Add Key, 2nd key"]
+    WARN{{"CC platform: use Module Config dropdowns, NOT raw Super Duty As-Built hex"}}
+    FORS -.-> WARN
+```
 
 ## Prereqs
 - Adapter: OBDLink MX+ (owned) · License: FORScan **Extended** (free 2-mo trial, renewable).

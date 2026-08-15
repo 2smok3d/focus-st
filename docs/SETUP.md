@@ -1,3 +1,9 @@
+---
+title: Setup Guide — Connections & Data Flow
+aliases: [SETUP, Setup, Connectors, Data Flow]
+tags: [focus-st, setup, automation]
+---
+
 # Setup Guide — Connections, Tools & Data Flow
 
 > How the whole system is wired together, what's already working, and the few things **only you can do** (authorizations + one Dropbox step). Read the checklist at the bottom.
@@ -61,6 +67,17 @@ Until then, everything else proceeds without it.
 ---
 
 ## Gmail → receipts pipeline
+
+```mermaid
+flowchart LR
+    GM[Gmail order/receipt email] --> AUTO["Apps Script - hourly scan, parse vendor/amount"]
+    GM --> ASST["Assisted - 'log my receipts' → I search + parse"]
+    AUTO --> LOG[FOST - Receipts Log Sheet]
+    ASST --> LOG
+    ASST --> PDF["FOST/_Archive/receipts/YYYY - PDFs"]
+    LOG --> DASH["Master Tracker - budget vs actual roll-up"]
+    AUTO -. labels thread FOST-Logged .-> GM
+```
 
 **Goal:** every parts order/receipt gets logged to the Sheet and the PDF filed in FOST, tied to the right project.
 

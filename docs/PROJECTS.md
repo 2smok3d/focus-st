@@ -1,3 +1,9 @@
+---
+title: Project Index & Build Map
+aliases: [PROJECTS, Projects, Build Map, Roadmap]
+tags: [focus-st, project, moc]
+---
+
 # Project Index & Build Map — Focus ST
 
 > Every planned project, grouped into **streamlined bundles** (jobs that share teardown, tools, or a service session so you do them once, not five times).
@@ -13,6 +19,32 @@ Individual mods are cheap to *plan* and expensive to *repeat* — every job that
 Each build doc follows the same standard: **Overview → Parts list (linked, costed) → Tools → Time & difficulty → Wiring / system diagram → Step-by-step → Verification → Notes/risks.**
 
 ---
+
+## Priority & sequence at a glance
+
+```mermaid
+flowchart TB
+    subgraph NOW["DO NOW - safety + free wins"]
+      C["🅲 Cooling & Oil - radiator has a hole"]
+      D["🅳 FORScan - MyKey reset + 2nd key + tweaks - ~free"]
+    end
+    subgraph SOON["SOON - quality of life"]
+      B["🅱 Exterior Lighting"]
+      A["🅐 Cockpit + RR2 head unit"]
+      F["🅕 Key fob PCB / security"]
+    end
+    subgraph LATER["LATER - bigger spend, staged"]
+      G["🅖 Powertrain - AccessPort first"]
+      E["🅔 Handling & Brakes - wheels→Brembo→susp→align"]
+    end
+    GATE{{"Gate: VIN recall check + oil leak fixed before adding power"}}
+    NOW --> SOON --> LATER
+    NOW --> GATE --> G
+    D -. shares session .- F
+    B -. shares FORScan session .- D
+```
+
+> The one hard gate: **resolve the oil leak and run the VIN recall check before any power adds** (🅖).
 
 ## Streamlined bundles (recommended routes)
 

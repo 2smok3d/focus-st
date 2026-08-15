@@ -1,9 +1,44 @@
+---
+title: Vehicle Master Spec
+aliases: [VEHICLE, Vehicle, Master Spec, Digital Twin]
+tags: [focus-st, spec, vehicle]
+---
+
 # Vehicle Master Spec — 2017 Ford Focus ST
 
 > Single source of truth for the car. Everything else (projects, parts, maintenance) references this file.
 > Legend: ✅ verified · ⚠️ unverified / needs check · 🔧 needs attention · ❌ removed / not present
 >
 > **Authoring model:** this repo is the authoring layer (version-controlled, feeds the PWA, holds the wiring diagrams + streamlined bundles). The **FFST "mechanic vault"** in Google Drive (FOST → *FFST Knowledge Base*, 16 docs) is the deep reference for OEM specs, diagnostics, recalls and forum-graded knowledge. On any spec conflict, the vault's Grade-A (Ford/NHTSA) values win — reconciled here.
+
+Full index of everything (repo + Drive + sheets): **[INDEX.md](INDEX.md)**.
+
+---
+
+## Systems at a glance
+
+```mermaid
+flowchart TB
+    ENG["ENGINE 2.0 EcoBoost - 252hp/270 - oil leak? 🔧"]
+    FI["FORCED INDUCTION - Depo Beast FMIC ✅ - stock diverter"]
+    EXH[EXHAUST - stock catted DP + resonated catback]
+    COOL["COOLING - radiator HOLE 🔧 - AGS deleted ❌ - AZ heat"]
+    DT["DRIVETRAIN - MMT6 6MT - 240mm clutch - TS mounts ✅"]
+    SUS[SUSPENSION - stock MacPherson / Control Blade]
+    BRK[BRAKES - 320 front / 302 rear single-piston]
+    WT[WHEELS/TIRES - 18x8 +55 - 235/40R18]
+    ELE["ELECTRICAL - upgraded battery ✅ - 0 admin keys 🔧"]
+    LGT[LIGHTING - halogen H11/H1 - LED plan]
+    INT[INTERIOR - SYNC1 4in - RR2 plan]
+    MOD["MODULES - BCM/IPC/APIM/ACM/ABS - FORScan via OBDLink MX+ ✅"]
+
+    ENG --- FI --- EXH
+    ENG --- COOL
+    ENG --- DT --- SUS --- BRK --- WT
+    ELE --- MOD --- LGT --- INT
+```
+
+Legend: ✅ good/done · 🔧 needs attention · ❌ removed. Details per system below.
 
 ---
 
@@ -61,7 +96,7 @@
 | Rear brakes | 302 × 10 mm solid |
 | Brake fluid | DOT 4 LV (WSS-M6C65-A2) |
 | Suspension | MacPherson front / Control Blade rear · front bar 22 mm · rear bar 21.7 mm |
-| Wheels | 18 × 7.5" · 5×108 · ET52.5 · 63.3 mm bore · lug M12×1.5 / 17 mm hex · **100 lb-ft** |
+| Wheels | **18 × 8" · 5×108 · ET55 (+55 mm)** · 63.3 mm bore · lug M12×1.5 / 17 mm hex · **100 lb-ft** · ✅ verified (was wrongly 18×7.5/ET52.5 in PARTS.md) |
 | Tires | 235/40R18 |
 | Battery | Group 96R · 590 CCA min |
 
@@ -73,7 +108,7 @@
 |----------|------|-------|
 | Headlight low | **H11** halogen | true reflector housing — **do not** LED-retrofit (scatter/glare/inspection). Upgrade = Osram Night Breaker halogen |
 | Headlight high | **H1** halogen | same reasoning |
-| Fog | **H11** | ⚠️ PARTS.md lists H16 — ST1 research says H11; verify at car before ordering |
+| Fog | **verify at car (H8 / H11)** | ⚠️ sources conflict — aggregators say H8, your ST1 research says H11, PARTS.md said H16. Pull the bulb before ordering |
 | Front turn/park | **7440** (7440A amber) | ST1-specific — *not* 3157 up front |
 | Rear tail/turn/brake | **3157** (check CK vs non-CK socket) | CANbus/anti-hyperflash bulbs required |
 | Interior dome/map/door | **194 / T10 / W5W** | any error-free T10 |
@@ -136,5 +171,23 @@ Requires: OBDLink adapter (owned: **OBDLink MX+**) + FORScan **Extended License*
 - Parts sourcing preference: **open to budget/generic aftermarket** (not OEM-only) where reliability allows — noted per project.
 
 ---
+
+---
+
+## 9. Fact-check log (2026-08-11)
+
+Verified against external sources; corrections applied above.
+
+| Fact | Verdict | Source |
+|------|---------|--------|
+| Transmission = **Getrag MMT6** (not MT82) | ✅ corrected | Ford owner manual, Mountune, Jacks Transmissions (Ford #CV6Z-7002-B) |
+| Wheels **18×8 · ET55 · 5×108 · 235/40R18** (not 18×7.5/ET52.5) | ✅ corrected | MAPerformance, Wheel-Size.com, Fitment Industries |
+| **252 hp / 270 lb-ft** (not 247) | ✅ confirmed | automobile-catalog, US News, Edmunds |
+| Recall **18S32 / NHTSA 18V735** purge valve → tank deformation → stall (2012–18 Focus, ~1.28M) | ✅ confirmed | CarComplaints, NHTSA RCLRPT-18V735, oemdtc |
+| 2026 re-recall **26S40 / 26V369** (incorrect prior remedy) | ✅ confirmed | Ford Authority (Jun 2026), NHTSA 26V369 |
+| Firing order **1-3-4-2** | ✅ per vault Grade-A | Ford engine spec (FFST vault 03) |
+| MMT6 4th gear **1.03** (not 1.321) | ✅ per vault correction | Ford NA transmission spec |
+| **Fog bulb** H8 vs H11 vs H16 | ⚠️ unresolved — **pull bulb at car** | aggregators H8; ST1 research H11; PARTS.md H16 |
+| Headlight **H11 low / H1 high** | ⚠️ verify high beam | ST1 research (aggregators unreliable on high) |
 
 *Maintained in the repo; mirrored to FOST. Update this file first when a fact about the car changes.*

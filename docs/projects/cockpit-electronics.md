@@ -1,3 +1,9 @@
+---
+title: 🅐 Cockpit Electronics & Trim
+aliases: [cockpit-electronics, Cockpit, Head unit, RR2, Maestro]
+tags: [focus-st, project, bundle-a, interior, electronics]
+---
+
 # 🅐 Cockpit Electronics & Trim — Head Unit + Maestro RR2
 
 > The 2030-cabin build. One planned dash/console program: aftermarket head unit with **wireless Android Auto**, integrated through an **iDatalink Maestro RR2** so you keep steering controls, chimes, and vehicle/OBD data — plus the Qi charger, interior LEDs, blue ambient lighting, and shift knob while the dash is open.

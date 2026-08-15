@@ -1,3 +1,9 @@
+---
+title: 🅳 FORScan / Digital Session
+aliases: [forscan-session, FORScan session, MyKey, PATS]
+tags: [focus-st, project, bundle-d, forscan, electronics]
+---
+
 # 🅳 FORScan / Digital Session
 
 > Laptop + OBDLink, no hand tools. Batch every software change, key programming, and MyKey reset into one sitting with fresh module backups. Highest value-per-dollar work on the car.

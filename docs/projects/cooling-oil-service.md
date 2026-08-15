@@ -1,3 +1,9 @@
+---
+title: 🅲 Cooling & Oil-Leak Service
+aliases: [cooling-oil-service, Cooling, Radiator, Oil leak]
+tags: [focus-st, project, bundle-c, cooling, priority-1]
+---
+
 # 🅲 Cooling & Oil-Leak Service
 
 > **Priority 1.** The radiator has a through-hole in the front-left corner of the core. While the cooling system is drained, batch every job that needs the front end open or the same fluids. Phoenix heat makes this the highest-value session on the car.

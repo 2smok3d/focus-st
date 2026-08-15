@@ -22,6 +22,13 @@ const SHEET_ID = '1Y5lDZIvOPDb0Lnn6e575NiTVaS0s_MPTd4s1nyWj_Bw'; // FOST — Rec
 const PROCESSED_LABEL = 'FOST-Logged';
 const LOOKBACK = 'newer_than:2d';
 
+// OPTIONAL — feed the digital-garage truth store too. Leave '' to disable.
+// Point at your running API's /receipts (e.g. a tunnel to http://localhost:8000).
+// Each receipt is POSTed as a pending PROPOSAL you approve later; it never
+// writes the car's record directly. See digital-garage/README.md.
+const DG_ENDPOINT = '';           // e.g. 'https://your-tunnel.example/receipts'
+const DG_TOKEN = '';              // optional shared secret sent as X-DG-Token
+
 // Only treat as a receipt if it looks like a purchase AND (optionally) touches a car vendor/keyword.
 const SEARCH = LOOKBACK +
   ' (subject:(order OR receipt OR invoice OR "order confirmation" OR purchase OR shipped)) ' +
@@ -47,8 +54,33 @@ function runOnce() {
     const msg = thread.getMessages()[thread.getMessageCount() - 1];
     const row = parseReceipt(msg);
     if (row) sheet.appendRow(row);
+    if (DG_ENDPOINT) postToGarage(msg, row); // optional truth-store feed
     thread.addLabel(label); // mark handled either way
   });
+}
+
+// POST a structured receipt to digital-garage /receipts (files a proposal).
+function postToGarage(msg, row) {
+  try {
+    const payload = {
+      vendor: row ? row[1] : msg.getFrom(),
+      date: row ? row[0] : Utilities.formatDate(msg.getDate(), Session.getScriptTimeZone(), 'yyyy-MM-dd'),
+      total: row && row[7] !== 'TBD' ? Number(row[7]) : null,
+      items: [msg.getSubject() || ''],
+      order_id: '',
+      url: 'https://mail.google.com/mail/u/0/#inbox/' + msg.getId(),
+      email_id: msg.getId(),
+      text: (msg.getPlainBody() || '').slice(0, 4000) // let the API re-parse if it wants
+    };
+    const headers = DG_TOKEN ? { 'X-DG-Token': DG_TOKEN } : {};
+    UrlFetchApp.fetch(DG_ENDPOINT, {
+      method: 'post', contentType: 'application/json', headers: headers,
+      payload: JSON.stringify(payload), muteHttpExceptions: true
+    });
+  } catch (e) {
+    // Non-fatal: the sheet row is still logged even if the garage is offline.
+    console.warn('digital-garage POST failed: ' + e);
+  }
 }
 
 function parseReceipt(msg) {

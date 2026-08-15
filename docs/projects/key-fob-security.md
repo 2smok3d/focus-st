@@ -1,3 +1,9 @@
+---
+title: 🅕 Key Fob & Security
+aliases: [key-fob-security, Key fob, Keys, PATS, MyKey]
+tags: [focus-st, project, bundle-f, security, electronics]
+---
+
 # 🅕 Key Fob & Security
 
 > Ex-auction car came with **0 admin keys / 3 MyKeys**. Get a working spare, clear the MyKeys, and (optional) transplant the fob PCB into a slimmer shell.
