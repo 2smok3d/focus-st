@@ -71,6 +71,29 @@ Or run the whole thing in Docker:
 docker compose up --build            # db + api together
 ```
 
+## Receipts in, dashboard out
+
+The store is wired to both sides of the vision:
+
+**Gmail receipts → proposals.** A purchase or service receipt (posted by the
+Gmail Apps Script to `POST /receipts`, or filed with `python -m app.cli receipt
+email.txt`, or pasted to Claude via the `log_receipt` MCP tool) is parsed,
+classified as a **parts purchase** or a **service event**, and filed as a
+*pending proposal*. Nothing lands on the car's record until you approve it — the
+receipt path honors the same boundary as everything else.
+
+**Truth store → markdown/JSON.** `python -m app.cli export` regenerates
+`MODS.md` (the file the PWA references) and `data/export/garage.json` (a single
+feed the dashboard can read instead of inline data) from the database. Postgres
+becomes the source; the markdown surfaces become build artifacts, so they never
+drift. `GET /export/snapshot` returns the same JSON live.
+
+```bash
+python -m app.cli receipt receipt.txt      # → pending proposal
+python -m app.cli approve 1 --by "Brandon" # → lands as parts/service_event
+python -m app.cli export --miles 62000     # → MODS.md + garage.json
+```
+
 ## The approval boundary
 
 Reads never require approval. Writes that change the vehicle's record — a new

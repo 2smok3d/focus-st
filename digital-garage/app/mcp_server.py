@@ -135,5 +135,15 @@ def propose_change(entity: str, patch: dict, op: str = "insert",
                                       proposed_by="mcp-agent")
 
 
+@mcp.tool
+def log_receipt(text: str) -> dict:
+    """Parse a pasted purchase/service receipt and file it as a pending proposal
+    (a parts purchase or a service event) for HUMAN APPROVAL. Does not modify the
+    car's record — a person approves via `python -m app.cli approve`."""
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        return service.propose_from_receipt(s, v.id, text, proposed_by="mcp-agent")
+
+
 if __name__ == "__main__":
     mcp.run()

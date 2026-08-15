@@ -43,6 +43,20 @@ class ProposalIn(BaseModel):
     proposed_by: str = "agent"
 
 
+class ReceiptIn(BaseModel):
+    # Either a structured receipt or raw email text. The Gmail Apps Script posts
+    # the structured form; paste-in uses `text`.
+    vendor: str | None = None
+    date: str | None = None
+    total: float | None = None
+    currency: str | None = None
+    items: list[str] | None = None
+    order_id: str | None = None
+    url: str | None = None
+    email_id: str | None = None
+    text: str | None = Field(None, description="Raw email body, if unstructured.")
+
+
 class ApproveIn(BaseModel):
     approved_by: str = Field(..., examples=["Brandon"])
 
@@ -111,6 +125,15 @@ def parts_search(q: str, part_number: str | None = None):
     return domain.parts_search_links(q, part_number=part_number)
 
 
+@app.get("/export/snapshot")
+def export_snapshot(miles: int | None = Query(None, ge=0), s: Session = Depends(get_session)):
+    """The full car as one JSON feed (vehicle, specs, mods, issues, due, costs) —
+    what garage.json contains and the dashboard can read."""
+    from .export import build_snapshot
+    v = service.get_vehicle(s)
+    return build_snapshot(s, v.id, current_miles=miles)
+
+
 @app.get("/sources")
 def sources(s: Session = Depends(get_session)):
     rows = s.scalars(select(Source).order_by(Source.authority)).all()
@@ -131,6 +154,20 @@ def create_proposal(body: ProposalIn, s: Session = Depends(get_session)):
         res = service.propose_change(
             s, v.id, body.entity, body.patch, op=body.op, entity_id=body.entity_id,
             rationale=body.rationale, proposed_by=body.proposed_by)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+    _commit(s)
+    return res
+
+
+@app.post("/receipts", status_code=201)
+def ingest_receipt(body: ReceiptIn, s: Session = Depends(get_session)):
+    """Accept a Gmail receipt (structured or raw text) and file it as a pending
+    proposal. This is the endpoint the Gmail Apps Script posts to."""
+    v = service.get_vehicle(s)
+    payload: dict | str = body.text if body.text else body.model_dump(exclude_none=True)
+    try:
+        res = service.propose_from_receipt(s, v.id, payload)
     except ValueError as e:
         raise HTTPException(422, str(e))
     _commit(s)

@@ -206,6 +206,7 @@ PROPOSABLE_ENTITIES: dict[str, set[str]] = {
               "root_cause", "verification", "note"},
     "spec": {"category", "name", "value", "unit", "verification"},
     "service_event": {"item", "performed_at", "miles", "cost", "vendor", "note"},
+    "parts": {"name", "part_number", "category", "oem", "approx_price", "url", "note"},
 }
 
 

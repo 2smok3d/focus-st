@@ -8,6 +8,8 @@
     python -m app.cli ingest forscan scan.txt [--miles 61000]
     python -m app.cli dtc P0299            # find a code across sessions
     python -m app.cli parts "intercooler"  # retailer search links
+    python -m app.cli receipt email.txt    # file a receipt as a proposal
+    python -m app.cli export --miles 62000 # DB → MODS.md + garage.json
     python -m app.cli proposals            # review the approval queue
     python -m app.cli approve <id> --by "Brandon"
     python -m app.cli reject  <id> --by "Brandon" --reason "duplicate"
@@ -114,6 +116,40 @@ def cmd_parts(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_receipt(args: argparse.Namespace) -> int:
+    import json
+    raw = Path(args.file).read_text()
+    payload: dict | str
+    if args.file.endswith(".json"):
+        payload = json.loads(raw)
+    else:
+        payload = raw
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        res = service.propose_from_receipt(s, v.id, payload, proposed_by="cli")
+    print(f"Filed proposal #{res['proposal_id']} as {res['classified_as']} "
+          f"(vendor {res['receipt']['vendor']}, total {res['receipt']['total']}).")
+    print(f"  patch: {res['patch']}")
+    print("  Approve with:  python -m app.cli approve "
+          f"{res['proposal_id']} --by \"<name>\"")
+    return 0
+
+
+def cmd_export(args: argparse.Namespace) -> int:
+    from pathlib import Path as _P
+
+    from .export import write_export
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        out = _P(args.out) if args.out else None
+        res = write_export(s, v.id, current_miles=args.miles,
+                           repo_root=out, json_dir=out)
+    print(f"Wrote {res['mods_md']}")
+    print(f"Wrote {res['garage_json']}")
+    print(f"  {res['mods']} mods · total spend ${res['total_cost']:,.2f}")
+    return 0
+
+
 def cmd_proposals(args: argparse.Namespace) -> int:
     with session_scope() as s:
         rows = service.list_proposals(s, status=args.status)
@@ -187,6 +223,15 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("query")
     sp.add_argument("--part-number", default=None)
     sp.set_defaults(fn=cmd_parts)
+
+    sp = sub.add_parser("receipt", help="file a receipt (.txt/.json) as a proposal")
+    sp.add_argument("file")
+    sp.set_defaults(fn=cmd_receipt)
+
+    sp = sub.add_parser("export", help="export DB → MODS.md + garage.json")
+    sp.add_argument("--miles", type=int, default=None)
+    sp.add_argument("--out", default=None, help="output dir (default: repo root for MODS.md, data/export for json)")
+    sp.set_defaults(fn=cmd_export)
 
     sp = sub.add_parser("proposals", help="review the approval queue")
     sp.add_argument("--status", default="pending")

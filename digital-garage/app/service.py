@@ -17,6 +17,7 @@ from .models import (
     Issue,
     MaintenanceInterval,
     Mod,
+    Part,
     ServiceEvent,
     Spec,
     Vehicle,
@@ -28,6 +29,7 @@ _ENTITY_MODELS = {
     "issue": Issue,
     "spec": Spec,
     "service_event": ServiceEvent,
+    "parts": Part,
 }
 
 # Columns that must be coerced from ISO strings (JSON has no date type).
@@ -97,6 +99,20 @@ def propose_change(session: Session, vehicle_id: int, entity: str, patch: dict,
     session.add(prop)
     session.flush()
     return {"proposal_id": prop.id, "status": "pending", "entity": entity, "patch": patch}
+
+
+def propose_from_receipt(session: Session, vehicle_id: int, payload: dict | str,
+                         *, proposed_by: str = "gmail-receipt") -> dict:
+    """Parse a receipt, classify it, and file it as a pending proposal."""
+    from . import receipts  # local import keeps domain/service import graph flat
+
+    receipt = receipts.parse_receipt(payload)
+    cls = receipts.classify(receipt)
+    res = propose_change(session, vehicle_id, cls.entity, cls.patch,
+                         rationale=cls.rationale, proposed_by=proposed_by)
+    res["receipt"] = receipt.as_dict()
+    res["classified_as"] = cls.entity
+    return res
 
 
 def list_proposals(session: Session, status: str | None = "pending") -> list[dict]:
