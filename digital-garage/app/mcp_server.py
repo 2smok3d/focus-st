@@ -92,10 +92,40 @@ def find_dtc(code: str) -> list[dict]:
 
 
 @mcp.tool
+def list_sessions() -> list[dict]:
+    """List ingested diagnostic sessions (FORScan/candump/datalog) with row counts."""
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        return service.list_sessions(s, v.id)
+
+
+@mcp.tool
+def session_summary(session_id: int) -> dict:
+    """Summarize a datalog session: channel stats + turbo-relevant findings
+    (boost tracking, knock, misfire, fuel-trim drift, temps, rail pressure).
+    Answers 'was that pull safe?' from an ingested log."""
+    with session_scope() as s:
+        return service.session_summary(s, session_id)
+
+
+@mcp.tool
 def parts_search(query: str, part_number: str | None = None) -> dict:
     """Generate retailer search links for a part (Amazon, eBay, RockAuto, Summit,
     Google), scoped to the vehicle when no part number is given."""
     return domain.parts_search_links(query, part_number=part_number)
+
+
+@mcp.tool
+def check_recalls(refresh: bool = False) -> list[dict]:
+    """List recall / safety campaigns for the vehicle. With refresh=True, re-seed
+    the known baseline and try a live NHTSA fetch first (non-fatal if the network
+    is unavailable). Per-VIN completion isn't in the free API — 'unknown' status
+    means confirm at a dealer."""
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        if refresh:
+            service.refresh_recalls(s, v, live=True)
+        return service.list_recalls(s, v.id)
 
 
 @mcp.tool

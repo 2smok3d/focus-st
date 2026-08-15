@@ -98,6 +98,32 @@ def cmd_ingest(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_sessions(args: argparse.Namespace) -> int:
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        for r in service.list_sessions(s, v.id):
+            print(f"  #{r['id']} {r['kind']:<8} dtcs={r['dtcs']} meas={r['measurements']} "
+                  f"can={r['can_frames']}  {r['ingested_at'] or ''}")
+    return 0
+
+
+def cmd_summary(args: argparse.Namespace) -> int:
+    icon = {"warn": "🟡", "info": "·"}
+    with session_scope() as s:
+        try:
+            summ = service.session_summary(s, args.id)
+        except LookupError as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+    print(f"Session #{summ['session_id']} ({summ['kind']}) · {summ['samples']} samples · "
+          f"{summ['channels_recorded']} channels · {summ['duration_s']}s")
+    for f in summ["findings"]:
+        print(f"  {icon.get(f['level'], '·')} {f['text']}")
+    if not summ["findings"]:
+        print("  (no measurements to analyze — is this a datalog session?)")
+    return 0
+
+
 def cmd_dtc(args: argparse.Namespace) -> int:
     with session_scope() as s:
         rows = s.scalars(select(Dtc).where(Dtc.code == args.code.upper())).all()
@@ -135,6 +161,34 @@ def cmd_receipt(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_recalls(args: argparse.Namespace) -> int:
+    icon = {"completed": "✅", "open": "🔴", "unknown": "⚪"}
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        if args.refresh:
+            res = service.refresh_recalls(s, v, live=not args.offline)
+            print(f"Refreshed: known={res['known_seeded']} nhtsa={res['nhtsa_fetched']}"
+                  + (f" (NHTSA: {res['error']})" if res["error"] else ""))
+        for r in service.list_recalls(s, v.id):
+            print(f"  {icon.get(r['status'], '·')} [{r['campaign_number']}] "
+                  f"{r['component'] or ''} — {r['status']} ({r['origin']})")
+            if r["summary"]:
+                print(f"      {r['summary'][:110]}")
+    return 0
+
+
+def cmd_recall_status(args: argparse.Namespace) -> int:
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        try:
+            service.set_recall_status(s, v.id, args.campaign, args.status)
+        except (LookupError, ValueError) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+    print(f"{args.campaign} → {args.status}")
+    return 0
+
+
 def cmd_export(args: argparse.Namespace) -> int:
     from pathlib import Path as _P
 
@@ -147,6 +201,44 @@ def cmd_export(args: argparse.Namespace) -> int:
     print(f"Wrote {res['mods_md']}")
     print(f"Wrote {res['garage_json']}")
     print(f"  {res['mods']} mods · total spend ${res['total_cost']:,.2f}")
+    return 0
+
+
+def cmd_publish(args: argparse.Namespace) -> int:
+    """Export, then git add/commit/push the two published artifacts so the Pages
+    dashboard updates. Only stages garage.json + MODS.md."""
+    import subprocess
+    from pathlib import Path as _P
+
+    from .export import write_export
+    repo = _P(__file__).resolve().parent.parent.parent  # focus-st/
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        res = write_export(s, v.id, current_miles=args.miles)
+    files = [res["mods_md"], res["garage_json"]]
+
+    def git(*a):
+        return subprocess.run(["git", "-C", str(repo), *a], capture_output=True, text=True)
+
+    git("add", *files)
+    status = git("status", "--porcelain", *files).stdout.strip()
+    if not status:
+        print("Nothing changed — dashboard already current.")
+        return 0
+    msg = args.message or "chore(garage): refresh published snapshot"
+    c = git("commit", "-m", msg, *files)
+    if c.returncode != 0:
+        print(f"commit failed:\n{c.stderr or c.stdout}", file=sys.stderr)
+        return 1
+    print("Committed:", msg)
+    if args.push:
+        p = git("push")
+        if p.returncode != 0:
+            print(f"push failed:\n{p.stderr or p.stdout}", file=sys.stderr)
+            return 1
+        print("Pushed.")
+    else:
+        print("Skipped push (--push to publish to Pages).")
     return 0
 
 
@@ -169,11 +261,16 @@ def cmd_approve(args: argparse.Namespace) -> int:
     with session_scope() as s:
         try:
             res = service.approve_proposal(s, args.id, args.by)
+            export = service.maybe_autoexport(s, service.get_vehicle(s).id)
         except (LookupError, ValueError) as e:
             print(f"error: {e}", file=sys.stderr)
             return 1
     print(f"Approved #{res['proposal_id']} → {res['entity']} #{res['applied_id']} "
           f"(by {res['approved_by']})")
+    if export and not export.get("error"):
+        print(f"  ↳ auto-exported {export['garage_json']} + MODS.md")
+    elif export and export.get("error"):
+        print(f"  ↳ auto-export skipped: {export['error']}")
     return 0
 
 
@@ -209,7 +306,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(fn=cmd_due)
 
     sp = sub.add_parser("ingest", help="ingest a diagnostic artifact")
-    sp.add_argument("kind", choices=["forscan", "candump"])
+    sp.add_argument("kind", choices=["forscan", "candump", "datalog"])
     sp.add_argument("file")
     sp.add_argument("--miles", type=int, default=None)
     sp.add_argument("--note", default=None)
@@ -218,6 +315,12 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("dtc", help="find a DTC across sessions")
     sp.add_argument("code")
     sp.set_defaults(fn=cmd_dtc)
+
+    sub.add_parser("sessions", help="list ingested diagnostic sessions").set_defaults(fn=cmd_sessions)
+
+    sp = sub.add_parser("summary", help="summarize a datalog session")
+    sp.add_argument("id", type=int)
+    sp.set_defaults(fn=cmd_summary)
 
     sp = sub.add_parser("parts", help="retailer search links")
     sp.add_argument("query")
@@ -228,10 +331,26 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("file")
     sp.set_defaults(fn=cmd_receipt)
 
+    sp = sub.add_parser("recalls", help="list/refresh recall campaigns")
+    sp.add_argument("--refresh", action="store_true", help="re-seed known + fetch NHTSA")
+    sp.add_argument("--offline", action="store_true", help="with --refresh, skip the NHTSA fetch")
+    sp.set_defaults(fn=cmd_recalls)
+
+    sp = sub.add_parser("recall-status", help="mark a recall completed/open/unknown")
+    sp.add_argument("campaign")
+    sp.add_argument("status", choices=["unknown", "open", "completed"])
+    sp.set_defaults(fn=cmd_recall_status)
+
     sp = sub.add_parser("export", help="export DB → MODS.md + garage.json")
     sp.add_argument("--miles", type=int, default=None)
     sp.add_argument("--out", default=None, help="output dir (default: repo root for MODS.md, data/export for json)")
     sp.set_defaults(fn=cmd_export)
+
+    sp = sub.add_parser("publish", help="export + git commit/push the snapshot")
+    sp.add_argument("--miles", type=int, default=None)
+    sp.add_argument("--message", default=None)
+    sp.add_argument("--push", action="store_true", help="also push to origin")
+    sp.set_defaults(fn=cmd_publish)
 
     sp = sub.add_parser("proposals", help="review the approval queue")
     sp.add_argument("--status", default="pending")

@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import service
-from .models import Issue, Mod, Part, ServiceEvent, Source, Spec
+from .models import Issue, Mod, OdometerReading, Part, ServiceEvent, Source, Spec
 
 
 def _f(v) -> float | None:
@@ -30,6 +30,14 @@ def build_snapshot(session: Session, vehicle_id: int,
                    current_miles: int | None = None) -> dict:
     from .models import Vehicle
     veh = session.get(Vehicle, vehicle_id)
+
+    # Fall back to the latest odometer reading when no mileage was supplied.
+    if current_miles is None:
+        latest = session.scalar(
+            select(OdometerReading).where(OdometerReading.vehicle_id == vehicle_id)
+            .order_by(OdometerReading.recorded_at.desc(), OdometerReading.id.desc())
+        )
+        current_miles = latest.miles if latest else None
 
     specs = session.scalars(
         select(Spec).where(Spec.vehicle_id == vehicle_id).order_by(Spec.category, Spec.name)
@@ -76,6 +84,7 @@ def build_snapshot(session: Session, vehicle_id: int,
                              "miles": s.miles, "cost": _f(s.cost), "vendor": s.vendor}
                             for s in services],
         "maintenance_due": service.due_list(session, vehicle_id, current_miles=current_miles),
+        "recalls": service.list_recalls(session, vehicle_id),
         "costs": {"mods": round(mod_cost, 2), "service": round(service_cost, 2),
                   "parts": round(parts_cost, 2),
                   "total": round(mod_cost + service_cost + parts_cost, 2),
@@ -134,10 +143,14 @@ def write_export(session: Session, vehicle_id: int, *, current_miles: int | None
     """Write MODS.md (repo root) and garage.json (data/export/). Returns paths."""
     snap = build_snapshot(session, vehicle_id, current_miles=current_miles)
     repo_root = repo_root or Path(__file__).resolve().parent.parent.parent  # focus-st/
-    json_dir = json_dir or (Path(__file__).resolve().parent.parent / "data" / "export")
+    # garage.json lives beside the dashboard in web/ (garage.html fetches
+    # ./garage.json); the human-readable MODS.md lives with the data in data/.
+    json_dir = json_dir or (repo_root / "web")
     json_dir.mkdir(parents=True, exist_ok=True)
+    data_dir = repo_root / "data"
+    data_dir.mkdir(parents=True, exist_ok=True)
 
-    mods_md_path = repo_root / "MODS.md"
+    mods_md_path = data_dir / "MODS.md"
     garage_json_path = json_dir / "garage.json"
     mods_md_path.write_text(render_mods_md(snap))
     garage_json_path.write_text(json.dumps(snap, indent=2))

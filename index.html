@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0b">
+<title>FOST · Digital Garage</title>
+<link rel="icon" href="web/icon.svg">
+<style>
+  :root{--bg:#0a0a0b;--panel:#141416;--line:#26262b;--line2:#2e2e35;--ink:#f4f4f6;
+    --ink2:#a2a2ad;--ink3:#63636e;--red:#e8000d;--green:#35c46a;
+    --disp:'Chakra Petch',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--disp);min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:32px;
+    background-image:radial-gradient(circle at 50% 0%,rgba(232,0,13,.08),transparent 55%)}
+  .brand{text-align:center}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.35em;color:var(--ink3);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:clamp(44px,12vw,84px);font-weight:700;letter-spacing:-.02em;line-height:.9}
+  h1 em{color:var(--red);font-style:normal}
+  .tag{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--ink2);text-transform:uppercase;margin-top:14px}
+  .cards{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;max-width:560px;width:100%}
+  a.card{flex:1 1 220px;text-decoration:none;background:var(--panel);border:1px solid var(--line);
+    border-radius:16px;padding:22px 20px;transition:.16s;position:relative;overflow:hidden}
+  a.card:hover{border-color:var(--red);transform:translateY(-2px)}
+  a.card .k{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--red);text-transform:uppercase}
+  a.card h2{font-size:22px;font-weight:600;margin:8px 0 6px;letter-spacing:.02em}
+  a.card p{font-size:13px;color:var(--ink2);line-height:1.5}
+  a.card .arr{position:absolute;top:20px;right:20px;color:var(--ink3);transition:.16s}
+  a.card:hover .arr{color:var(--red);transform:translate(3px,-3px)}
+  .foot{font-family:var(--mono);font-size:11px;color:var(--ink3);display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+  .foot a{color:var(--ink3);text-decoration:none;border-bottom:1px solid transparent;transition:.14s}
+  .foot a:hover{color:var(--ink);border-color:var(--red)}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;vertical-align:middle;margin-right:6px}
+</style>
+</head>
+<body>
+  <div class="brand">
+    <div class="eyebrow">2017 · 2.0L EcoBoost · MT82</div>
+    <h1>FOCUS <em>ST</em></h1>
+    <div class="tag"><span class="dot"></span>Digital Garage</div>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="web/garage.html">
+      <span class="arr">↗</span>
+      <div class="k">Dashboard</div>
+      <h2>Garage HUD</h2>
+      <p>Live dossier — specs, projects, engine bay, maintenance, recalls, searchable manual.</p>
+    </a>
+    <a class="card" href="web/index.html">
+      <span class="arr">↗</span>
+      <div class="k">PWA</div>
+      <h2>Parts Tracker</h2>
+      <p>Add parts, browse the catalog, log installs. Writes straight to the repo.</p>
+    </a>
+  </div>
+
+  <div class="foot">
+    <a href="https://github.com/2smok3d/focus-st">◆ Repository</a>
+    <a href="README.md">◆ Docs</a>
+    <a href="digital-garage/README.md">◆ Digital Garage backend</a>
+  </div>
+</body>
+</html>

@@ -7,8 +7,10 @@ the same approval boundary the CLI and MCP server honor.
 from __future__ import annotations
 
 import datetime as dt
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException, Query
+from fastapi.responses import FileResponse, RedirectResponse
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -23,6 +25,20 @@ app = FastAPI(
     description="Local truth store for a 2017 Ford Focus ST. Reads open; "
                 "vehicle-record writes require human approval.",
 )
+
+_STATIC = Path(__file__).resolve().parent / "static"
+
+
+@app.get("/", include_in_schema=False)
+def home():
+    return RedirectResponse("/ui")
+
+
+@app.get("/ui", include_in_schema=False)
+def approve_ui():
+    """One-tap approval console for the proposal queue (served same-origin so it
+    talks to this API without CORS). Open on your phone against the running API."""
+    return FileResponse(_STATIC / "approve.html", media_type="text/html")
 
 
 def _commit(s: Session):
@@ -120,6 +136,22 @@ def maintenance_due(miles: int | None = Query(None, ge=0),
     return service.due_list(s, v.id, current_miles=miles, today=dt.date.today())
 
 
+@app.get("/sessions")
+def sessions(s: Session = Depends(get_session)):
+    """List ingested diagnostic sessions with row counts."""
+    v = service.get_vehicle(s)
+    return service.list_sessions(s, v.id)
+
+
+@app.get("/sessions/{session_id}/summary")
+def session_summary(session_id: int, s: Session = Depends(get_session)):
+    """Datalog summary: channel stats + turbo-relevant findings for a session."""
+    try:
+        return service.session_summary(s, session_id)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+
+
 @app.get("/parts/search")
 def parts_search(q: str, part_number: str | None = None):
     return domain.parts_search_links(q, part_number=part_number)
@@ -132,6 +164,40 @@ def export_snapshot(miles: int | None = Query(None, ge=0), s: Session = Depends(
     from .export import build_snapshot
     v = service.get_vehicle(s)
     return build_snapshot(s, v.id, current_miles=miles)
+
+
+@app.get("/recalls")
+def recalls(s: Session = Depends(get_session)):
+    """Known + fetched recall campaigns for this vehicle."""
+    v = service.get_vehicle(s)
+    return service.list_recalls(s, v.id)
+
+
+@app.post("/recalls/refresh")
+def recalls_refresh(live: bool = True, s: Session = Depends(get_session)):
+    """Re-seed the known baseline and (by default) fetch from NHTSA. Live-fetch
+    failure is reported in the response but non-fatal."""
+    v = service.get_vehicle(s)
+    res = service.refresh_recalls(s, v, live=live)
+    _commit(s)
+    return res
+
+
+class RecallStatusIn(BaseModel):
+    status: str = Field(..., examples=["completed"])
+
+
+@app.post("/recalls/{campaign}/status")
+def recall_status(campaign: str, body: RecallStatusIn, s: Session = Depends(get_session)):
+    v = service.get_vehicle(s)
+    try:
+        res = service.set_recall_status(s, v.id, campaign, body.status)
+    except LookupError as e:
+        raise HTTPException(404, str(e))
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+    _commit(s)
+    return res
 
 
 @app.get("/sources")
@@ -178,11 +244,14 @@ def ingest_receipt(body: ReceiptIn, s: Session = Depends(get_session)):
 def approve(proposal_id: int, body: ApproveIn, s: Session = Depends(get_session)):
     try:
         res = service.approve_proposal(s, proposal_id, body.approved_by)
+        export = service.maybe_autoexport(s, service.get_vehicle(s).id)
     except LookupError as e:
         raise HTTPException(404, str(e))
     except ValueError as e:
         raise HTTPException(422, str(e))
     _commit(s)
+    if export:
+        res["exported"] = export
     return res
 
 

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Garage · Approvals</title>
+<style>
+  :root{--bg:#0a0a0b;--panel:#141416;--line:#26262b;--ink:#f4f4f6;--ink2:#a8a8b3;
+        --ink3:#6b6b76;--red:#e8000d;--green:#35c46a;--amber:#ffb020;--radius:14px;
+        --disp:'Chakra Petch',ui-sans-serif,system-ui,sans-serif;
+        --mono:ui-monospace,'SF Mono',Menlo,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--disp);
+       -webkit-font-smoothing:antialiased;padding:0 0 40px}
+  header{position:sticky;top:0;background:rgba(10,10,11,.92);backdrop-filter:blur(8px);
+         border-bottom:1px solid var(--line);padding:14px 18px calc(14px + env(safe-area-inset-top));
+         display:flex;align-items:center;gap:12px;z-index:5}
+  header b{font-weight:700;letter-spacing:.04em;font-size:16px}
+  header .tag{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.16em;
+              color:var(--ink3);text-transform:uppercase}
+  .wrap{max-width:640px;margin:0 auto;padding:18px}
+  .who{display:flex;gap:8px;align-items:center;margin-bottom:16px}
+  .who input{flex:1;background:var(--panel);border:1px solid var(--line);color:var(--ink);
+             border-radius:10px;padding:11px 13px;font-family:var(--disp);font-size:15px}
+  .who label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink3);
+             text-transform:uppercase}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+        padding:15px 16px;margin-bottom:13px}
+  .card .top{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+        border:1px solid var(--line);border-radius:20px;padding:3px 10px;color:var(--ink2)}
+  .pill.parts{border-color:#3a6ea5;color:#7db0e8}
+  .pill.service_event{border-color:#3a8a5a;color:#7ddaa0}
+  .pill.mod{border-color:var(--red);color:#ff6b73}
+  .pill.spec,.pill.issue{border-color:var(--amber);color:#ffd27a}
+  .card .id{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink3)}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13.5px;margin:8px 0}
+  .kv dt{color:var(--ink3);font-family:var(--mono);font-size:11px;padding-top:2px}
+  .kv dd{margin:0;color:var(--ink);word-break:break-word}
+  .why{color:var(--ink2);font-size:13px;font-style:italic;margin:8px 0 12px;
+       border-left:2px solid var(--line);padding-left:11px}
+  .row{display:flex;gap:9px}
+  button{flex:1;border:none;border-radius:10px;padding:12px;font-family:var(--disp);
+          font-weight:600;font-size:14px;letter-spacing:.02em;cursor:pointer}
+  .ok{background:var(--green);color:#04140a}
+  .no{background:transparent;border:1px solid var(--line);color:var(--ink2)}
+  .ok:active{transform:scale(.98)}.no:active{transform:scale(.98)}
+  .empty{text-align:center;color:var(--ink3);padding:48px 20px;font-size:14px}
+  .empty .big{font-size:34px;margin-bottom:10px}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--panel);
+         border:1px solid var(--line);border-radius:10px;padding:11px 18px;font-size:13px;
+         opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+  .toast.on{opacity:1}
+  details.paste{margin-bottom:18px;background:var(--panel);border:1px solid var(--line);
+                border-radius:var(--radius);padding:0 15px}
+  details.paste summary{cursor:pointer;padding:13px 0;font-size:13.5px;color:var(--ink2);
+                        font-family:var(--mono);letter-spacing:.06em;list-style:none}
+  details.paste textarea{width:100%;min-height:120px;background:#0e0e10;border:1px solid var(--line);
+       color:var(--ink);border-radius:10px;padding:11px;font-family:var(--mono);font-size:12.5px;
+       margin-bottom:11px;resize:vertical}
+  .muted{color:var(--ink3);font-size:12px;text-align:center;margin-top:22px;font-family:var(--mono);
+         letter-spacing:.04em}
+</style>
+</head>
+<body>
+<header><b>FOST GARAGE</b><span style="color:var(--ink3);font-size:13px">Approvals</span>
+  <span class="tag" id="count">—</span></header>
+<div class="wrap">
+  <div class="who">
+    <div><label>Approver</label></div>
+    <input id="name" placeholder="your name (required to approve)" autocomplete="name">
+  </div>
+
+  <details class="paste">
+    <summary>＋ paste a receipt to file as a proposal</summary>
+    <textarea id="rcpt" placeholder="Paste receipt email text here…"></textarea>
+    <div class="row"><button class="ok" id="fileBtn" style="flex:0 0 auto;padding-left:20px;padding-right:20px">File receipt</button></div>
+    <div style="height:12px"></div>
+  </details>
+
+  <div id="list"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const nameEl=$("#name"), listEl=$("#list"), countEl=$("#count"), toastEl=$("#toast");
+nameEl.value=localStorage.getItem("dg_name")||"";
+nameEl.addEventListener("input",()=>localStorage.setItem("dg_name",nameEl.value.trim()));
+
+function toast(msg){toastEl.textContent=msg;toastEl.classList.add("on");
+  clearTimeout(toast._t);toast._t=setTimeout(()=>toastEl.classList.remove("on"),1900);}
+const esc=s=>String(s==null?"":s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function patchRows(patch){
+  return Object.entries(patch).filter(([,v])=>v!==null&&v!=="").map(([k,v])=>
+    `<dt>${esc(k)}</dt><dd>${esc(typeof v==="object"?JSON.stringify(v):v)}</dd>`).join("");
+}
+
+async function load(){
+  let data=[];
+  try{const r=await fetch("proposals?status=pending",{cache:"no-store"});data=await r.json();}
+  catch(e){listEl.innerHTML=`<div class="empty"><div class="big">⚠</div>Can't reach the garage API.<br>Is it running on this host?</div>`;countEl.textContent="offline";return;}
+  countEl.textContent=data.length?data.length+" pending":"clear";
+  if(!data.length){listEl.innerHTML=`<div class="empty"><div class="big">✓</div>Queue is clear — nothing to approve.</div>`;return;}
+  listEl.innerHTML=data.map(p=>`
+    <div class="card" data-id="${p.id}">
+      <div class="top"><span class="pill ${esc(p.entity)}">${esc(p.entity)}</span>
+        <span style="font-size:12px;color:var(--ink3)">${esc(p.op)} · by ${esc(p.proposed_by)}</span>
+        <span class="id">#${p.id}</span></div>
+      <dl class="kv">${patchRows(p.patch||{})}</dl>
+      ${p.rationale?`<div class="why">${esc(p.rationale)}</div>`:""}
+      <div class="row">
+        <button class="ok" onclick="decide(${p.id},'approve')">✓ Approve</button>
+        <button class="no" onclick="decide(${p.id},'reject')">Reject</button>
+      </div>
+    </div>`).join("");
+}
+
+async function decide(id,action){
+  const by=nameEl.value.trim();
+  if(action==="approve"&&!by){toast("Enter your name first");nameEl.focus();return;}
+  const body=action==="approve"?{approved_by:by}:{approved_by:by,reason:null};
+  const card=document.querySelector(`.card[data-id="${id}"]`);
+  try{
+    const r=await fetch(`proposals/${id}/${action}`,{method:"POST",
+      headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+    if(!r.ok){const e=await r.json().catch(()=>({}));toast(e.detail||("Failed ("+r.status+")"));return;}
+    if(card){card.style.transition="opacity .25s";card.style.opacity="0";setTimeout(load,260);}
+    toast(action==="approve"?`Approved #${id}`:`Rejected #${id}`);
+  }catch(e){toast("Network error");}
+}
+window.decide=decide;
+
+$("#fileBtn").addEventListener("click",async()=>{
+  const text=$("#rcpt").value.trim();
+  if(!text){toast("Paste a receipt first");return;}
+  try{
+    const r=await fetch("receipts",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({text})});
+    const j=await r.json();
+    if(!r.ok){toast(j.detail||"Failed");return;}
+    $("#rcpt").value="";toast(`Filed as ${j.classified_as} → #${j.proposal_id}`);load();
+  }catch(e){toast("Network error");}
+});
+
+load();
+setInterval(load,15000); // gentle auto-refresh
+</script>
+</body>
+</html>

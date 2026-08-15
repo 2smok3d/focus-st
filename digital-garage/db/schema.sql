@@ -206,6 +206,28 @@ CREATE TABLE IF NOT EXISTS can_frames (
 CREATE INDEX IF NOT EXISTS idx_can_session_id ON can_frames(session_id, can_id);
 
 -- ---------------------------------------------------------------------------
+-- Recalls / safety campaigns. Seeded with the known Focus ST campaigns and
+-- refreshable from the NHTSA recallsByVehicle API. Per-VIN completion is not in
+-- the free API, so `status` defaults to 'unknown' until confirmed at a dealer.
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS recalls (
+    id              SERIAL PRIMARY KEY,
+    vehicle_id      INTEGER NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
+    campaign_number TEXT NOT NULL,          -- NHTSA campaign or Ford program (e.g. 18S32)
+    origin          TEXT NOT NULL DEFAULT 'nhtsa',  -- nhtsa | ford-known
+    component       TEXT,
+    summary         TEXT,
+    consequence     TEXT,
+    remedy          TEXT,
+    report_date     DATE,
+    status          TEXT NOT NULL DEFAULT 'unknown',  -- unknown | open | completed
+    verification    verification_state NOT NULL DEFAULT 'CORROBORATED',
+    fetched_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    note            TEXT,
+    UNIQUE (vehicle_id, campaign_number)
+);
+
+-- ---------------------------------------------------------------------------
 -- The approval boundary. Agents write here; humans approve; only then does
 -- the target table change. entity/entity_id/patch describe the intended write.
 -- ---------------------------------------------------------------------------

@@ -207,6 +207,24 @@ class CanFrame(Base):
     data_hex: Mapped[str | None] = mapped_column(Text)
 
 
+class Recall(Base):
+    __tablename__ = "recalls"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    vehicle_id: Mapped[int] = mapped_column(ForeignKey("vehicles.id", ondelete="CASCADE"))
+    campaign_number: Mapped[str] = mapped_column(Text)
+    origin: Mapped[str] = mapped_column(Text, default="nhtsa")
+    component: Mapped[str | None] = mapped_column(Text)
+    summary: Mapped[str | None] = mapped_column(Text)
+    consequence: Mapped[str | None] = mapped_column(Text)
+    remedy: Mapped[str | None] = mapped_column(Text)
+    report_date: Mapped[dt.date | None] = mapped_column(Date)
+    status: Mapped[str] = mapped_column(Text, default="unknown")
+    verification: Mapped[str] = mapped_column(String(20), default="CORROBORATED")
+    fetched_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    note: Mapped[str | None] = mapped_column(Text)
+    __table_args__ = (UniqueConstraint("vehicle_id", "campaign_number"),)
+
+
 class ChangeProposal(Base):
     __tablename__ = "change_proposals"
     id: Mapped[int] = mapped_column(primary_key=True)

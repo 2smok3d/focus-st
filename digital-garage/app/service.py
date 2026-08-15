@@ -13,11 +13,16 @@ from sqlalchemy.orm import Session
 
 from . import domain
 from .models import (
+    CanFrame,
     ChangeProposal,
+    DiagnosticSession,
+    Dtc,
     Issue,
     MaintenanceInterval,
+    Measurement,
     Mod,
     Part,
+    Recall,
     ServiceEvent,
     Spec,
     Vehicle,
@@ -101,6 +106,114 @@ def propose_change(session: Session, vehicle_id: int, entity: str, patch: dict,
     return {"proposal_id": prop.id, "status": "pending", "entity": entity, "patch": patch}
 
 
+def list_sessions(session: Session, vehicle_id: int) -> list[dict]:
+    from sqlalchemy import func
+    rows = session.scalars(
+        select(DiagnosticSession).where(DiagnosticSession.vehicle_id == vehicle_id)
+        .order_by(DiagnosticSession.ingested_at.desc())
+    ).all()
+    out = []
+    for ds in rows:
+        dtc_n = session.scalar(select(func.count(Dtc.id)).where(Dtc.session_id == ds.id))
+        meas_n = session.scalar(select(func.count(Measurement.id)).where(Measurement.session_id == ds.id))
+        can_n = session.scalar(select(func.count(CanFrame.id)).where(CanFrame.session_id == ds.id))
+        out.append({"id": ds.id, "kind": ds.kind, "miles": ds.miles,
+                    "captured_at": ds.captured_at.isoformat() if ds.captured_at else None,
+                    "ingested_at": ds.ingested_at.isoformat() if ds.ingested_at else None,
+                    "sha256": ds.sha256, "dtcs": dtc_n, "measurements": meas_n,
+                    "can_frames": can_n, "note": ds.note})
+    return out
+
+
+def session_summary(session: Session, session_id: int) -> dict:
+    from . import analysis
+    ds = session.get(DiagnosticSession, session_id)
+    if ds is None:
+        raise LookupError(f"Diagnostic session {session_id} not found.")
+    meas = [{"pid": m.pid, "value": m.value, "unit": m.unit, "t_offset_s": m.t_offset_s}
+            for m in session.scalars(select(Measurement).where(Measurement.session_id == session_id)
+                                     .order_by(Measurement.id)).all()]
+    dtc_n = len(session.scalars(select(Dtc).where(Dtc.session_id == session_id)).all())
+    can_n = len(session.scalars(select(CanFrame).where(CanFrame.session_id == session_id)).all())
+    summary = analysis.summarize_measurements(meas, dtc_count=dtc_n, can_count=can_n)
+    summary["session_id"] = session_id
+    summary["kind"] = ds.kind
+    return summary
+
+
+def _upsert_recall(session: Session, vehicle_id: int, row: dict) -> None:
+    existing = session.scalar(select(Recall).where(
+        Recall.vehicle_id == vehicle_id,
+        Recall.campaign_number == row["campaign_number"]))
+    if existing is None:
+        session.add(Recall(vehicle_id=vehicle_id, **row))
+        return
+    # Update fields from the incoming row, but never downgrade a human-set status
+    # (a confirmed 'completed' must survive a refresh) or weaken verification.
+    from . import domain
+    for k, v in row.items():
+        if k == "status":
+            continue
+        if k == "verification" and not domain.can_override(v, existing.verification):
+            continue
+        if v is not None:
+            setattr(existing, k, v)
+    existing.fetched_at = dt.datetime.now(dt.timezone.utc)
+
+
+def seed_known_recalls(session: Session, vehicle_id: int) -> int:
+    from . import recalls
+    for row in recalls.KNOWN:
+        _upsert_recall(session, vehicle_id, dict(row))
+    session.flush()
+    return len(recalls.KNOWN)
+
+
+def refresh_recalls(session: Session, vehicle: Vehicle, *, live: bool = True) -> dict:
+    """Seed the known baseline, then (optionally) augment from NHTSA. Live-fetch
+    failure is non-fatal — the baseline still stands."""
+    from . import recalls
+    seeded = seed_known_recalls(session, vehicle.id)
+    fetched = 0
+    error = None
+    if live:
+        try:
+            rows = recalls.fetch_nhtsa(vehicle.make or "ford", vehicle.model or "focus",
+                                       vehicle.year or 2017)
+            for row in rows:
+                _upsert_recall(session, vehicle.id, row)
+            fetched = len(rows)
+        except Exception as e:  # network/policy/parse — keep the baseline
+            error = f"{type(e).__name__}: {e}"
+    session.flush()
+    return {"known_seeded": seeded, "nhtsa_fetched": fetched, "error": error}
+
+
+def list_recalls(session: Session, vehicle_id: int) -> list[dict]:
+    rows = session.scalars(select(Recall).where(Recall.vehicle_id == vehicle_id)
+                           .order_by(Recall.origin, Recall.campaign_number)).all()
+    return [{"campaign_number": r.campaign_number, "origin": r.origin,
+             "component": r.component, "summary": r.summary, "remedy": r.remedy,
+             "consequence": r.consequence, "status": r.status,
+             "report_date": r.report_date.isoformat() if r.report_date else None,
+             "verification": r.verification, "note": r.note} for r in rows]
+
+
+def set_recall_status(session: Session, vehicle_id: int, campaign_number: str,
+                      status: str) -> dict:
+    if status not in ("unknown", "open", "completed"):
+        raise ValueError("status must be unknown | open | completed")
+    r = session.scalar(select(Recall).where(
+        Recall.vehicle_id == vehicle_id, Recall.campaign_number == campaign_number))
+    if r is None:
+        raise LookupError(f"No recall {campaign_number} on record.")
+    r.status = status
+    if status == "completed":
+        r.verification = "VEHICLE_VERIFIED"
+    session.flush()
+    return {"campaign_number": campaign_number, "status": status}
+
+
 def propose_from_receipt(session: Session, vehicle_id: int, payload: dict | str,
                          *, proposed_by: str = "gmail-receipt") -> dict:
     """Parse a receipt, classify it, and file it as a pending proposal."""
@@ -134,6 +247,19 @@ def _coerce(patch: dict) -> dict:
         if isinstance(out.get(f), str) and out[f]:
             out[f] = dt.date.fromisoformat(out[f])
     return out
+
+
+def maybe_autoexport(session: Session, vehicle_id: int) -> dict | None:
+    """Regenerate MODS.md + garage.json after a record change, if enabled. Any
+    failure is swallowed to a dict — a broken export must never fail an approval."""
+    from .config import settings
+    if not settings.auto_export:
+        return None
+    try:
+        from . import export as export_mod
+        return export_mod.write_export(session, vehicle_id)
+    except Exception as e:  # export is a side effect, not part of the approval
+        return {"error": f"{type(e).__name__}: {e}"}
 
 
 def approve_proposal(session: Session, proposal_id: int, approved_by: str) -> dict:

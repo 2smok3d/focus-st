@@ -17,6 +17,7 @@ from .models import (
     Issue,
     MaintenanceInterval,
     Mod,
+    OdometerReading,
     Spec,
     Source,
     Vehicle,
@@ -78,22 +79,51 @@ INTERVALS = [
     ("Clutch fluid (shares brake reservoir)", None, 24, "CORROBORATED", "community", "MMT6 hydraulic clutch."),
 ]
 
-# --- known issues (platform-level, not yet vehicle-verified) ----------------
+# --- known issues ----------------------------------------------------------
+# Platform-level (CORROBORATED) + this-car observations (VEHICLE_VERIFIED where
+# physically confirmed).
 ISSUES = [
+    dict(title="Radiator cracked → through-hole (front-left of core)",
+         status="open", severity="stop", verification="VEHICLE_VERIFIED",
+         note="Confirmed hole in the aluminum core. Decided fix: Mishimoto radiator. Priority 1 (Cooling bundle)."),
+    dict(title="Possible oil leak after aggressive driving",
+         status="monitoring", severity="warn", verification="CORROBORATED",
+         note="Suspects: valve-cover gasket, turbo oil lines, filter-housing adapter, oil-pan RTV. Diagnose during the cooling/oil service."),
+    dict(title="Floating / uncapped vacuum line (EVAP), no codes",
+         status="monitoring", severity="warn", verification="VEHICLE_VERIFIED",
+         note="Trace and cap. Check against the EVAP purge-valve recall by VIN first."),
+    dict(title="0 admin keys / 3 MyKeys (ex-auction)",
+         status="open", severity="warn", verification="VEHICLE_VERIFIED",
+         note="Program a 2nd IA key via FORScan PATS (Add Key works with 1 existing) + reset MyKey."),
     dict(title="EVAP purge valve campaign (18S32 / 26S40) — verify status for this VIN",
          status="monitoring", severity="warn", verification="CORROBORATED",
          note="Stuck-open purge valve causes P1450/rough idle after refuel. Confirm recall completion against the VIN before chasing EVAP codes."),
     dict(title="P04DB crankcase-ventilation sensitivity — inspect PCV plumbing before parts",
          status="monitoring", severity="info", verification="CORROBORATED",
          note="Treat as a case: smoke/pressure test, confirm calibration expects installed PCV architecture. Permanent DTC can linger post-repair until monitors complete."),
-    dict(title="Intercooler heat-soak (even stock) — baseline before tuning",
-         status="open", severity="info", verification="CORROBORATED",
-         note="Stock IC heat-soaks under AZ ambient + sustained load; prioritized R1 upgrade in the build plan."),
 ]
 
-# --- factory-baseline 'mods' seeded as known slots (stock references) --------
-# Left empty at seed time — real installs are proposed + approved, not seeded,
-# so the store reflects what's actually on THIS car.
+# --- odometer baseline ------------------------------------------------------
+ODOMETER_AT_PURCHASE = 86390
+
+# --- installed mods observed on THIS car (VEHICLE_VERIFIED) ------------------
+# Seeded because they are physically confirmed on the vehicle. Future installs
+# still go through the propose→approve boundary.
+MODS = [
+    dict(slot="Intake", part_name="Injen cold-air intake", stage="P1", verification="VEHICLE_VERIFIED",
+         note="Installed by prior owner. Verify MAF housing size + tune requirement."),
+    dict(slot="Intake feed", part_name="Ram-air / hood-scoop feed", stage="P1", verification="VEHICLE_VERIFIED",
+         note="PO addition feeding the airbox."),
+    dict(slot="Intercooler", part_name="Depo 'Beast' FMIC", stage="R1", verification="VEHICLE_VERIFIED",
+         note="28×8.25×5.5 core. Pressure-tested OK to ~15 psi."),
+    dict(slot="Engine mounts", part_name="Torque Solution rear + passenger mounts", stage="P1", verification="VEHICLE_VERIFIED",
+         note="Reduced wheel hop / engine movement; some NVH increase."),
+    dict(slot="Battery", part_name="Upgraded battery (Group 96R, 590 CCA)", verification="VEHICLE_VERIFIED",
+         note="AGS delete means no grille-shutter draw."),
+    dict(slot="Cargo", part_name="Trunk storage box", verification="VEHICLE_VERIFIED"),
+    dict(slot="Active Grille Shutters", part_name="AGS — REMOVED (delete)", verification="VEHICLE_VERIFIED",
+         note="Grille shutters removed. Confirm tune/BCM tolerates the delete."),
+]
 
 
 def seed(session: Session, *, if_empty: bool = False) -> str:
@@ -147,6 +177,21 @@ def seed(session: Session, *, if_empty: bool = False) -> str:
                 Issue.vehicle_id == vehicle.id, Issue.title == i["title"])) is None:
             session.add(Issue(vehicle_id=vehicle.id, opened_at=dt.date.today(), **i))
 
+    for m in MODS:
+        if session.scalar(select(Mod).where(
+                Mod.vehicle_id == vehicle.id, Mod.slot == m["slot"],
+                Mod.part_name == m["part_name"])) is None:
+            session.add(Mod(vehicle_id=vehicle.id, **m))
+
+    if session.scalar(select(OdometerReading).where(
+            OdometerReading.vehicle_id == vehicle.id)) is None:
+        session.add(OdometerReading(vehicle_id=vehicle.id, miles=ODOMETER_AT_PURCHASE,
+                                    note="At purchase (ex-auction)."))
+
+    from . import service  # lazy: seed the known recall baseline
+    recalls_n = service.seed_known_recalls(session, vehicle.id)
+
     session.flush()
-    return (f"Seeded vehicle {vehicle.vin}: {len(SPECS)} specs, "
-            f"{len(INTERVALS)} intervals, {len(ISSUES)} issues, {len(SOURCES)} sources.")
+    return (f"Seeded vehicle {vehicle.vin}: {len(SPECS)} specs, {len(INTERVALS)} "
+            f"intervals, {len(ISSUES)} issues, {len(MODS)} mods, {recalls_n} recalls, "
+            f"{len(SOURCES)} sources.")
