@@ -1,0 +1,93 @@
+{
+  "garage": "FOST",
+  "owner": "Brandon Berault",
+  "location": "Phoenix, AZ",
+  "note": "The garage: one platform, many machines. Each vehicle shares the same tools, design system, and data logic. Add a vehicle → it slots in here.",
+  "vehicles": [
+    {
+      "slug": "focus-st",
+      "name": "Focus ST",
+      "make": "Ford",
+      "years": "2017",
+      "code": "MK3 · ST1",
+      "class": "Hot hatch",
+      "engine": "2.0L EcoBoost I4 turbo",
+      "drivetrain": "MT82 6-speed · FWD eLSD",
+      "power": "252 hp · 270 lb-ft",
+      "status": "active",
+      "accent": "#e8000d",
+      "screen": "garage.html",
+      "vin": "1FADP3L94HL223134",
+      "tagline": "The daily. Fully documented, wired to the truth store.",
+      "stats": [
+        {"k": "Odometer", "v": "86,390", "u": "mi"},
+        {"k": "Open projects", "v": "30"},
+        {"k": "Recalls to verify", "v": "4"}
+      ]
+    },
+    {
+      "slug": "zzr600",
+      "name": "ZZR600",
+      "make": "Kawasaki",
+      "years": "1991",
+      "code": "ZX600-D",
+      "class": "Sport tourer",
+      "engine": "599cc liquid-cooled inline-4 · DOHC 16v",
+      "drivetrain": "6-speed · chain",
+      "power": "~90 hp (crank)",
+      "status": "staged",
+      "accent": "#4f9dff",
+      "screen": null,
+      "tagline": "First-gen ZZR (ZX-6D). Carbureted inline-four sport tourer.",
+      "stats": [{"k": "Build", "v": "planned"}]
+    },
+    {
+      "slug": "rz350",
+      "name": "RZ350 · Kenny Roberts",
+      "make": "Yamaha",
+      "years": "1985",
+      "code": "RD350 YPVS · 31K",
+      "class": "2-stroke sport",
+      "engine": "347cc reed-valve 2-stroke twin · YPVS",
+      "drivetrain": "6-speed · chain",
+      "power": "~44 hp (US) / ~59 hp (RD)",
+      "status": "staged",
+      "accent": "#ffb020",
+      "screen": null,
+      "tagline": "Last US production year. Kenny Roberts yellow/black livery, powervalve twin.",
+      "stats": [{"k": "Build", "v": "planned"}]
+    },
+    {
+      "slug": "tz250",
+      "name": "TZ250",
+      "make": "Yamaha",
+      "years": "1986–87",
+      "code": "TZ250 · race",
+      "class": "GP roadracer",
+      "engine": "249cc liquid-cooled 2-stroke twin · race-only",
+      "drivetrain": "6-speed close-ratio · chain",
+      "power": "~55–60 hp",
+      "status": "staged",
+      "accent": "#35c46a",
+      "screen": null,
+      "tagline": "Japan-market production roadracer. No lights, no compromise — track/GP only.",
+      "stats": [{"k": "Build", "v": "planned"}]
+    },
+    {
+      "slug": "toyota-pickup",
+      "name": "Pickup (22RE)",
+      "make": "Toyota",
+      "years": "1986",
+      "code": "N50 · single cab",
+      "class": "Compact truck",
+      "engine": "2.4L 22RE SOHC EFI I4 (swap pending)",
+      "drivetrain": "W56 5-speed manual · RWD",
+      "power": "~105 hp (stock 22RE)",
+      "status": "project",
+      "accent": "#a2a2ad",
+      "screen": null,
+      "tagline": "Empty-shell single cab — full interior rebuild + engine swap. Ground-up.",
+      "stats": [{"k": "Cab", "v": "bare shell"}, {"k": "Engine", "v": "swap pending"}]
+    }
+  ]
+}

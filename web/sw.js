@@ -1,5 +1,8 @@
-const CACHE = 'fst-v2';
-const SHELL = ['index.html', 'garage.html', 'manifest.json', 'icon.svg'];
+const CACHE = 'fst-v3';
+const SHELL = [
+  'index.html', 'garage.html', 'manifest.json', 'icon.svg',
+  'assets/hud.css', 'tools/parts.html', 'tools/dtc.html'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)));

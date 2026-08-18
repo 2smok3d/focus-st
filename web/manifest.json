@@ -1,6 +1,7 @@
 {
-  "name": "FOST Parts",
+  "name": "FOST Garage",
   "short_name": "FOST",
+  "description": "Digital garage — vehicles, tools, and diagnostics in one platform.",
   "start_url": "index.html",
   "scope": ".",
   "display": "standalone",
@@ -21,7 +22,7 @@
     }
   ],
   "share_target": {
-    "action": "index.html",
+    "action": "tools/parts.html",
     "method": "GET",
     "enctype": "application/x-www-form-urlencoded",
     "params": {
