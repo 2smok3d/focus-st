@@ -68,7 +68,7 @@
   <nav class="gnav">
     <a href="index.html" class="on">◆ <span>Garage</span></a>
     <a href="tools/dtc.html">❏ <span>Codes</span></a>
-    <a href="garage.html">▣ <span>Focus ST</span></a>
+    <a href="vehicles/focus-st/index.html">▣ <span>Focus ST</span></a>
   </nav>
 </div>
 
@@ -91,7 +91,7 @@
   <div class="sec"><span class="n">02</span><h2>Garage Tools</h2><span class="ln"></span><span class="act mono">shared · multi-vehicle</span></div>
   <div class="grid g3" id="tools"></div>
 
-  <div class="sec"><span class="n">03</span><h2>Needs Attention</h2><span class="ln"></span><a class="act" href="garage.html">Focus ST →</a></div>
+  <div class="sec"><span class="n">03</span><h2>Needs Attention</h2><span class="ln"></span><a class="act" href="vehicles/focus-st/index.html">Focus ST →</a></div>
   <div class="attn" id="attn"><div class="empty" style="padding:22px">Loading live status…</div></div>
 
   <footer>
@@ -140,9 +140,9 @@ const svg=p=>`<svg class="ic" fill="none" stroke="currentColor" stroke-width="1.
 const TOOLS=[
   {href:'tools/dtc.html',ic:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4" stroke-linecap="round"/><path d="M11 8v3M11 14h.01" stroke-linecap="round"/>',
    h:'Code Lookup',p:'Search any OBD-II / DTC — description, likely causes, and a diagnostic path. Ford + generic.',tag:'multi-vehicle'},
-  {href:'garage.html',ic:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 18v2M16 18v2" stroke-linecap="round"/>',
+  {href:'vehicles/focus-st/index.html',ic:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 18v2M16 18v2" stroke-linecap="round"/>',
    h:'Focus ST Cockpit',p:'The full vehicle dossier — specs, projects, engine bay, maintenance, recalls, live manual.',tag:'focus-st'},
-  {href:'tools/parts.html',ic:'<path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5L12 20l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" stroke-linecap="round" stroke-linejoin="round"/>',
+  {href:'tools/parts.html?v=focus-st',ic:'<path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5L12 20l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" stroke-linecap="round" stroke-linejoin="round"/>',
    h:'Parts Tracker',p:'Add parts, browse the catalog, log installs — writes straight to the repo database.',tag:'focus-st · PWA'}
 ];
 $('#tools').innerHTML=TOOLS.map(t=>`<a class="card link accent tool" href="${t.href}">${svg(t.ic)}<h3>${t.h}</h3><p>${t.p}</p><span class="tag">${t.tag}</span></a>`).join('');
@@ -163,13 +163,13 @@ qin.addEventListener('input',runQuick);
 qin.addEventListener('keydown',e=>{if(e.key==='Enter'){const first=qres.querySelector('a');if(first)location.href=first.href;else location.href='tools/dtc.html?q='+encodeURIComponent(qin.value.trim());}});
 
 /* ── Live attention (FOST feed) ── */
-fetch('garage.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(live=>{
+fetch('vehicles/focus-st/garage.json',{cache:'no-store'}).then(r=>r.ok?r.json():null).then(live=>{
   if(!live){$('#attn').innerHTML='<div class="empty" style="padding:22px">Live feed unavailable — open the Focus ST cockpit.</div>';return;}
   const items=[];
   (live.recalls||[]).filter(r=>r.status!=='completed').forEach(r=>items.push(
-    {txt:`Recall ${r.campaign_number} — ${r.component||'campaign'}`,sub:'Verify against VIN',dot:'s-warn',href:'garage.html'}));
+    {txt:`Recall ${r.campaign_number} — ${r.component||'campaign'}`,sub:'Verify against VIN',dot:'s-warn',href:'vehicles/focus-st/index.html'}));
   (live.maintenance_due||[]).filter(d=>d.status==='overdue').slice(0,4).forEach(d=>items.push(
-    {txt:`${d.item} — overdue`,sub:d.detail||'',dot:'s-crit',href:'garage.html'}));
+    {txt:`${d.item} — overdue`,sub:d.detail||'',dot:'s-crit',href:'vehicles/focus-st/index.html'}));
   if(!items.length){$('#attn').innerHTML='<div class="empty" style="padding:22px"><div class="glyph">✓</div>Nothing flagged. Garage is current.</div>';return;}
   $('#attn').innerHTML=items.slice(0,8).map(i=>`<a href="${i.href}">
     <span class="dot-s ${i.dot}"></span><div><div class="txt">${esc(i.txt)}</div>${i.sub?`<div class="sub">${esc(i.sub)}</div>`:''}</div>

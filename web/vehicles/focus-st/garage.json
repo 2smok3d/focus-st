@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-15T11:45:55.798312+00:00",
+  "generated_at": "2026-08-19T05:25:38.945897+00:00",
   "current_miles": 86390,
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -274,7 +274,7 @@
       "severity": "stop",
       "root_cause": null,
       "verification": "VEHICLE_VERIFIED",
-      "opened_at": "2026-08-15"
+      "opened_at": "2026-08-19"
     },
     {
       "title": "Possible oil leak after aggressive driving",
@@ -282,7 +282,7 @@
       "severity": "warn",
       "root_cause": null,
       "verification": "CORROBORATED",
-      "opened_at": "2026-08-15"
+      "opened_at": "2026-08-19"
     },
     {
       "title": "Floating / uncapped vacuum line (EVAP), no codes",
@@ -290,7 +290,7 @@
       "severity": "warn",
       "root_cause": null,
       "verification": "VEHICLE_VERIFIED",
-      "opened_at": "2026-08-15"
+      "opened_at": "2026-08-19"
     },
     {
       "title": "0 admin keys / 3 MyKeys (ex-auction)",
@@ -298,7 +298,7 @@
       "severity": "warn",
       "root_cause": null,
       "verification": "VEHICLE_VERIFIED",
-      "opened_at": "2026-08-15"
+      "opened_at": "2026-08-19"
     },
     {
       "title": "EVAP purge valve campaign (18S32 / 26S40) \u2014 verify status for this VIN",
@@ -306,7 +306,7 @@
       "severity": "warn",
       "root_cause": null,
       "verification": "CORROBORATED",
-      "opened_at": "2026-08-15"
+      "opened_at": "2026-08-19"
     },
     {
       "title": "P04DB crankcase-ventilation sensitivity \u2014 inspect PCV plumbing before parts",
@@ -314,7 +314,7 @@
       "severity": "info",
       "root_cause": null,
       "verification": "CORROBORATED",
-      "opened_at": "2026-08-15"
+      "opened_at": "2026-08-19"
     }
   ],
   "service_history": [],

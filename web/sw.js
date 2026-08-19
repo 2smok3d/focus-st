@@ -1,7 +1,7 @@
-const CACHE = 'fst-v3';
+const CACHE = 'fst-v4';
 const SHELL = [
-  'index.html', 'garage.html', 'manifest.json', 'icon.svg',
-  'assets/hud.css', 'tools/parts.html', 'tools/dtc.html'
+  'index.html', 'manifest.json', 'icon.svg', 'assets/hud.css',
+  'tools/parts.html', 'tools/dtc.html', 'vehicles/focus-st/index.html'
 ];
 
 self.addEventListener('install', e => {

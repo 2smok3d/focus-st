@@ -16,7 +16,10 @@
       "power": "252 hp · 270 lb-ft",
       "status": "active",
       "accent": "#e8000d",
-      "screen": "garage.html",
+      "screen": "vehicles/focus-st/index.html",
+      "feed": "vehicles/focus-st/garage.json",
+      "parts": "data/vehicles/focus-st/PARTS.md",
+      "mods": "data/vehicles/focus-st/MODS.md",
       "vin": "1FADP3L94HL223134",
       "tagline": "The daily. Fully documented, wired to the truth store.",
       "stats": [

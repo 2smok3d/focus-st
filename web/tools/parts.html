@@ -339,7 +339,14 @@ textarea#notes{resize:none;height:76px;line-height:1.5;font-size:15px}
    Reads/writes data/PARTS.md + data/MODS.md via the Contents API.
    ═══════════════════════════════════════════════════════════════════ */
 const OWNER='2smok3d', REPO='focus-st';
-const PARTS_PATH='data/PARTS.md', MODS_PATH='data/MODS.md';
+/* Vehicle-aware: ?v=<slug> selects which vehicle's catalog to edit. All vehicles
+   live in the one repo, so a single token covers them. Defaults to focus-st. */
+const VEHICLES={
+  'focus-st':{name:'Focus ST',parts:'data/vehicles/focus-st/PARTS.md',mods:'data/vehicles/focus-st/MODS.md'}
+};
+const VSLUG=new URLSearchParams(location.search).get('v')||'focus-st';
+const VEH=VEHICLES[VSLUG]||VEHICLES['focus-st'];
+const PARTS_PATH=VEH.parts, MODS_PATH=VEH.mods;
 
 /* ── Taxonomy (cosmetic pills; Add always appends to ## Wishlist) ── */
 const CATS=[
@@ -431,7 +438,7 @@ const updateInstallInMd=(md,slotName,partName,partUrl)=>{
   throw new Error(`Slot "${slotName}" not found in PARTS.md`);
 };
 const generateModsMd=catalog=>{
-  const out=['# Focus ST — Changes from OEM','','*Auto-generated from data/PARTS.md*','','---',''];let any=false;
+  const out=['# Focus ST — Changes from OEM','','*Auto-generated from the FOST parts tracker*','','---',''];let any=false;
   for(const sec of catalog){
     const mods=sec.slots.filter(s=>s.isMod);if(!mods.length)continue;any=true;out.push('## '+sec.name,'');
     for(const s of mods){out.push('**'+s.name.split(' *(')[0]+'**');
