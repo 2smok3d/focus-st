@@ -93,8 +93,10 @@
       "drivetrain": "W56 5-speed manual · RWD",
       "power": "~105 hp (stock 22RE)",
       "status": "project",
-      "accent": "#a2a2ad",
-      "screen": null,
+      "accent": "#f0803c",
+      "screen": "vehicles/toyota-pickup/index.html",
+      "parts": "data/vehicles/toyota-pickup/PARTS.md",
+      "mods": "data/vehicles/toyota-pickup/MODS.md",
       "tagline": "Empty-shell single cab — full interior rebuild + engine swap. Ground-up.",
       "stats": [{"k": "Cab", "v": "bare shell"}, {"k": "Engine", "v": "swap pending"}]
     }

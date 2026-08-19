@@ -1,6 +1,6 @@
 {
-  "name": "FOST Garage",
-  "short_name": "FOST",
+  "name": "The Garage",
+  "short_name": "Garage",
   "description": "Digital garage — vehicles, tools, and diagnostics in one platform.",
   "start_url": "index.html",
   "scope": ".",

@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0a0b">
-<title>FOST · Parts</title>
+<title>The Garage · Parts</title>
 <link rel="manifest" href="../manifest.json">
 <link rel="icon" href="../icon.svg">
 <style>
@@ -220,7 +220,7 @@ textarea#notes{resize:none;height:76px;line-height:1.5;font-size:15px}
 <header>
   <a href="../index.html" aria-label="Back to Garage" style="display:flex;align-items:center;gap:11px;text-decoration:none;color:inherit">
     <span class="status-dot"></span>
-    <div class="wordmark">FO<em>S</em>T<span class="slash">//</span><span class="sub">Parts</span></div>
+    <div class="wordmark">THE <em>GARAGE</em><span class="slash">//</span><span class="sub">Parts</span></div>
   </a>
   <span class="offline-pill">Offline</span>
   <button class="icon-btn" id="btn-cfg" aria-label="Settings">
@@ -335,7 +335,7 @@ textarea#notes{resize:none;height:76px;line-height:1.5;font-size:15px}
 
 <script>
 /* ═══════════════════════════════════════════════════════════════════
-   FOST // Parts — single-file PWA. GitHub repo is the database.
+   The Garage // Parts — single-file PWA. GitHub repo is the database.
    Reads/writes data/PARTS.md + data/MODS.md via the Contents API.
    ═══════════════════════════════════════════════════════════════════ */
 const OWNER='2smok3d', REPO='focus-st';
@@ -345,7 +345,8 @@ const VEHICLES={
   'focus-st':{name:'Focus ST',parts:'data/vehicles/focus-st/PARTS.md',mods:'data/vehicles/focus-st/MODS.md'},
   'zzr600':{name:'ZZR600',parts:'data/vehicles/zzr600/PARTS.md',mods:'data/vehicles/zzr600/MODS.md'},
   'rz350':{name:'RZ350',parts:'data/vehicles/rz350/PARTS.md',mods:'data/vehicles/rz350/MODS.md'},
-  'tz250':{name:'TZ250',parts:'data/vehicles/tz250/PARTS.md',mods:'data/vehicles/tz250/MODS.md'}
+  'tz250':{name:'TZ250',parts:'data/vehicles/tz250/PARTS.md',mods:'data/vehicles/tz250/MODS.md'},
+  'toyota-pickup':{name:'Pickup 22RE',parts:'data/vehicles/toyota-pickup/PARTS.md',mods:'data/vehicles/toyota-pickup/MODS.md'}
 };
 const VSLUG=new URLSearchParams(location.search).get('v')||'focus-st';
 const VEH=VEHICLES[VSLUG]||VEHICLES['focus-st'];
