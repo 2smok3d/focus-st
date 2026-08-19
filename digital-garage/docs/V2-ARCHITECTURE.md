@@ -142,6 +142,18 @@ before the previous one is complete and tested.**
   condition-based maintenance + degradation models. **Next:** usage-driven degradation
   / remaining-life estimates, and attaching mods/service events to component states.
 
+  **Fleet commissioning *(done)*:** `app/commission.py` + `cli commission [machine|all]`
+  onboards the four other machines — **ZZR600** (carbureted inline-4), **RZ350** (YPVS
+  two-stroke twin), **TZ250** (premix race two-stroke), **Toyota 22RE** (EFI truck) — as
+  real twins rather than DB rows. Each gets its own reference graph (manufacturer →
+  platform → variant → engine/transmission → systems → components, from the web-verified
+  manual specs), a linked `vehicles` row, a **capability profile** (the EFI truck has
+  OBD/DTC; the carbureted two-strokes don't), and an honestly-graded **baseline**:
+  owner-stated facts (Toyota engine-out + stripped interior → `removed`/`DIRECTLY_OBSERVED`)
+  vs un-inspected items (TZ top-end → `unknown`, *not* a claimed deviation). `cli fleet`
+  gives the five-machine overview. The core is vehicle-agnostic — a 6th machine is a new
+  entry in the `MACHINES` map, no schema or engine change.
+
 - **Phase 4 — Professional tools.** Diagnostic workbench (`diagnostic_cases` linking
   symptoms → DTCs → components → tests), telemetry PID registry + derived signals +
   event detection, maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/

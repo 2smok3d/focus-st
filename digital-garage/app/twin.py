@@ -22,6 +22,9 @@ from .models import Vehicle
 from .refmodels import Component, System, VehicleVariant
 from .twinmodels import CONDITIONS, KNOWLEDGE_STATES, ComponentState, MachineCapability
 
+# Conditions that represent a real departure worth surfacing (vs stock/unknown/healthy).
+NOTABLE_CONDITIONS = {"modified", "removed", "failed", "suspect", "degraded"}
+
 
 def _resolve_component_id(session: Session, variant: VehicleVariant, slug: str) -> int | None:
     sys_ids = [s.id for s in session.scalars(select(System).where(System.variant_id == variant.id))]
@@ -118,7 +121,7 @@ def reference_vs_actual(session: Session, variant_slug: str = "focus-st") -> dic
     tree = walk(rs.system_tree(session, variant_slug))
     changed = [{"slug": slug, "condition": st.condition, "installed_part": st.installed_part,
                 "knowledge_state": st.knowledge_state}
-               for slug, st in sorted(states.items()) if st.condition != "stock"]
+               for slug, st in sorted(states.items()) if st.condition in NOTABLE_CONDITIONS]
     return {"variant": variant_slug, "vin": vehicle.vin if vehicle else None,
             "tree": tree, "deviations": changed}
 

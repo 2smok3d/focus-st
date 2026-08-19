@@ -4,8 +4,10 @@
     python -m app.cli seed [--if-empty]    # load the Focus ST
     python -m app.cli seed-ref             # load the V2 reference model
     python -m app.cli migrate-specs        # migrate V1 specs → V2 claims (non-destructive)
+    python -m app.cli commission [machine] # baseline-commission a machine (or 'all')
+    python -m app.cli fleet                # fleet overview across all machines
     python -m app.cli seed-twin            # seed the digital twin from on-vehicle facts
-    python -m app.cli twin                 # reference-vs-actual component state
+    python -m app.cli twin [--variant S]   # reference-vs-actual component state
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -85,6 +87,38 @@ def cmd_migrate_specs(args: argparse.Namespace) -> int:
     from .migrate_specs import migrate_specs_to_claims
     with session_scope() as s:
         print(migrate_specs_to_claims(s, args.variant))
+    return 0
+
+
+def cmd_commission(args: argparse.Namespace) -> int:
+    from .commission import MACHINES, commission_all, commission_machine
+    with session_scope() as s:
+        if args.machine in (None, "all"):
+            for line in commission_all(s):
+                print(line)
+        elif args.machine in MACHINES:
+            print(commission_machine(s, args.machine))
+        else:
+            print(f"Unknown machine '{args.machine}'. Known: {', '.join(MACHINES)}, all",
+                  file=sys.stderr)
+            return 1
+    return 0
+
+
+def cmd_fleet(_: argparse.Namespace) -> int:
+    from .models import Vehicle
+    from .refmodels import VehicleVariant
+    from . import twin
+    with session_scope() as s:
+        vehicles = s.scalars(select(Vehicle).order_by(Vehicle.id)).all()
+        print(f"Fleet · {len(vehicles)} machine(s)")
+        for v in vehicles:
+            variant = s.get(VehicleVariant, v.variant_id) if v.variant_id else None
+            states = twin.current_states(s, v.id)
+            devs = sum(1 for st in states.values() if st.condition in twin.NOTABLE_CONDITIONS)
+            link = f"→ {variant.slug}" if variant else "(unlinked)"
+            print(f"  {v.year} {v.make} {v.model} · {v.vin}  {link}")
+            print(f"      states tracked={len(states)} · deviations={devs} · {v.notes or ''}")
     return 0
 
 
@@ -475,6 +509,13 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("migrate-specs", help="migrate V1 specs → V2 claims (non-destructive)")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_migrate_specs)
+
+    sp = sub.add_parser("commission", help="baseline-commission a machine (or 'all') as a twin")
+    sp.add_argument("machine", nargs="?", default="all",
+                    help="machine slug (zzr600/rz350/tz250/toyota-pickup) or 'all'")
+    sp.set_defaults(fn=cmd_commission)
+
+    sub.add_parser("fleet", help="fleet overview across all machines").set_defaults(fn=cmd_fleet)
 
     sp = sub.add_parser("seed-twin", help="seed the digital twin from on-vehicle observations")
     sp.add_argument("--variant", default="focus-st")
