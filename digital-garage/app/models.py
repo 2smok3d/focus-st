@@ -50,6 +50,8 @@ class Vehicle(Base):
     engine: Mapped[str | None] = mapped_column(Text)
     transmission: Mapped[str | None] = mapped_column(Text)
     notes: Mapped[str | None] = mapped_column(Text)
+    # V2 digital-twin link → the reference variant this actual car is configured as.
+    variant_id: Mapped[int | None] = mapped_column(Integer)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     specs: Mapped[list["Spec"]] = relationship(back_populates="vehicle", cascade="all, delete-orphan")

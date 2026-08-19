@@ -10,15 +10,19 @@
 -- Verification state: how mature the evidence for a claim is. Kept as TEXT with
 -- a CHECK (not a Postgres ENUM) so the ORM's plain string binds validate without
 -- needing an explicit enum cast on every insert.
-CREATE DOMAIN verification_state AS TEXT
-    CONSTRAINT verification_state_check CHECK (
-        VALUE IN ('UNVERIFIED', 'CORROBORATED', 'OEM_VERIFIED', 'VEHICLE_VERIFIED')
-    );
+DO $$ BEGIN
+    CREATE DOMAIN verification_state AS TEXT
+        CONSTRAINT verification_state_check CHECK (
+            VALUE IN ('UNVERIFIED', 'CORROBORATED', 'OEM_VERIFIED', 'VEHICLE_VERIFIED')
+        );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
-CREATE DOMAIN proposal_status AS TEXT
-    CONSTRAINT proposal_status_check CHECK (
-        VALUE IN ('pending', 'approved', 'rejected')
-    );
+DO $$ BEGIN
+    CREATE DOMAIN proposal_status AS TEXT
+        CONSTRAINT proposal_status_check CHECK (
+            VALUE IN ('pending', 'approved', 'rejected')
+        );
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ---------------------------------------------------------------------------
 -- Sources — every fact can point at where it came from, with a rank.

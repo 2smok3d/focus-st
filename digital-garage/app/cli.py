@@ -1,7 +1,12 @@
 """Operator CLI — the human side of the garage.
 
-    python -m app.cli init                 # create schema
+    python -m app.cli init                 # create schema (V1 + V2 additive)
     python -m app.cli seed [--if-empty]    # load the Focus ST
+    python -m app.cli seed-ref             # load the V2 reference model
+    python -m app.cli ref [--variant S]    # reference system → component tree
+    python -m app.cli component <slug>     # a component: relationships + claims
+    python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
+    python -m app.cli conflicts            # claims flagged as conflicting
     python -m app.cli vehicle              # show the tracked car
     python -m app.cli specs [--category X] # list graded specs
     python -m app.cli due --miles 62000    # maintenance-due report
@@ -39,12 +44,20 @@ def _print_rows(rows: list[dict]) -> None:
 
 def cmd_init(_: argparse.Namespace) -> int:
     # Prefer the canonical DDL (enums, checks) if present; fall back to ORM.
-    schema = Path(__file__).resolve().parent.parent / "db" / "schema.sql"
+    db = Path(__file__).resolve().parent.parent / "db"
+    schema = db / "schema.sql"
     if schema.exists():
         with engine.begin() as conn:
             conn.execute(text(schema.read_text()))
         print(f"Schema applied from {schema}")
+        # V2 additive layer (reference model + provenance). Idempotent.
+        schema_v2 = db / "schema_v2.sql"
+        if schema_v2.exists():
+            with engine.begin() as conn:
+                conn.execute(text(schema_v2.read_text()))
+            print(f"V2 schema applied from {schema_v2}")
     else:
+        import app.refmodels  # noqa: F401 — register V2 tables on the Base
         Base.metadata.create_all(engine)
         print("Schema created from ORM metadata.")
     return 0
@@ -53,6 +66,118 @@ def cmd_init(_: argparse.Namespace) -> int:
 def cmd_seed(args: argparse.Namespace) -> int:
     with session_scope() as s:
         print(seed_fn(s, if_empty=args.if_empty))
+    return 0
+
+
+def cmd_seed_ref(_: argparse.Namespace) -> int:
+    from .seed_ref import seed_reference
+    with session_scope() as s:
+        print(seed_reference(s))
+    return 0
+
+
+def _verdict_icon(verification: str, conflict: bool) -> str:
+    if conflict:
+        return "⚠️"
+    return {"VEHICLE_VERIFIED": "🟢", "OEM_VERIFIED": "🔵",
+            "CORROBORATED": "🟡", "UNVERIFIED": "⚪"}.get(verification, "·")
+
+
+def cmd_ref(args: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        hdr = rs.variant_header(s, args.variant)
+        if hdr is None:
+            print(f"No reference variant '{args.variant}'. Run: python -m app.cli seed-ref",
+                  file=sys.stderr)
+            return 1
+        print(f"{hdr['manufacturer']} {hdr['platform']} "
+              f"[{hdr['platform_code']}] → {hdr['name']} · {hdr['trim'] or ''} "
+              f"· {hdr['market'] or ''} {hdr['years'] or ''}")
+        if hdr["engine"]:
+            e = hdr["engine"]
+            print(f"  engine: {e['code']} · {e['displacement_cc']}cc {e['config']} · "
+                  f"{e['aspiration']} · {e['power']} / {e['torque']}")
+        if hdr["transmission"]:
+            t = hdr["transmission"]
+            print(f"  trans:  {t['code']} · {t['type']}")
+        print()
+
+        def walk(nodes: list[dict], depth: int = 0) -> None:
+            for n in nodes:
+                print("  " * depth + f"▸ {n['name']}")
+                for c in n["components"]:
+                    hint = f"  ({c['oem_hint']})" if c["oem_hint"] else ""
+                    print("  " * (depth + 1) + f"· {c['name']}  [{c['slug']}]{hint}")
+                walk(n["children"], depth + 1)
+
+        walk(rs.system_tree(s, args.variant))
+    return 0
+
+
+def cmd_component(args: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        c = rs.get_component(s, args.variant, args.slug)
+        if c is None:
+            print(f"No component '{args.slug}' on variant '{args.variant}'.", file=sys.stderr)
+            return 1
+        print(f"{c['name']}  [{c['slug']}] · system: {c['system']}")
+        if c["description"]:
+            print(f"  {c['description']}")
+        if c["relationships"]:
+            print("  relationships:")
+            for r in c["relationships"]:
+                note = f" — {r['note']}" if r["note"] else ""
+                print(f"    {r['dir']} {r['relation']} {r['other']}{note}")
+        if c["claims"]:
+            print("  claims:")
+            for cl in c["claims"]:
+                u = f" {cl['unit']}" if cl["unit"] else ""
+                icon = _verdict_icon(cl["verification"], cl["conflict"])
+                print(f"    {icon} {cl['property']}: {cl['value']}{u}  "
+                      f"({cl['verification']}, conf {cl['confidence']:.2f})")
+    return 0
+
+
+def cmd_claim(args: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        c = rs.get_claim(s, args.subject, args.property)
+        if c is None:
+            print(f"No claim '{args.subject}/{args.property}'.", file=sys.stderr)
+            return 1
+        u = f" {c['unit']}" if c["unit"] else ""
+        icon = _verdict_icon(c["verification"], c["conflict"])
+        print(f"{icon} {c['subject_type']}:{c['subject_key']} · {c['property']} = {c['value']}{u}")
+        r = c["resolved"]
+        print(f"  verdict:  {r['verification']} · confidence {r['confidence']} "
+              f"· {'CONFLICT' if r['conflict'] else 'no conflict'}")
+        print(f"  {r['rationale']}")
+        if c["applicability"]:
+            print(f"  applies:  {c['applicability']}")
+        print("  evidence:")
+        for e in c["evidence"]:
+            stance = {"supports": "＋", "contradicts": "－", "supersedes": "↻"}.get(e["stance"], "?")
+            veh = " [on-vehicle]" if e["on_vehicle"] else ""
+            print(f"    {stance} auth {e['authority']} · {e['label']}{veh}")
+    return 0
+
+
+def cmd_conflicts(_: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        rows = rs.list_conflicts(s)
+        if not rows:
+            print("No conflicting claims on record. 🟢")
+            return 0
+        print(f"{len(rows)} conflicting claim(s):")
+        for c in rows:
+            u = f" {c['unit']}" if c["unit"] else ""
+            print(f"  ⚠️ {c['subject_type']}:{c['subject_key']} · {c['property']} = "
+                  f"{c['value']}{u}  ({c['verification']})")
+            if c["notes"]:
+                print(f"      {c['notes']}")
     return 0
 
 
@@ -294,6 +419,24 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("seed", help="load the Focus ST")
     sp.add_argument("--if-empty", action="store_true", help="skip if the vehicle already exists")
     sp.set_defaults(fn=cmd_seed)
+
+    sub.add_parser("seed-ref", help="seed the V2 reference model (Focus ST)").set_defaults(fn=cmd_seed_ref)
+
+    sp = sub.add_parser("ref", help="show a variant's reference system tree")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_ref)
+
+    sp = sub.add_parser("component", help="show a component: relationships + claims")
+    sp.add_argument("slug")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_component)
+
+    sp = sub.add_parser("claim", help="show a claim with evidence + resolved verdict")
+    sp.add_argument("subject", help="subject_key (e.g. 'lubrication', 'focus-st')")
+    sp.add_argument("property", help="property (e.g. 'oil_capacity')")
+    sp.set_defaults(fn=cmd_claim)
+
+    sub.add_parser("conflicts", help="list claims flagged as conflicting").set_defaults(fn=cmd_conflicts)
 
     sub.add_parser("vehicle", help="show the tracked vehicle").set_defaults(fn=cmd_vehicle)
 
