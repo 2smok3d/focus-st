@@ -115,11 +115,17 @@ python -m app.cli conflicts
 Each phase is additive and independently shippable. **Do not start a later phase
 before the previous one is complete and tested.**
 
-- **Phase 2 — Reference dataset.** Normalize the Focus ST knowledge base (specs,
-  torques, fluids, intervals, known traits) into claims with citations. Migrate
-  existing Markdown *facts* into structured claims; keep the Markdown as a
-  projection. Store citations + document/page/section metadata and only
-  **permissible excerpts** — never copy protected service manuals into the repo.
+- **Phase 2 — Reference dataset.** *(in progress)* Normalize the Focus ST knowledge
+  base (specs, torques, fluids, intervals, known traits) into claims with citations.
+  **Done:** the V1-spec → claim migrator (`app/migrate_specs.py`, `cli migrate-specs`)
+  moves 19 fact-checked specs onto the reference model — engine/transmission/component
+  claims — deriving each verdict from the spec's source authority (OEM→`OEM_VERIFIED`,
+  community→`CORROBORATED`). It is idempotent, never overwrites a seeded claim (the
+  oil-capacity conflict survives), reports unmapped specs instead of guessing, and
+  leaves the V1 `specs` rows (and their exports) intact — the Markdown/JSON stay
+  projections. **Next:** normalize maintenance intervals, known issues, and TSB/recall
+  references into the claim model; store citations + document/page/section metadata and
+  only **permissible excerpts** — never copy protected service manuals into the repo.
 
 - **Phase 3 — Digital Twin.** Component *state* on the actual car (`STOCK` /
   `MODIFIED` / `REMOVED` / `PLANNED` / `FAILED`), reference-vs-actual diff, and mods

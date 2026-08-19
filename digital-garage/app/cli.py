@@ -3,6 +3,7 @@
     python -m app.cli init                 # create schema (V1 + V2 additive)
     python -m app.cli seed [--if-empty]    # load the Focus ST
     python -m app.cli seed-ref             # load the V2 reference model
+    python -m app.cli migrate-specs        # migrate V1 specs → V2 claims (non-destructive)
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -73,6 +74,13 @@ def cmd_seed_ref(_: argparse.Namespace) -> int:
     from .seed_ref import seed_reference
     with session_scope() as s:
         print(seed_reference(s))
+    return 0
+
+
+def cmd_migrate_specs(args: argparse.Namespace) -> int:
+    from .migrate_specs import migrate_specs_to_claims
+    with session_scope() as s:
+        print(migrate_specs_to_claims(s, args.variant))
     return 0
 
 
@@ -421,6 +429,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(fn=cmd_seed)
 
     sub.add_parser("seed-ref", help="seed the V2 reference model (Focus ST)").set_defaults(fn=cmd_seed_ref)
+
+    sp = sub.add_parser("migrate-specs", help="migrate V1 specs → V2 claims (non-destructive)")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_migrate_specs)
 
     sp = sub.add_parser("ref", help="show a variant's reference system tree")
     sp.add_argument("--variant", default="focus-st")

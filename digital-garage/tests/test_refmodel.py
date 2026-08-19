@@ -42,10 +42,13 @@ def _schema():
     with engine.begin() as conn:
         conn.execute(text((DB / "schema.sql").read_text()))
         conn.execute(text((DB / "schema_v2.sql").read_text()))
-    # A vehicle row is needed for the digital-twin link; seed V1 if empty.
+    # A vehicle row is needed for the digital-twin link; seed V1 if empty, then
+    # seed the reference model so the module is self-contained (order-independent).
     from app.seed import seed as seed_fn
+    from app.seed_ref import seed_reference
     with session_scope() as s:
         seed_fn(s, if_empty=True)
+        seed_reference(s)
     yield
 
 
@@ -103,6 +106,39 @@ def test_vehicle_verified_claim_reaches_top_tier():
     with session_scope() as s:
         claim = rs.get_claim(s, "radiator", "condition")
     assert claim["resolved"]["verification"] == "VEHICLE_VERIFIED"
+
+
+def test_migrate_specs_preserves_evidence_grades():
+    """V1 specs migrate to claims whose verdict reflects the source authority."""
+    from app import refservice as rs
+    from app.migrate_specs import migrate_specs_to_claims
+    with session_scope() as s:
+        migrate_specs_to_claims(s)
+    with session_scope() as s:
+        # OEM-sourced spec (authority 1) → OEM_VERIFIED
+        power = rs.get_claim(s, "r9da", "rated_power")
+        assert power["value"] == "252"
+        assert power["resolved"]["verification"] == "OEM_VERIFIED"
+        # community-sourced spec (authority 4) → CORROBORATED, never inflated
+        fd = rs.get_claim(s, "mt82", "final_drive")
+        assert fd["resolved"]["verification"] == "CORROBORATED"
+
+
+def test_migrate_specs_is_idempotent_and_non_destructive():
+    """Re-running migrates nothing new, and never overwrites a seeded claim."""
+    from app import refservice as rs
+    from app.migrate_specs import migrate_specs_to_claims
+    with session_scope() as s:
+        migrate_specs_to_claims(s)          # ensure first pass done
+    with session_scope() as s:
+        again = migrate_specs_to_claims(s)  # second pass
+    assert "Migrated 0 spec(s)" in again
+    # The seeded oil-capacity conflict must survive migration untouched — the V1
+    # spec (a clean 4.3 qt OEM value) must NOT clobber the seeded conflicting claim.
+    with session_scope() as s:
+        oil = rs.get_claim(s, "lubrication", "oil_capacity")
+    assert oil["conflict"] is True
+    assert oil["resolved"]["verification"] == "CORROBORATED"
 
 
 def test_export_compatibility_vehicle_linked_not_mutated():
