@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0b">
+<title>The Garage · Code Lookup</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="../assets/hud.css">
+<style>
+  .search-wrap{position:sticky;top:57px;z-index:30;background:var(--bg);padding:14px 0 12px;margin-bottom:4px}
+  .search-row{display:flex;gap:10px}
+  #q{font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;font-size:17px;padding:15px 16px}
+  .filters{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+  .fchip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;background:var(--panel);
+    border:1px solid var(--line);color:var(--ink3);border-radius:8px;padding:7px 12px;cursor:pointer;transition:.12s}
+  .fchip.on{background:rgba(232,0,13,.12);border-color:var(--red);color:var(--ink)}
+  .count{font-family:var(--mono);font-size:11px;color:var(--ink3);margin:2px 0 14px}
+  .dtc{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel);margin-bottom:13px;overflow:hidden}
+  .dtc .hd{display:flex;align-items:center;gap:13px;padding:15px 17px;cursor:pointer}
+  .dtc .code{font-family:var(--mono);font-size:19px;font-weight:600;color:var(--red2);flex-shrink:0;letter-spacing:.02em}
+  .dtc .ttl{flex:1;min-width:0}
+  .dtc .ttl h3{font-family:var(--disp);font-size:15.5px;font-weight:600;letter-spacing:.01em;line-height:1.25}
+  .dtc .ttl .sys{font-family:var(--mono);font-size:10.5px;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+  .dtc .chev{color:var(--ink4);transition:transform .2s;flex-shrink:0}
+  .dtc.open .chev{transform:rotate(90deg)}
+  .dtc .body{display:none;padding:0 17px 17px;border-top:1px solid var(--line)}
+  .dtc.open .body{display:block}
+  .dtc .desc{font-size:14px;color:var(--ink);line-height:1.6;margin:14px 0}
+  .dtc .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin:14px 0 7px}
+  .dtc ul{list-style:none;display:flex;flex-wrap:wrap;gap:7px}
+  .dtc ul li{font-size:12.5px;color:var(--ink2);background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:6px 11px}
+  .dtc .guide{font-size:13.5px;color:var(--ink2);line-height:1.65;background:var(--bg2);border-left:2px solid var(--red);
+    border-radius:0 8px 8px 0;padding:12px 14px;margin-top:8px}
+  .dtc .vehs{display:flex;gap:6px;margin-top:12px}
+  .rangebox{border:1px dashed var(--line2);border-radius:var(--radius);padding:18px;background:var(--bg2);margin-bottom:13px}
+  .rangebox .code{font-family:var(--mono);font-size:19px;color:var(--ink);font-weight:600}
+  .rangebox .sys{font-family:var(--disp);font-size:15px;color:var(--ink);margin-top:8px}
+  .rangebox .hint{font-size:13px;color:var(--ink2);margin-top:6px;line-height:1.5}
+  .rangebox .note{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:10px}
+  .sevdot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="gbar">
+  <a class="home" href="../index.html"><span class="dot"></span><span class="wm">THE <em>GARAGE</em></span></a>
+  <span class="crumb"><a href="../index.html" style="color:inherit;text-decoration:none">Garage</a><span class="sep">/</span>Code Lookup</span>
+  <span class="spacer"></span>
+  <nav class="gnav">
+    <a href="../index.html">◆ <span>Garage</span></a>
+    <a href="dtc.html" class="on">❏ <span>Codes</span></a>
+    <a href="../vehicles/focus-st/index.html">▣ <span>Focus ST</span></a>
+  </nav>
+</div>
+
+<div class="wrap wrap-narrow">
+  <div class="eyebrow" style="margin-top:6px">Diagnostic Trouble Codes · OBD-II</div>
+  <div class="search-wrap">
+    <div class="search-row">
+      <input class="inp" id="q" placeholder="P0299, misfire, evap, U0100…" autocapitalize="characters" autocorrect="off" enterkeyhint="search" autofocus>
+    </div>
+    <div class="filters" id="filters">
+      <span class="fchip on" data-f="all">All</span>
+      <span class="fchip" data-f="focus-st">Focus ST</span>
+      <span class="fchip" data-f="ford">Ford</span>
+      <span class="fchip" data-f="generic">Generic</span>
+      <span class="fchip" data-f="misfire">Misfire</span>
+      <span class="fchip" data-f="evap">EVAP</span>
+      <span class="fchip" data-f="boost">Boost</span>
+      <span class="fchip" data-f="fuel">Fuel</span>
+      <span class="fchip" data-f="can">Network</span>
+    </div>
+  </div>
+  <div class="count" id="count"></div>
+  <div id="results"><div class="empty"><div class="spinner" style="margin:0 auto"></div></div></div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const SEV={stop:'var(--red)',warn:'var(--amber)',info:'var(--green)'};
+let DB=null,filter='all';
+
+function markup(text,q){ // highlight query term in text
+  if(!q||q.length<2)return esc(text);
+  try{return esc(text).replace(new RegExp('('+q.replace(/[.*+?^${}()|[\\]\\\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>');}catch{return esc(text);}
+}
+
+function rangeFallback(code){
+  const c=code.toUpperCase();
+  for(const r of DB.ranges){if(c.startsWith(r.match))return r;}
+  return null;
+}
+
+function card(c,q){
+  const sev=SEV[c.severity]||'var(--ink4)';
+  const vehs=(c.vehicles||[]).map(v=>`<span class="pill">${esc(v)}</span>`).join('');
+  return `<div class="dtc" data-code="${esc(c.code)}">
+    <div class="hd"><span class="sevdot" style="background:${sev}" title="${esc(c.severity||'')}"></span>
+      <span class="code">${markup(c.code,q)}</span>
+      <div class="ttl"><h3>${markup(c.title,q)}</h3><div class="sys">${esc(c.system)}</div></div>
+      <svg class="chev" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="body">
+      <div class="desc">${markup(c.desc||'',q)}</div>
+      ${(c.causes&&c.causes.length)?`<div class="lbl">Likely causes</div><ul>${c.causes.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
+      ${c.guidance?`<div class="lbl">Diagnostic path</div><div class="guide">${esc(c.guidance)}</div>`:''}
+      ${vehs?`<div class="vehs">${vehs}</div>`:''}
+    </div>
+  </div>`;
+}
+
+function render(){
+  const q=$('#q').value.trim().toLowerCase();
+  let list=DB.codes.slice();
+  if(filter!=='all')list=list.filter(c=>(c.tags||[]).includes(filter)||(c.vehicles||[]).includes(filter));
+  if(q)list=list.filter(c=>c.code.toLowerCase().includes(q)||c.title.toLowerCase().includes(q)||
+    (c.desc||'').toLowerCase().includes(q)||(c.tags||[]).some(t=>t.includes(q))||(c.system||'').toLowerCase().includes(q));
+  // rank: code prefix match first
+  if(q)list.sort((a,b)=>(b.code.toLowerCase().startsWith(q)?1:0)-(a.code.toLowerCase().startsWith(q)?1:0));
+
+  let html='';
+  const looksLikeCode=/^[pbcu][0-9]/i.test(q);
+  if(!list.length&&looksLikeCode){
+    const r=rangeFallback(q);
+    html=`<div class="rangebox"><div class="code">${esc(q.toUpperCase())}</div>
+      <div class="sys">${r?esc(r.system):'Unknown code'}</div>
+      <div class="hint">${r?esc(r.hint):'Not in the curated set.'} No curated entry for this exact code yet — the category comes from the code family.</div>
+      <div class="note">Cross-check the exact definition against the vehicle's factory service manual.</div></div>`;
+  } else if(!list.length){
+    html='<div class="empty"><div class="glyph">∅</div>No match. Try a code (P0299), a system (boost, evap), or a keyword.</div>';
+  } else {
+    html=list.map(c=>card(c,q)).join('');
+  }
+  $('#results').innerHTML=html;
+  $('#count').textContent=list.length?`${list.length} code${list.length!==1?'s':''}`+(filter!=='all'?` · ${filter}`:''):'';
+  // expand-on-tap
+  $('#results').querySelectorAll('.dtc .hd').forEach(hd=>hd.addEventListener('click',()=>hd.parentElement.classList.toggle('open')));
+  // auto-open a single exact match
+  if(list.length===1)$('#results').querySelector('.dtc')?.classList.add('open');
+}
+
+fetch('../../data/dtc-codes.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{
+  DB=d;
+  const q=new URLSearchParams(location.search).get('q');
+  if(q)$('#q').value=q;
+  render();
+}).catch(()=>{$('#results').innerHTML='<div class="empty">Code database unavailable.</div>';});
+
+$('#q').addEventListener('input',()=>DB&&render());
+$('#filters').addEventListener('click',e=>{const c=e.target.closest('.fchip');if(!c)return;
+  filter=c.dataset.f;$('#filters').querySelectorAll('.fchip').forEach(x=>x.classList.toggle('on',x===c));render();});
+</script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0b">
+<title>ZZR600 · Cockpit</title>
+<link rel="icon" href="../../icon.svg">
+<link rel="stylesheet" href="../../assets/hud.css">
+<style>
+  /* ZZR identity: blue accent over the shared system (criticals stay red — unused here) */
+  :root{--red:#4f9dff;--red2:#6fb0ff}
+  .hero{padding:16px 0 6px}
+  .hero .eyebrow{margin-bottom:12px}
+  .hero h1{font-family:var(--disp);font-size:clamp(36px,9vw,64px);font-weight:700;letter-spacing:-.01em;line-height:.92}
+  .hero h1 em{color:var(--red);font-style:normal}
+  .hero .sub{color:var(--ink2);font-size:14.5px;max-width:640px;margin-top:12px;line-height:1.55}
+  .hero .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .note-blue{background:rgba(79,157,255,.06);border:1px solid rgba(79,157,255,.25);border-radius:12px;
+    padding:13px 15px;font-size:13px;color:var(--ink2);line-height:1.6}
+  .note-blue b{color:var(--ink)}
+  .sys{display:flex;align-items:flex-start;gap:11px;padding:14px 16px}
+  .sys .nm{font-family:var(--disp);font-weight:600;letter-spacing:.02em;font-size:14px}
+  .sys .ds{font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.45}
+  .chk a,.chk div{display:flex;align-items:flex-start;gap:11px;padding:12px 15px;border:1px solid var(--line);
+    border-radius:11px;background:var(--panel);margin-bottom:9px}
+  .chk .t{flex:1}.chk .t .h{font-size:13.5px;color:var(--ink);font-weight:500}
+  .chk .t .s{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.5}
+  .grade{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);
+    border:1px solid var(--line2);border-radius:5px;padding:1px 5px;margin-left:6px}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11px;color:var(--ink3)}
+  footer a{color:var(--ink3);text-decoration:none}footer a:hover{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="gbar">
+  <a class="home" href="../../index.html"><span class="dot"></span><span class="wm">THE <em>GARAGE</em></span></a>
+  <span class="crumb">Garage<span class="sep">/</span>ZZR600</span>
+  <span class="spacer"></span>
+  <nav class="gnav">
+    <a href="../../index.html">◆ <span>Garage</span></a>
+    <a href="../../tools/dtc.html">❏ <span>Codes</span></a>
+    <a href="../../tools/parts.html?v=zzr600">✦ <span>Parts</span></a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Kawasaki · ZX600-D · Sport tourer</div>
+    <h1>ZZR<em>600</em></h1>
+    <div class="sub">1991 first-generation ZZR600 — Kawasaki's ram-air 599cc inline-four in an
+      aluminium perimeter frame. Carbureted and pre-OBD: diagnosis is analog (compression,
+      vacuum sync, spark, charging). This bay tracks a recommission from a long sit.</div>
+    <div class="chips">
+      <span class="pill blue"><span class="dot-s s-warn"></span>Project · recommission</span>
+      <span class="pill">1991 · ZX600-D</span>
+      <span class="pill">Carbureted · no fault codes</span>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:20px">
+    <div class="tile"><div class="k">Displacement</div><div class="v">599<span class="u">cc</span></div><div class="n">inline-4 · DOHC 16v</div></div>
+    <div class="tile"><div class="k">Power</div><div class="v">~98<span class="u">hp</span></div><div class="n">@ ~11,500 rpm · crank</div></div>
+    <div class="tile"><div class="k">Dry weight</div><div class="v">~430<span class="u">lb</span></div><div class="n">~195 kg</div></div>
+    <div class="tile"><div class="k">Top speed</div><div class="v">~155<span class="u">mph</span></div><div class="n">~250 km/h</div></div>
+  </div>
+
+  <div class="sec"><span class="n">01</span><h2>Specification</h2><span class="ln"></span><span class="act mono">verify vs manual</span></div>
+  <div class="note-blue" style="margin-bottom:14px">Values below are <b>community / spec-sheet figures</b> for the ZX600-D. Treat as
+    ⚠️ starting points — confirm every clearance, capacity, and part number against the
+    <b>Kawasaki service manual</b> and the actual bike before wrenching or ordering.</div>
+  <div class="tbl-wrap">
+    <table class="hud">
+      <thead><tr><th>System</th><th>Spec</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Engine</td><td class="mono">599cc liquid-cooled inline-4, DOHC 16v · bore×stroke ~64.0×46.6mm · ~11.5:1</td><td>corroborated</td></tr>
+        <tr><td>Fuel</td><td class="mono">4× Keihin CVK constant-velocity carburetors · ram-air intake</td><td>corroborated</td></tr>
+        <tr><td>Ignition</td><td class="mono">Digital CDI · NGK CR9E plugs (verify heat range/gap)</td><td>unverified ⚠️</td></tr>
+        <tr><td>Transmission</td><td class="mono">6-speed · wet clutch · 525 chain final drive</td><td>corroborated</td></tr>
+        <tr><td>Frame</td><td class="mono">Aluminium perimeter ("e-box")</td><td>corroborated</td></tr>
+        <tr><td>Front susp.</td><td class="mono">41mm telescopic fork</td><td>corroborated</td></tr>
+        <tr><td>Rear susp.</td><td class="mono">Uni-Trak single shock · adjustable preload</td><td>corroborated</td></tr>
+        <tr><td>Brakes</td><td class="mono">Twin front discs (~300mm) · single rear disc · DOT 4</td><td>unverified ⚠️</td></tr>
+        <tr><td>Wheels/tires</td><td class="mono">17" · front 120/60ZR17 · rear 160/60ZR17</td><td>corroborated</td></tr>
+        <tr><td>Engine oil</td><td class="mono">~3.5–3.7L w/ filter · 10W-40 JASO MA (verify capacity)</td><td>unverified ⚠️</td></tr>
+        <tr><td>Fuel capacity</td><td class="mono">~18 L incl. reserve</td><td>corroborated</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="n">02</span><h2>Systems Status</h2><span class="ln"></span></div>
+  <div class="grid g3">
+    <div class="card sys"><span class="dot-s s-warn"></span><div><div class="nm">Fuel / Carbs</div><div class="ds">Assume varnished after a sit — clean/rebuild 4× CVK, then bench + vacuum sync.</div></div></div>
+    <div class="card sys"><span class="dot-s s-warn"></span><div><div class="nm">Charging</div><div class="ds">Era regulator/rectifier is a known weak point. Confirm 14.0–14.5V @ RPM before trusting it.</div></div></div>
+    <div class="card sys"><span class="dot-s s-warn"></span><div><div class="nm">Fuel delivery</div><div class="ds">Vacuum petcock diaphragm + cracked intake boots cause flooding / lean hunting.</div></div></div>
+    <div class="card sys"><span class="dot-s s-warn"></span><div><div class="nm">Brakes</div><div class="ds">35-yr rubber lines swell → mushy lever. Flush DOT 4; consider braided lines.</div></div></div>
+    <div class="card sys"><span class="dot-s s-off"></span><div><div class="nm">Suspension</div><div class="ds">Fork seals likely weeping; refresh fork oil. Check steering-head + linkage bearings.</div></div></div>
+    <div class="card sys"><span class="dot-s s-off"></span><div><div class="nm">Final drive</div><div class="ds">Inspect 525 chain stretch + sprocket hooking; replace as a set if worn.</div></div></div>
+  </div>
+
+  <div class="sec"><span class="n">03</span><h2>Recommission Checklist</h2><span class="ln"></span><span class="act mono">from a long sit</span></div>
+  <div class="chk">
+    <div><span class="dot-s s-warn" style="margin-top:4px"></span><div class="t"><div class="h">Drain old fuel · clean tank + petcock</div><div class="s">Old gas varnishes carbs and clogs pilot jets — do this first.</div></div></div>
+    <div><span class="dot-s s-warn" style="margin-top:4px"></span><div class="t"><div class="h">Pull + ultrasonic-clean the 4 CVK carbs</div><div class="s">Rebuild kit (jets, o-rings, float valves) · set floats · bench sync.</div></div></div>
+    <div><span class="dot-s s-warn" style="margin-top:4px"></span><div class="t"><div class="h">Fresh oil + filter, new plugs, check air filter</div><div class="s">Establish a baseline before first start.</div></div></div>
+    <div><span class="dot-s s-warn" style="margin-top:4px"></span><div class="t"><div class="h">Test charging system + battery</div><div class="s">Resting/cranking/charging voltage; inspect R/R + stator connector for heat damage.</div></div></div>
+    <div><span class="dot-s s-off" style="margin-top:4px"></span><div class="t"><div class="h">Brake + clutch hydraulic flush (DOT 4)</div><div class="s">Inspect lines/seals; bleed thoroughly.</div></div></div>
+    <div><span class="dot-s s-off" style="margin-top:4px"></span><div class="t"><div class="h">Coolant flush · inspect hoses</div><div class="s">35-yr rubber hardens; check water-pump weep hole.</div></div></div>
+    <div><span class="dot-s s-off" style="margin-top:4px"></span><div class="t"><div class="h">Tires (date code) · chain + sprockets · fork seals</div><div class="s">Age-out items — replace regardless of tread if old.</div></div></div>
+    <div><span class="dot-s s-off" style="margin-top:4px"></span><div class="t"><div class="h">Valve-clearance check (shim-under-bucket)</div><div class="s">Measure cold; record intake/exhaust before adjusting to manual spec.</div></div></div>
+  </div>
+
+  <div class="sec"><span class="n">04</span><h2>Maintenance Intervals</h2><span class="ln"></span><span class="act mono">confirm in manual</span></div>
+  <div class="tbl-wrap">
+    <table class="hud">
+      <thead><tr><th>Item</th><th>Interval</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Engine oil &amp; filter</td><td class="mono">~3,000–4,000 mi / yr</td><td>Shorter after a rebuild/recommission</td></tr>
+        <tr><td>Chain clean + lube</td><td class="mono">~300–600 mi</td><td>Adjust slack to spec; inspect wear</td></tr>
+        <tr><td>Valve clearance</td><td class="mono">~6,000 mi</td><td>Shim-under-bucket; measure cold</td></tr>
+        <tr><td>Carb sync (vacuum balance)</td><td class="mono">~6,000 mi / when rough</td><td>After any carb work</td></tr>
+        <tr><td>Spark plugs</td><td class="mono">~6,000–12,000 mi</td><td>NGK — verify heat range</td></tr>
+        <tr><td>Brake / clutch fluid</td><td class="mono">2 yr</td><td>DOT 4</td></tr>
+        <tr><td>Coolant</td><td class="mono">2–3 yr</td><td>Inspect hoses + water pump</td></tr>
+        <tr><td>Fork oil</td><td class="mono">~2 yr / 12,000 mi</td><td>Refresh with seal service</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="n">05</span><h2>Diagnosis</h2><span class="ln"></span></div>
+  <div class="note-blue">This bike is <b>carbureted and pre-OBD-II</b> — there is no ECU and no fault codes,
+    so the garage's <a href="../../tools/dtc.html" style="color:var(--red);text-decoration:none">Code Lookup</a>
+    doesn't apply here. Diagnosis is analog: <b>compression + leakdown</b>, <b>carburetor vacuum
+    sync</b>, <b>spark + coil</b> checks, <b>charging-voltage</b> tests, and <b>fuel-delivery</b>
+    inspection (petcock, float levels, intake boots). Log findings the same way — a symptom,
+    the test that proved it, and the fix — even without a scan tool.</div>
+
+  <footer>
+    <a href="../../index.html">◆ The Garage</a>
+    <a href="../../tools/parts.html?v=zzr600">✦ Parts tracker</a>
+    <a href="https://github.com/2smok3d/focus-st">◆ Repository</a>
+    <span style="margin-left:auto">ZX600-D · one garage, many machines</span>
+  </footer>
+</div>
+</body>
+</html>

@@ -15,7 +15,7 @@ Parts, mods, maintenance, diagnostics, and the entire knowledge base, wired toge
 ![Backend](https://img.shields.io/badge/backend-Postgres%20·%20FastAPI%20·%20MCP-141416?style=flat-square)
 ![Vehicle](https://img.shields.io/badge/MK3%20·%202.0T%20·%20MT82-1FADP3L94HL223134-63636e?style=flat-square)
 
-**[◆ Open the Garage HUD](https://2smok3d.github.io/focus-st/web/garage.html)** · **[◆ Open the Parts PWA](https://2smok3d.github.io/focus-st/web/index.html)** · **[◆ Landing](https://2smok3d.github.io/focus-st/)**
+**[◆ Enter the Garage](https://2smok3d.github.io/focus-st/web/index.html)** · **[◆ Focus ST Cockpit](https://2smok3d.github.io/focus-st/web/vehicles/focus-st/index.html)** · **[◆ Code Lookup](https://2smok3d.github.io/focus-st/web/tools/dtc.html)**
 
 </div>
 
@@ -23,17 +23,21 @@ Parts, mods, maintenance, diagnostics, and the entire knowledge base, wired toge
 
 ## What this is
 
-Everything about the car lives in this repo — and the repo *is* the database. Three
-surfaces read and write the same source of truth, so nothing drifts:
+A **digital garage platform** — one hub, many machines. The garage is the front
+door: pick a vehicle to open its cockpit, or run a shared tool across the whole
+fleet. Everything lives in this repo, and the repo *is* the database, so nothing
+drifts.
 
 | | Surface | What it does |
 |---|---|---|
-| 📱 | **Parts PWA** (`web/index.html`) | Installable app. Add parts, browse the catalog, log installs — writes straight to `data/PARTS.md` via the GitHub API. No backend. |
-| 🖥️ | **Garage HUD** (`web/garage.html`) | Motorsport dashboard: specs, projects, live engine bay, maintenance, recalls, and a searchable mechanic's manual. Hydrates from a live data feed. |
+| 🏁 | **The Garage** (`web/index.html`) | The homepage. Vehicle picker (Focus ST active + more staged), shared tools, front-and-center code lookup, and live status pulled from the fleet. |
+| 🖥️ | **Focus ST Cockpit** (`web/vehicles/focus-st/index.html`) | The vehicle screen — specs, projects, live engine bay, maintenance, recalls, and a searchable mechanic's manual. Hydrates from a live feed. |
+| 🔧 | **Shared tools** (`web/tools/`) | Multi-vehicle utilities: an OBD-II/DTC **code lookup** (any code → causes + diagnostic path) and the **parts tracker** PWA that writes straight to the repo. |
 | ⚙️ | **Digital Garage** (`digital-garage/`) | The truth store: Postgres + FastAPI + an MCP server, with evidence grading and a human-approval boundary on every write. |
 
-All three are backed by an **Obsidian-ready knowledge base** (`docs/`) — 16 fully
-graded reference notes, per-project build guides, and a 154 KB searchable compendium.
+Every surface speaks one design language (`web/assets/hud.css`) so it reads as a
+single progression, not a pile of pages — and each new vehicle slots into the same
+tools, logic, and look. All backed by an **Obsidian knowledge base** (`docs/`).
 
 ## Architecture
 
@@ -48,9 +52,9 @@ flowchart TD
       DG["Postgres + FastAPI + MCP<br/>authority · verification · approval"]
     end
     subgraph Data["🗄️ repo = database"]
-      PARTS["data/PARTS.md"]
-      JSON["web/garage.json"]
-      MODS["data/MODS.md"]
+      PARTS["data/vehicles/focus-st/PARTS.md"]
+      JSON["web/vehicles/focus-st/garage.json"]
+      MODS["data/vehicles/focus-st/MODS.md"]
     end
     subgraph Surfaces["🖥️ surfaces"]
       PWA["Parts PWA"]
@@ -66,8 +70,8 @@ flowchart TD
     DG -. "propose → approve" .-> Human(("👤 you"))
 ```
 
-The **PWA** owns `data/PARTS.md` (hand-authored catalog + app-appended wishlist).
-The **backend** owns structured facts and exports `web/garage.json`, which the
+The **PWA** owns `data/vehicles/focus-st/PARTS.md` (hand-authored catalog + app-appended wishlist).
+The **backend** owns structured facts and exports `web/vehicles/focus-st/garage.json`, which the
 **dashboard** hydrates from. Every write that changes the car's record passes
 through an approval queue — an agent can propose, but a human commits.
 
@@ -75,16 +79,25 @@ through an approval queue — an agent can propose, but a human commits.
 
 ```
 focus-st/
-├── index.html              Landing → links both surfaces
-├── web/                    The apps (GitHub Pages serves these)
-│   ├── index.html          Parts PWA  (motorsport-HUD redesign)
-│   ├── garage.html         Garage HUD dashboard
-│   ├── garage.json         Live data feed  (generated)
+├── index.html              Landing → enter the garage
+├── web/                    The platform (GitHub Pages serves these)
+│   ├── index.html          THE GARAGE — hub: vehicle picker + tools + status
+│   ├── assets/hud.css      Shared design system (one look everywhere)
+│   ├── tools/              Shared, multi-vehicle tools
+│   │   ├── dtc.html        OBD-II / DTC code lookup
+│   │   └── parts.html      Parts tracker PWA (vehicle-aware via ?v=)
+│   ├── vehicles/           Per-vehicle cockpit modules
+│   │   └── focus-st/
+│   │       ├── index.html  Focus ST cockpit (HUD dashboard)
+│   │       └── garage.json Focus ST live feed  (generated)
 │   ├── manifest.json  sw.js  icon.svg   PWA shell
 │   └── serve.ps1           Local dev server
 ├── data/                   The database
-│   ├── PARTS.md            Source of truth — catalog + wishlist
-│   └── MODS.md             Changes-from-stock  (generated)
+│   ├── fleet.json          Vehicle registry (the garage bays)
+│   ├── dtc-codes.json      DTC reference database
+│   └── vehicles/focus-st/
+│       ├── PARTS.md        Source of truth — catalog + wishlist
+│       └── MODS.md         Changes-from-stock  (generated)
 ├── digital-garage/         Backend: Postgres · FastAPI · MCP · CLI
 │   ├── app/                domain, parsers, analysis, service, API, MCP
 │   ├── db/schema.sql       canonical DDL
@@ -99,12 +112,13 @@ focus-st/
 
 ## Quick start
 
-**Use the apps** — nothing to install:
+**Use the platform** — nothing to install:
 
-- Parts tracker → **https://2smok3d.github.io/focus-st/web/index.html**
-- Dashboard → **https://2smok3d.github.io/focus-st/web/garage.html**
+- The Garage → **https://2smok3d.github.io/focus-st/web/index.html**
+- Focus ST cockpit → **https://2smok3d.github.io/focus-st/web/vehicles/focus-st/index.html**
+- Code lookup → **https://2smok3d.github.io/focus-st/web/tools/dtc.html**
 
-The PWA needs a fine-grained GitHub token (**Contents: read & write** on
+The parts tracker needs a fine-grained GitHub token (**Contents: read & write** on
 `2smok3d/focus-st`) the first time — it's stored only in your browser.
 
 **Run the backend** — one command:
@@ -137,7 +151,7 @@ link from any app and it opens pre-filled. Writes are committed straight to the 
 A live "digital twin" dashboard — vehicle spec sheet, 30 projects across 7 bundles,
 an interactive top-down **engine bay**, maintenance status, **recall campaigns**, cost
 rollups, and the full mechanic's manual with instant search. Hydrates from
-`web/garage.json` when present, falls back to inline data offline.
+`web/vehicles/focus-st/garage.json` when present, falls back to inline data offline.
 
 ### ⚙️ Digital Garage
 A local-first truth store. **Postgres** for graded facts, **FastAPI** for local HTTP,
@@ -163,8 +177,8 @@ chassis, electronics, tuning…), seven per-project build guides, YAML frontmatt
 
 ## Conventions
 
-- **The repo is the database.** `data/PARTS.md` is the source of truth; `data/MODS.md`
-  and `web/garage.json` are generated — don't hand-edit them.
+- **The repo is the database.** `data/vehicles/focus-st/PARTS.md` is the source of truth; `data/vehicles/focus-st/MODS.md`
+  and `web/vehicles/focus-st/garage.json` are generated — don't hand-edit them.
 - **Design system:** black `#0a0a0b`, ST red `#e8000d`, Chakra Petch / IBM Plex Mono,
   mobile-first, safe-area aware. Web files are fully self-contained (no CDNs).
 - **Evidence is graded.** Every claim carries a verification state
