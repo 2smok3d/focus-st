@@ -112,9 +112,10 @@ const statusLabel={active:'Active',staged:'Staged',project:'Project',researching
 fetch('../data/fleet.json',{cache:'no-store'}).then(r=>r.json()).then(f=>{
   $('#veh-count').textContent=f.vehicles.length+' machines';
   $('#fleet').innerHTML=f.vehicles.map(v=>{
-    const active=v.status==='active'&&v.screen;
+    const active=!!v.screen;                       // linkable if it has a cockpit
     const href=active?v.screen:'';
-    const tag=`<span class="pill ${statusPill[v.status]||''}"><span class="dot-s ${active?'s-good':'s-off'}"></span>${statusLabel[v.status]||v.status}</span>`;
+    const dot=v.status==='active'?'s-good':v.status==='project'?'s-warn':active?'s-warn':'s-off';
+    const tag=`<span class="pill ${statusPill[v.status]||''}"><span class="dot-s ${dot}"></span>${statusLabel[v.status]||v.status}</span>`;
     const inner=`
       <div class="stripe" style="background:${esc(v.accent)}"></div>
       <div class="top">

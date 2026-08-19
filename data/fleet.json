@@ -36,13 +36,15 @@
       "code": "ZX600-D",
       "class": "Sport tourer",
       "engine": "599cc liquid-cooled inline-4 · DOHC 16v",
-      "drivetrain": "6-speed · chain",
-      "power": "~90 hp (crank)",
-      "status": "staged",
+      "drivetrain": "6-speed · 525 chain",
+      "power": "~98 hp (crank)",
+      "status": "project",
       "accent": "#4f9dff",
-      "screen": null,
-      "tagline": "First-gen ZZR (ZX-6D). Carbureted inline-four sport tourer.",
-      "stats": [{"k": "Build", "v": "planned"}]
+      "screen": "vehicles/zzr600/index.html",
+      "parts": "data/vehicles/zzr600/PARTS.md",
+      "mods": "data/vehicles/zzr600/MODS.md",
+      "tagline": "First-gen ZZR (ZX600-D). Ram-air carbureted inline-four. Recommission from a long sit.",
+      "stats": [{"k": "Carbs", "v": "service due"}, {"k": "Charging", "v": "verify R/R"}]
     },
     {
       "slug": "rz350",
