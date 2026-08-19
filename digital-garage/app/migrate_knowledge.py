@@ -24,7 +24,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import provenance as pv
-from .models import Issue, MaintenanceInterval, Source, Vehicle
+from .models import Issue, MaintenanceInterval, Recall, Source, Vehicle
 from .refmodels import Claim, ClaimEvidence, VehicleVariant
 
 # Map a recorded verification grade to a source authority when no source row exists.
@@ -120,6 +120,43 @@ def migrate_issues_to_claims(session: Session, variant_slug: str = "focus-st") -
     return f"Known issues → claims: {created} created."
 
 
+# NHTSA is a primary government safety-data source; a KB-noted campaign awaiting VIN
+# confirmation is only as strong as its recorded grade.
+_ORIGIN_AUTHORITY = {"nhtsa": 1}
+
+
+def migrate_recalls_to_claims(session: Session, variant_slug: str = "focus-st") -> str:
+    """Normalize recall / safety-campaign records into claims.
+
+    Stores the campaign's *derived structured facts* — number, affected component,
+    remedy summary, status, and the "verify by VIN" citation note — never protected
+    manual content. NHTSA-origin campaigns are government-authoritative; KB-noted Ford
+    campaigns keep their recorded (conservative) grade until confirmed for this VIN.
+    """
+    variant, vehicle, ap = _resolve_targets(session, variant_slug)
+    if variant is None:
+        return "No reference variant — run `seed-ref` first."
+    if vehicle is None:
+        return f"No vehicle linked to variant '{variant_slug}'."
+    created = 0
+    for rc in session.scalars(select(Recall).where(Recall.vehicle_id == vehicle.id)):
+        origin = (rc.origin or "").lower()
+        auth = _ORIGIN_AUTHORITY.get(origin.split("-")[0], _GRADE_AUTHORITY.get(rc.verification, 4))
+        label = "NHTSA recalls database" if origin.startswith("nhtsa") else f"KB / Ford campaign ({rc.verification})"
+        value = rc.component or (rc.summary[:80] if rc.summary else rc.campaign_number)
+        detail_bits = [f"status={rc.status}"]
+        if rc.summary:
+            detail_bits.append(rc.summary)
+        if rc.remedy:
+            detail_bits.append(f"Remedy: {rc.remedy}")
+        if rc.note:
+            detail_bits.append(rc.note)
+        created += _add_claim(session, "recall", rc.campaign_number.upper(), "campaign",
+                              value, None, ap, auth, label, False, " · ".join(detail_bits))
+    return f"Recalls/TSBs → claims: {created} created."
+
+
 def migrate_knowledge(session: Session, variant_slug: str = "focus-st") -> str:
     return (migrate_maintenance_to_claims(session, variant_slug)
-            + "  " + migrate_issues_to_claims(session, variant_slug))
+            + "  " + migrate_issues_to_claims(session, variant_slug)
+            + "  " + migrate_recalls_to_claims(session, variant_slug))

@@ -81,9 +81,42 @@ def test_platform_issue_is_corroborated():
     assert "years" in evap["applicability"]  # platform-level → year/market applicability
 
 
+def test_known_recall_is_corroborated():
+    from app import refservice as rs
+    with session_scope() as s:
+        rc = rs.get_claim(s, "18S32", "campaign")
+    assert rc["subject_type"] == "recall"
+    assert "EVAP" in rc["value"]
+    # KB-noted Ford campaign awaiting VIN confirmation → conservative grade
+    assert rc["resolved"]["verification"] == "CORROBORATED"
+
+
+def test_nhtsa_origin_grades_authoritative():
+    """A government-sourced (NHTSA) campaign is graded from its origin, not just its
+    stored verification — reaching OEM_VERIFIED (authority 1)."""
+    from sqlalchemy import select
+    from app import refservice as rs, service
+    from app.migrate_knowledge import migrate_recalls_to_claims
+    from app.models import Recall
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        # guard: the DB persists across runs — only add the synthetic recall once
+        if s.scalar(select(Recall).where(Recall.campaign_number == "NHTSA-TEST-99")) is None:
+            s.add(Recall(vehicle_id=v.id, campaign_number="NHTSA-TEST-99", origin="nhtsa",
+                         component="Test system", summary="Synthetic NHTSA campaign for grading test.",
+                         status="unknown", verification="CORROBORATED"))
+            s.flush()
+        migrate_recalls_to_claims(s)
+    with session_scope() as s:
+        claim = rs.get_claim(s, "NHTSA-TEST-99", "campaign")
+    assert claim["resolved"]["verification"] == "OEM_VERIFIED"
+    assert claim["evidence"][0]["authority"] == 1
+
+
 def test_migration_is_idempotent():
     from app.migrate_knowledge import migrate_knowledge
     with session_scope() as s:
         again = migrate_knowledge(s)
     assert "Maintenance → claims: 0 created." in again
     assert "Known issues → claims: 0 created." in again
+    assert "Recalls/TSBs → claims: 0 created." in again

@@ -4,7 +4,7 @@
     python -m app.cli seed [--if-empty]    # load the Focus ST
     python -m app.cli seed-ref             # load the V2 reference model
     python -m app.cli migrate-specs        # migrate V1 specs → V2 claims (non-destructive)
-    python -m app.cli migrate-knowledge    # migrate V1 maintenance + issues → V2 claims
+    python -m app.cli migrate-knowledge    # migrate V1 maintenance + issues + recalls → claims
     python -m app.cli commission [machine] # baseline-commission a machine (or 'all')
     python -m app.cli fleet                # fleet overview across all machines
     python -m app.cli seed-twin            # seed the digital twin from on-vehicle facts
