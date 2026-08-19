@@ -4,6 +4,8 @@
     python -m app.cli seed [--if-empty]    # load the Focus ST
     python -m app.cli seed-ref             # load the V2 reference model
     python -m app.cli migrate-specs        # migrate V1 specs → V2 claims (non-destructive)
+    python -m app.cli seed-twin            # seed the digital twin from on-vehicle facts
+    python -m app.cli twin                 # reference-vs-actual component state
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -52,13 +54,15 @@ def cmd_init(_: argparse.Namespace) -> int:
             conn.execute(text(schema.read_text()))
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
-        schema_v2 = db / "schema_v2.sql"
-        if schema_v2.exists():
-            with engine.begin() as conn:
-                conn.execute(text(schema_v2.read_text()))
-            print(f"V2 schema applied from {schema_v2}")
+        for extra in ("schema_v2.sql", "schema_v3.sql"):
+            path = db / extra
+            if path.exists():
+                with engine.begin() as conn:
+                    conn.execute(text(path.read_text()))
+                print(f"Additive schema applied from {path}")
     else:
         import app.refmodels  # noqa: F401 — register V2 tables on the Base
+        import app.twinmodels  # noqa: F401 — register V3 tables on the Base
         Base.metadata.create_all(engine)
         print("Schema created from ORM metadata.")
     return 0
@@ -81,6 +85,44 @@ def cmd_migrate_specs(args: argparse.Namespace) -> int:
     from .migrate_specs import migrate_specs_to_claims
     with session_scope() as s:
         print(migrate_specs_to_claims(s, args.variant))
+    return 0
+
+
+def cmd_seed_twin(args: argparse.Namespace) -> int:
+    from .twin import seed_twin
+    with session_scope() as s:
+        print(seed_twin(s, args.variant))
+    return 0
+
+
+def cmd_twin(args: argparse.Namespace) -> int:
+    from . import twin
+    cond_icon = {"stock": "·", "modified": "🟣", "removed": "⚫", "failed": "🔴",
+                 "suspect": "🟠", "degraded": "🟡", "healthy": "🟢",
+                 "planned": "🔵", "unknown": "⚪"}
+    with session_scope() as s:
+        rva = twin.reference_vs_actual(s, args.variant)
+        if rva is None:
+            print(f"No reference variant '{args.variant}'.", file=sys.stderr)
+            return 1
+        print(f"Digital twin · {args.variant} · VIN {rva['vin'] or '(unlinked)'}")
+        print(f"  deviations from stock: {len(rva['deviations'])}")
+
+        def walk(nodes, depth=0):
+            for n in nodes:
+                print("  " * depth + f"▸ {n['name']}")
+                for c in n["components"]:
+                    a = c["actual"]
+                    icon = cond_icon.get(a["condition"], "·")
+                    extra = ""
+                    if a["observed"]:
+                        extra = f"  [{a['condition']} · {a['knowledge_state']}]"
+                        if a["installed_part"]:
+                            extra += f" → {a['installed_part']}"
+                    print("  " * (depth + 1) + f"{icon} {c['name']}{extra}")
+                walk(n["children"], depth + 1)
+
+        walk(rva["tree"])
     return 0
 
 
@@ -433,6 +475,14 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("migrate-specs", help="migrate V1 specs → V2 claims (non-destructive)")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_migrate_specs)
+
+    sp = sub.add_parser("seed-twin", help="seed the digital twin from on-vehicle observations")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_seed_twin)
+
+    sp = sub.add_parser("twin", help="reference-vs-actual component state (the digital twin)")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_twin)
 
     sp = sub.add_parser("ref", help="show a variant's reference system tree")
     sp.add_argument("--variant", default="focus-st")

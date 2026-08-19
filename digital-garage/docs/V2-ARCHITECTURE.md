@@ -127,9 +127,20 @@ before the previous one is complete and tested.**
   references into the claim model; store citations + document/page/section metadata and
   only **permissible excerpts** — never copy protected service manuals into the repo.
 
-- **Phase 3 — Digital Twin.** Component *state* on the actual car (`STOCK` /
-  `MODIFIED` / `REMOVED` / `PLANNED` / `FAILED`), reference-vs-actual diff, and mods
-  attached to the components they change.
+- **Phase 3 — Digital Twin / Machine State Engine.** *(started)* A machine is a
+  **state over time**, not a bag of current records. **Done:** `db/schema_v3.sql` +
+  `app/twinmodels.py` + `app/twin.py` add `component_states` — each row an observation
+  of a component's **condition** (`stock`/`modified`/`removed`/`failed`/`suspect`/
+  `degraded`/`healthy`/`planned`/`unknown`) *and* its **epistemic knowledge_state**
+  (`DIRECTLY_OBSERVED`/`OEM_ASSERTED`/`INFERRED`/`ESTIMATED`/`DISPUTED`/… — keeping
+  inference distinct from fact). A new observation **supersedes** the prior one, so
+  `MachineState(T)` is reconstructable for any T (`state_at`). `reference_vs_actual`
+  overlays recorded states on the reference tree (unobserved → assumed stock, *not
+  claimed verified*); `machine_capabilities` records what a machine supports so tools
+  adapt per machine (no "Scan DTC" on a carbureted two-stroke). CLI: `seed-twin`,
+  `twin`. Usage accumulators (`hours`/`miles`/`cycles`) are in place to feed later
+  condition-based maintenance + degradation models. **Next:** usage-driven degradation
+  / remaining-life estimates, and attaching mods/service events to component states.
 
 - **Phase 4 — Professional tools.** Diagnostic workbench (`diagnostic_cases` linking
   symptoms → DTCs → components → tests), telemetry PID registry + derived signals +
