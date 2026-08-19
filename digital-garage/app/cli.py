@@ -1,7 +1,17 @@
 """Operator CLI — the human side of the garage.
 
-    python -m app.cli init                 # create schema
+    python -m app.cli init                 # create schema (V1 + V2 additive)
     python -m app.cli seed [--if-empty]    # load the Focus ST
+    python -m app.cli seed-ref             # load the V2 reference model
+    python -m app.cli migrate-specs        # migrate V1 specs → V2 claims (non-destructive)
+    python -m app.cli commission [machine] # baseline-commission a machine (or 'all')
+    python -m app.cli fleet                # fleet overview across all machines
+    python -m app.cli seed-twin            # seed the digital twin from on-vehicle facts
+    python -m app.cli twin [--variant S]   # reference-vs-actual component state
+    python -m app.cli ref [--variant S]    # reference system → component tree
+    python -m app.cli component <slug>     # a component: relationships + claims
+    python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
+    python -m app.cli conflicts            # claims flagged as conflicting
     python -m app.cli vehicle              # show the tracked car
     python -m app.cli specs [--category X] # list graded specs
     python -m app.cli due --miles 62000    # maintenance-due report
@@ -39,12 +49,22 @@ def _print_rows(rows: list[dict]) -> None:
 
 def cmd_init(_: argparse.Namespace) -> int:
     # Prefer the canonical DDL (enums, checks) if present; fall back to ORM.
-    schema = Path(__file__).resolve().parent.parent / "db" / "schema.sql"
+    db = Path(__file__).resolve().parent.parent / "db"
+    schema = db / "schema.sql"
     if schema.exists():
         with engine.begin() as conn:
             conn.execute(text(schema.read_text()))
         print(f"Schema applied from {schema}")
+        # V2 additive layer (reference model + provenance). Idempotent.
+        for extra in ("schema_v2.sql", "schema_v3.sql"):
+            path = db / extra
+            if path.exists():
+                with engine.begin() as conn:
+                    conn.execute(text(path.read_text()))
+                print(f"Additive schema applied from {path}")
     else:
+        import app.refmodels  # noqa: F401 — register V2 tables on the Base
+        import app.twinmodels  # noqa: F401 — register V3 tables on the Base
         Base.metadata.create_all(engine)
         print("Schema created from ORM metadata.")
     return 0
@@ -53,6 +73,195 @@ def cmd_init(_: argparse.Namespace) -> int:
 def cmd_seed(args: argparse.Namespace) -> int:
     with session_scope() as s:
         print(seed_fn(s, if_empty=args.if_empty))
+    return 0
+
+
+def cmd_seed_ref(_: argparse.Namespace) -> int:
+    from .seed_ref import seed_reference
+    with session_scope() as s:
+        print(seed_reference(s))
+    return 0
+
+
+def cmd_migrate_specs(args: argparse.Namespace) -> int:
+    from .migrate_specs import migrate_specs_to_claims
+    with session_scope() as s:
+        print(migrate_specs_to_claims(s, args.variant))
+    return 0
+
+
+def cmd_commission(args: argparse.Namespace) -> int:
+    from .commission import MACHINES, commission_all, commission_machine
+    with session_scope() as s:
+        if args.machine in (None, "all"):
+            for line in commission_all(s):
+                print(line)
+        elif args.machine in MACHINES:
+            print(commission_machine(s, args.machine))
+        else:
+            print(f"Unknown machine '{args.machine}'. Known: {', '.join(MACHINES)}, all",
+                  file=sys.stderr)
+            return 1
+    return 0
+
+
+def cmd_fleet(_: argparse.Namespace) -> int:
+    from .models import Vehicle
+    from .refmodels import VehicleVariant
+    from . import twin
+    with session_scope() as s:
+        vehicles = s.scalars(select(Vehicle).order_by(Vehicle.id)).all()
+        print(f"Fleet · {len(vehicles)} machine(s)")
+        for v in vehicles:
+            variant = s.get(VehicleVariant, v.variant_id) if v.variant_id else None
+            states = twin.current_states(s, v.id)
+            devs = sum(1 for st in states.values() if st.condition in twin.NOTABLE_CONDITIONS)
+            link = f"→ {variant.slug}" if variant else "(unlinked)"
+            print(f"  {v.year} {v.make} {v.model} · {v.vin}  {link}")
+            print(f"      states tracked={len(states)} · deviations={devs} · {v.notes or ''}")
+    return 0
+
+
+def cmd_seed_twin(args: argparse.Namespace) -> int:
+    from .twin import seed_twin
+    with session_scope() as s:
+        print(seed_twin(s, args.variant))
+    return 0
+
+
+def cmd_twin(args: argparse.Namespace) -> int:
+    from . import twin
+    cond_icon = {"stock": "·", "modified": "🟣", "removed": "⚫", "failed": "🔴",
+                 "suspect": "🟠", "degraded": "🟡", "healthy": "🟢",
+                 "planned": "🔵", "unknown": "⚪"}
+    with session_scope() as s:
+        rva = twin.reference_vs_actual(s, args.variant)
+        if rva is None:
+            print(f"No reference variant '{args.variant}'.", file=sys.stderr)
+            return 1
+        print(f"Digital twin · {args.variant} · VIN {rva['vin'] or '(unlinked)'}")
+        print(f"  deviations from stock: {len(rva['deviations'])}")
+
+        def walk(nodes, depth=0):
+            for n in nodes:
+                print("  " * depth + f"▸ {n['name']}")
+                for c in n["components"]:
+                    a = c["actual"]
+                    icon = cond_icon.get(a["condition"], "·")
+                    extra = ""
+                    if a["observed"]:
+                        extra = f"  [{a['condition']} · {a['knowledge_state']}]"
+                        if a["installed_part"]:
+                            extra += f" → {a['installed_part']}"
+                    print("  " * (depth + 1) + f"{icon} {c['name']}{extra}")
+                walk(n["children"], depth + 1)
+
+        walk(rva["tree"])
+    return 0
+
+
+def _verdict_icon(verification: str, conflict: bool) -> str:
+    if conflict:
+        return "⚠️"
+    return {"VEHICLE_VERIFIED": "🟢", "OEM_VERIFIED": "🔵",
+            "CORROBORATED": "🟡", "UNVERIFIED": "⚪"}.get(verification, "·")
+
+
+def cmd_ref(args: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        hdr = rs.variant_header(s, args.variant)
+        if hdr is None:
+            print(f"No reference variant '{args.variant}'. Run: python -m app.cli seed-ref",
+                  file=sys.stderr)
+            return 1
+        print(f"{hdr['manufacturer']} {hdr['platform']} "
+              f"[{hdr['platform_code']}] → {hdr['name']} · {hdr['trim'] or ''} "
+              f"· {hdr['market'] or ''} {hdr['years'] or ''}")
+        if hdr["engine"]:
+            e = hdr["engine"]
+            print(f"  engine: {e['code']} · {e['displacement_cc']}cc {e['config']} · "
+                  f"{e['aspiration']} · {e['power']} / {e['torque']}")
+        if hdr["transmission"]:
+            t = hdr["transmission"]
+            print(f"  trans:  {t['code']} · {t['type']}")
+        print()
+
+        def walk(nodes: list[dict], depth: int = 0) -> None:
+            for n in nodes:
+                print("  " * depth + f"▸ {n['name']}")
+                for c in n["components"]:
+                    hint = f"  ({c['oem_hint']})" if c["oem_hint"] else ""
+                    print("  " * (depth + 1) + f"· {c['name']}  [{c['slug']}]{hint}")
+                walk(n["children"], depth + 1)
+
+        walk(rs.system_tree(s, args.variant))
+    return 0
+
+
+def cmd_component(args: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        c = rs.get_component(s, args.variant, args.slug)
+        if c is None:
+            print(f"No component '{args.slug}' on variant '{args.variant}'.", file=sys.stderr)
+            return 1
+        print(f"{c['name']}  [{c['slug']}] · system: {c['system']}")
+        if c["description"]:
+            print(f"  {c['description']}")
+        if c["relationships"]:
+            print("  relationships:")
+            for r in c["relationships"]:
+                note = f" — {r['note']}" if r["note"] else ""
+                print(f"    {r['dir']} {r['relation']} {r['other']}{note}")
+        if c["claims"]:
+            print("  claims:")
+            for cl in c["claims"]:
+                u = f" {cl['unit']}" if cl["unit"] else ""
+                icon = _verdict_icon(cl["verification"], cl["conflict"])
+                print(f"    {icon} {cl['property']}: {cl['value']}{u}  "
+                      f"({cl['verification']}, conf {cl['confidence']:.2f})")
+    return 0
+
+
+def cmd_claim(args: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        c = rs.get_claim(s, args.subject, args.property)
+        if c is None:
+            print(f"No claim '{args.subject}/{args.property}'.", file=sys.stderr)
+            return 1
+        u = f" {c['unit']}" if c["unit"] else ""
+        icon = _verdict_icon(c["verification"], c["conflict"])
+        print(f"{icon} {c['subject_type']}:{c['subject_key']} · {c['property']} = {c['value']}{u}")
+        r = c["resolved"]
+        print(f"  verdict:  {r['verification']} · confidence {r['confidence']} "
+              f"· {'CONFLICT' if r['conflict'] else 'no conflict'}")
+        print(f"  {r['rationale']}")
+        if c["applicability"]:
+            print(f"  applies:  {c['applicability']}")
+        print("  evidence:")
+        for e in c["evidence"]:
+            stance = {"supports": "＋", "contradicts": "－", "supersedes": "↻"}.get(e["stance"], "?")
+            veh = " [on-vehicle]" if e["on_vehicle"] else ""
+            print(f"    {stance} auth {e['authority']} · {e['label']}{veh}")
+    return 0
+
+
+def cmd_conflicts(_: argparse.Namespace) -> int:
+    from . import refservice as rs
+    with session_scope() as s:
+        rows = rs.list_conflicts(s)
+        if not rows:
+            print("No conflicting claims on record. 🟢")
+            return 0
+        print(f"{len(rows)} conflicting claim(s):")
+        for c in rows:
+            u = f" {c['unit']}" if c["unit"] else ""
+            print(f"  ⚠️ {c['subject_type']}:{c['subject_key']} · {c['property']} = "
+                  f"{c['value']}{u}  ({c['verification']})")
+            if c["notes"]:
+                print(f"      {c['notes']}")
     return 0
 
 
@@ -294,6 +503,43 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("seed", help="load the Focus ST")
     sp.add_argument("--if-empty", action="store_true", help="skip if the vehicle already exists")
     sp.set_defaults(fn=cmd_seed)
+
+    sub.add_parser("seed-ref", help="seed the V2 reference model (Focus ST)").set_defaults(fn=cmd_seed_ref)
+
+    sp = sub.add_parser("migrate-specs", help="migrate V1 specs → V2 claims (non-destructive)")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_migrate_specs)
+
+    sp = sub.add_parser("commission", help="baseline-commission a machine (or 'all') as a twin")
+    sp.add_argument("machine", nargs="?", default="all",
+                    help="machine slug (zzr600/rz350/tz250/toyota-pickup) or 'all'")
+    sp.set_defaults(fn=cmd_commission)
+
+    sub.add_parser("fleet", help="fleet overview across all machines").set_defaults(fn=cmd_fleet)
+
+    sp = sub.add_parser("seed-twin", help="seed the digital twin from on-vehicle observations")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_seed_twin)
+
+    sp = sub.add_parser("twin", help="reference-vs-actual component state (the digital twin)")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_twin)
+
+    sp = sub.add_parser("ref", help="show a variant's reference system tree")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_ref)
+
+    sp = sub.add_parser("component", help="show a component: relationships + claims")
+    sp.add_argument("slug")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_component)
+
+    sp = sub.add_parser("claim", help="show a claim with evidence + resolved verdict")
+    sp.add_argument("subject", help="subject_key (e.g. 'lubrication', 'focus-st')")
+    sp.add_argument("property", help="property (e.g. 'oil_capacity')")
+    sp.set_defaults(fn=cmd_claim)
+
+    sub.add_parser("conflicts", help="list claims flagged as conflicting").set_defaults(fn=cmd_conflicts)
 
     sub.add_parser("vehicle", help="show the tracked vehicle").set_defaults(fn=cmd_vehicle)
 

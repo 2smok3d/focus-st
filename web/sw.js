@@ -1,7 +1,7 @@
-const CACHE = 'fst-v8';
+const CACHE = 'fst-v9';
 const SHELL = [
   'index.html', 'manifest.json', 'icon.svg', 'assets/hud.css',
-  'tools/parts.html', 'tools/dtc.html',
+  'tools/parts.html', 'tools/dtc.html', 'tools/manual.html',
   'vehicles/focus-st/index.html', 'vehicles/zzr600/index.html',
   'vehicles/rz350/index.html', 'vehicles/tz250/index.html', 'vehicles/toyota-pickup/index.html'
 ];
