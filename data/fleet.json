@@ -54,13 +54,15 @@
       "code": "RD350 YPVS · 31K",
       "class": "2-stroke sport",
       "engine": "347cc reed-valve 2-stroke twin · YPVS",
-      "drivetrain": "6-speed · chain",
-      "power": "~44 hp (US) / ~59 hp (RD)",
-      "status": "staged",
-      "accent": "#ffb020",
-      "screen": null,
-      "tagline": "Last US production year. Kenny Roberts yellow/black livery, powervalve twin.",
-      "stats": [{"k": "Build", "v": "planned"}]
+      "drivetrain": "6-speed · chain · Autolube",
+      "power": "~46 hp (US catted) / ~59 hp (RD)",
+      "status": "project",
+      "accent": "#f5c518",
+      "screen": "vehicles/rz350/index.html",
+      "parts": "data/vehicles/rz350/PARTS.md",
+      "mods": "data/vehicles/rz350/MODS.md",
+      "tagline": "Last US production year. Kenny Roberts yellow/black livery, YPVS powervalve twin.",
+      "stats": [{"k": "Powervalve", "v": "service"}, {"k": "Crank seals", "v": "verify"}]
     },
     {
       "slug": "tz250",

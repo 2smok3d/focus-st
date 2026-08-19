@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a0a0b">
+<title>RZ350 · Cockpit</title>
+<link rel="icon" href="../../icon.svg">
+<link rel="stylesheet" href="../../assets/hud.css">
+<style>
+  /* Kenny Roberts yellow identity over the shared system */
+  :root{--red:#f5c518;--red2:#ffe14d}
+  .crit{background:#e8000d;box-shadow:0 0 6px #e8000d} /* real critical stays red */
+  .hero{padding:16px 0 6px}
+  .hero .eyebrow{margin-bottom:12px}
+  .hero h1{font-family:var(--disp);font-size:clamp(36px,9vw,64px);font-weight:700;letter-spacing:-.01em;line-height:.92}
+  .hero h1 em{color:var(--red);font-style:normal}
+  .hero .sub{color:var(--ink2);font-size:14.5px;max-width:660px;margin-top:12px;line-height:1.55}
+  .hero .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+  .note-y{background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.28);border-radius:12px;
+    padding:13px 15px;font-size:13px;color:var(--ink2);line-height:1.6}
+  .note-y b{color:var(--ink)}
+  .note-crit{background:rgba(232,0,13,.07);border:1px solid rgba(232,0,13,.3)}
+  .sys{display:flex;align-items:flex-start;gap:11px;padding:14px 16px}
+  .sys .nm{font-family:var(--disp);font-weight:600;letter-spacing:.02em;font-size:14px}
+  .sys .ds{font-size:12.5px;color:var(--ink2);margin-top:3px;line-height:1.45}
+  .chk div{display:flex;align-items:flex-start;gap:11px;padding:12px 15px;border:1px solid var(--line);
+    border-radius:11px;background:var(--panel);margin-bottom:9px}
+  .chk .t{flex:1}.chk .t .h{font-size:13.5px;color:var(--ink);font-weight:500}
+  .chk .t .s{font-family:var(--mono);font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.5}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:11px;color:var(--ink3)}
+  footer a{color:var(--ink3);text-decoration:none}footer a:hover{color:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="gbar">
+  <a class="home" href="../../index.html"><span class="dot"></span><span class="wm">FO<em>S</em>T</span></a>
+  <span class="crumb">Garage<span class="sep">/</span>RZ350</span>
+  <span class="spacer"></span>
+  <nav class="gnav">
+    <a href="../../index.html">◆ <span>Garage</span></a>
+    <a href="../../tools/dtc.html">❏ <span>Codes</span></a>
+    <a href="../../tools/parts.html?v=rz350">✦ <span>Parts</span></a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Yamaha · RZ350 · Kenny Roberts</div>
+    <h1>RZ<em>350</em></h1>
+    <div class="sub">1985 US Kenny Roberts edition — 347cc liquid-cooled two-stroke twin with
+      YPVS powervalve and Autolube injection, in the yellow/black GP livery. Last year Yamaha
+      sold it in the States. No valves and no OBD: on a two-stroke the crank seals, jetting,
+      powervalve, and oil supply are everything.</div>
+    <div class="chips">
+      <span class="pill amber"><span class="dot-s s-warn"></span>Project · recommission</span>
+      <span class="pill">1985 · last US year</span>
+      <span class="pill">2-stroke · Autolube · no fault codes</span>
+    </div>
+  </div>
+
+  <div class="grid g4" style="margin-top:20px">
+    <div class="tile"><div class="k">Displacement</div><div class="v">347<span class="u">cc</span></div><div class="n">2-stroke twin · reed valve</div></div>
+    <div class="tile"><div class="k">Power</div><div class="v">~46<span class="u">hp</span></div><div class="n">US catted · ~59 hp RD/YPVS</div></div>
+    <div class="tile"><div class="k">Weight</div><div class="v">~340<span class="u">lb</span></div><div class="n">wet · ~155 kg</div></div>
+    <div class="tile"><div class="k">Induction</div><div class="v">YPVS<span class="u"></span></div><div class="n">powervalve · Autolube oil</div></div>
+  </div>
+
+  <div class="sec"><span class="n">01</span><h2>Specification</h2><span class="ln"></span><span class="act mono">verify vs manual</span></div>
+  <div class="note-y" style="margin-bottom:14px">Values below are <b>community / spec-sheet figures</b> for the US RZ350. Treat as
+    ⚠️ starting points — confirm jetting, clearances, and part numbers against the
+    <b>Yamaha service manual</b> and the actual bike. US models were <b>catalyzed and
+    detuned</b>; many were de-catted and rejetted, which changes everything downstream.</div>
+  <div class="tbl-wrap">
+    <table class="hud">
+      <thead><tr><th>System</th><th>Spec</th><th>Confidence</th></tr></thead>
+      <tbody>
+        <tr><td>Engine</td><td class="mono">347cc liquid-cooled 2-stroke parallel twin · reed valve · bore×stroke 64×54mm</td><td>corroborated</td></tr>
+        <tr><td>Powervalve</td><td class="mono">YPVS — servo-driven exhaust power valve</td><td>corroborated</td></tr>
+        <tr><td>Lubrication</td><td class="mono">Autolube oil injection (separate 2-stroke oil tank) · gearbox has its own oil</td><td>corroborated</td></tr>
+        <tr><td>Fuel</td><td class="mono">2× Mikuni ~26mm carbs (verify size)</td><td>unverified ⚠️</td></tr>
+        <tr><td>Ignition</td><td class="mono">CDI · NGK B8ES/BR8ES plugs (verify)</td><td>unverified ⚠️</td></tr>
+        <tr><td>Transmission</td><td class="mono">6-speed · wet clutch · chain final drive</td><td>corroborated</td></tr>
+        <tr><td>Frame</td><td class="mono">Steel perimeter · Monocross rear (single shock)</td><td>corroborated</td></tr>
+        <tr><td>Front susp.</td><td class="mono">Telescopic fork (~35mm — verify)</td><td>unverified ⚠️</td></tr>
+        <tr><td>Brakes</td><td class="mono">Front disc(s) + rear disc · DOT 4 — verify single vs twin front</td><td>unverified ⚠️</td></tr>
+        <tr><td>Wheels/tires</td><td class="mono">18" · ~100/90-18 F · ~110/90-18 R (verify)</td><td>unverified ⚠️</td></tr>
+        <tr><td>Top speed</td><td class="mono">~105–110 mph</td><td>corroborated</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="n">02</span><h2>Systems Status</h2><span class="ln"></span><span class="act mono">two-stroke priorities</span></div>
+  <div class="grid g3">
+    <div class="card sys"><span class="dot-s crit"></span><div><div class="nm">Crank seals</div><div class="ds"><b>Seize risk.</b> 40-yr seals harden → air leak → lean → seizure. Pressure-test the crankcase before any hard running.</div></div></div>
+    <div class="card sys"><span class="dot-s s-warn"></span><div><div class="nm">Powervalve (YPVS)</div><div class="ds">Carbons up + servo/cables stick. Decarbon and verify a full open/close sweep.</div></div></div>
+    <div class="card sys"><span class="dot-s s-warn"></span><div><div class="nm">Oil supply (Autolube)</div><div class="ds">Never run the injection tank dry. Verify pump operation + throttle-cable sync before start.</div></div></div>
+    <div class="card sys"><span class="dot-s s-warn"></span><div><div class="nm">Fueling / jetting</div><div class="ds">Carbs varnish after a sit. If de-catted or on chambers, it MUST be rejetted — read plug color.</div></div></div>
+    <div class="card sys"><span class="dot-s s-off"></span><div><div class="nm">Cooling</div><div class="ds">Liquid-cooled — flush coolant, inspect hoses + water-pump seal.</div></div></div>
+    <div class="card sys"><span class="dot-s s-off"></span><div><div class="nm">Chassis</div><div class="ds">Fork seals, steering-head + swingarm bearings, brake lines, tire date codes.</div></div></div>
+  </div>
+
+  <div class="sec"><span class="n">03</span><h2>Recommission Checklist</h2><span class="ln"></span><span class="act mono">before first start</span></div>
+  <div class="chk">
+    <div><span class="dot-s crit" style="margin-top:4px"></span><div class="t"><div class="h">Crankcase pressure/vacuum test</div><div class="s">Prove the crank seals hold before running — a lean air leak seizes a two-stroke.</div></div></div>
+    <div><span class="dot-s s-warn" style="margin-top:4px"></span><div class="t"><div class="h">Fill + verify the Autolube oil tank & pump</div><div class="s">Confirm oil delivery and cable sync. Do not start it dry.</div></div></div>
+    <div><span class="dot-s s-warn" style="margin-top:4px"></span><div class="t"><div class="h">Drain old fuel · clean carbs · set jetting</div><div class="s">Rebuild both carbs; jet to the current intake/exhaust config.</div></div></div>
+    <div><span class="dot-s s-warn" style="margin-top:4px"></span><div class="t"><div class="h">Decarbon + sync the YPVS powervalves</div><div class="s">Free the valves, set the servo, verify full sweep.</div></div></div>
+    <div><span class="dot-s s-off" style="margin-top:4px"></span><div class="t"><div class="h">Fresh plugs · check ignition/CDI · charging</div><div class="s">Carry spare plugs; read color after the first runs.</div></div></div>
+    <div><span class="dot-s s-off" style="margin-top:4px"></span><div class="t"><div class="h">Gearbox oil · coolant flush</div><div class="s">Transmission oil is separate from the fuel/injection oil.</div></div></div>
+    <div><span class="dot-s s-off" style="margin-top:4px"></span><div class="t"><div class="h">Brakes (DOT 4) · chain + sprockets · tires</div><div class="s">Age-out items — service regardless of appearance.</div></div></div>
+  </div>
+
+  <div class="sec"><span class="n">04</span><h2>Maintenance Intervals</h2><span class="ln"></span><span class="act mono">two-stroke — no valves</span></div>
+  <div class="tbl-wrap">
+    <table class="hud">
+      <thead><tr><th>Item</th><th>Interval</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>2-stroke injection oil</td><td class="mono">check every ride</td><td>Autolube tank — never run dry</td></tr>
+        <tr><td>Spark plugs</td><td class="mono">frequent · carry spares</td><td>2-strokes foul; plug color = jetting gauge</td></tr>
+        <tr><td>Gearbox oil</td><td class="mono">~2,000–3,000 mi</td><td>Separate from fuel/injection oil</td></tr>
+        <tr><td>Powervalve (YPVS) decarbon</td><td class="mono">periodic</td><td>Clean + verify servo sweep</td></tr>
+        <tr><td>Crank seals</td><td class="mono">inspect / as needed</td><td>Pressure-test; replace if leaking</td></tr>
+        <tr><td>Coolant</td><td class="mono">2–3 yr</td><td>Inspect hoses + pump seal</td></tr>
+        <tr><td>Brake fluid</td><td class="mono">2 yr</td><td>DOT 4</td></tr>
+        <tr><td>Chain clean + lube</td><td class="mono">~300–500 mi</td><td>Adjust slack; inspect sprockets</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec"><span class="n">05</span><h2>Diagnosis</h2><span class="ln"></span></div>
+  <div class="note-y note-crit">This is a <b>carbureted two-stroke</b> — no ECU, no fault codes, so the garage's
+    <a href="../../tools/dtc.html" style="color:var(--red);text-decoration:none">Code Lookup</a> doesn't apply.
+    Diagnosis is analog and two-stroke-specific: <b>crankcase pressure test</b> (air leaks →
+    lean seize — the number-one killer), <b>cylinder compression</b>, <b>spark plug color reads</b>
+    for jetting, <b>ignition/CDI</b> checks, and <b>powervalve</b> operation. When in doubt, jet
+    rich and read the plugs — a lean two-stroke is a seized two-stroke.</div>
+
+  <footer>
+    <a href="../../index.html">◆ The Garage</a>
+    <a href="../../tools/parts.html?v=rz350">✦ Parts tracker</a>
+    <a href="https://github.com/2smok3d/focus-st">◆ Repository</a>
+    <span style="margin-left:auto">RZ350 KR · one garage, many machines</span>
+  </footer>
+</div>
+</body>
+</html>
