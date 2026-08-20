@@ -98,6 +98,33 @@ def test_workbench_recommends_next_test_from_hypotheses():
     assert view["recommended_test"] == rec[0]["name"]           # surfaced in the case view
 
 
+def test_open_case_from_symptom_seeds_candidate_hypotheses():
+    from app import service, workbench
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        case = workbench.open_case_from_symptom(s, v, "low boost with a whistle")
+        view = workbench.case_view(s, case.id)
+    keys = {h["key"] for h in view["hypotheses"]}
+    assert {"charge-air-leak", "wastegate-fault"} <= keys      # candidates became hypotheses
+    assert view["recommended_test"] is not None                # best next test surfaced
+
+
+def test_confirm_failure_mode_enforces_evidence_and_cites_consequence():
+    from app import service, workbench
+    from app.epistemics import EpistemicError
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        case = workbench.open_case_from_symptom(s, v, "low boost with a whistle")
+        with pytest.raises(EpistemicError):
+            workbench.confirm_failure_mode(s, case, "charge-air-leak", supporting="")
+        f = workbench.confirm_failure_mode(s, case, "charge-air-leak",
+                                           supporting="smoke test failed at the IC coupler")
+        view = workbench.case_view(s, case.id)
+    assert "Charge-air" in f.text and "Consequence" in f.text
+    assert any(h["key"] == "charge-air-leak" and h["status"] == "confirmed"
+               for h in view["hypotheses"])
+
+
 def test_failure_mode_detail_lists_tests():
     from app import diaglib
     with session_scope() as s:

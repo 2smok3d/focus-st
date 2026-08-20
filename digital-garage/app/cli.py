@@ -22,6 +22,7 @@
     python -m app.cli pc-seed / pc <code>  # physical-component lifecycle
     python -m app.cli seed-diaglib         # seed the failure-mode + diagnostic-test library
     python -m app.cli symptom "<text>"     # symptom → candidate failure modes + best next test
+    python -m app.cli dx-open "<symptom>"  # open a case from a symptom (auto-seeds candidates)
     python -m app.cli failure-mode <slug>  # a failure mode + its discriminating tests
     python -m app.cli next-test <fm>… [--done …] # rank next tests by info-gain utility
     python -m app.cli ref [--variant S]    # reference system → component tree
@@ -290,6 +291,21 @@ def cmd_dx_seed(args: argparse.Namespace) -> int:
     from .workbench import seed_example_case
     with session_scope() as s:
         print(seed_example_case(s, args.variant))
+    return 0
+
+
+def cmd_dx_open(args: argparse.Namespace) -> int:
+    from . import service, workbench
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        case = workbench.open_case_from_symptom(s, v, args.symptom)
+        view = workbench.case_view(s, case.id)
+        print(f"Opened case #{case.id} · “{args.symptom}”")
+        print("  candidate failure modes (hypotheses):")
+        for h in view["hypotheses"]:
+            print(f"    · {h['description']}  [{h['key']}]  support {h['support']:.0%}")
+        if view["recommended_test"]:
+            print(f"  ▸ best next test: {view['recommended_test']}")
     return 0
 
 
@@ -870,6 +886,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("dx-seed", help="seed the worked diagnostic case (low boost)")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_dx_seed)
+
+    sp = sub.add_parser("dx-open", help="open a case from a symptom (auto-seeds candidate failure modes)")
+    sp.add_argument("symptom")
+    sp.set_defaults(fn=cmd_dx_open)
 
     sub.add_parser("cases", help="list diagnostic cases").set_defaults(fn=cmd_cases)
 
