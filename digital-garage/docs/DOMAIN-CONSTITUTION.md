@@ -75,3 +75,18 @@ rests on; a verified repair cites the verification that confirmed it.
 | Units normalized; cross-unit values compared correctly | `app/quantities.py` + `tests/test_quantities.py` |
 | Evidence precedence / conflict | `app/provenance.py` + `tests/test_provenance.py` |
 | Human approval boundary (agent proposes → human approves) | `app/service.py` change-proposal queue |
+| Observations are directly-measured facts, never Findings | `app/observations.py` (Observation V2) |
+| Configuration at time T is a projection of history | `app/observations.py::config_at` (twin state + event ledger) |
+| Measurements compared unit-aware | `app/observations.py::measurements_agree` (via `quantities`) |
+
+## 6. Records that realize these entities
+
+| Entity | Realized by |
+|---|---|
+| Observation / Measurement | `observations` (+ `instruments`) — value normalized via `quantities` |
+| State (over time) | `component_states` (temporal twin) |
+| Event | `machine_events` (append-only ledger; state is a projection of it) |
+| Configuration snapshot | `configuration_snapshots` — materialized twin state + settings |
+| Environment | `environment_snapshots` — canonical °C / kPa |
+| Claim / Evidence | `claims` / `claim_evidence` |
+| Hypothesis / Finding / Test | `case_hypotheses` / `case_findings` / `case_tests` (workbench) |
