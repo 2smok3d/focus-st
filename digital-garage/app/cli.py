@@ -25,6 +25,9 @@
     python -m app.cli dx-open "<symptom>"  # open a case from a symptom (auto-seeds candidates)
     python -m app.cli failure-mode <slug>  # a failure mode + its discriminating tests
     python -m app.cli next-test <fm>… [--done …] # rank next tests by info-gain utility
+    python -m app.cli wo-seed              # seed an example work order (job readiness)
+    python -m app.cli work-orders / wo <id> # list / show work orders
+    python -m app.cli wo-verify <id> <test> pass|fail  # post-repair verification
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -74,7 +77,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
         for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
-                      "schema_v6.sql", "schema_v7.sql", "schema_v8.sql"):
+                      "schema_v6.sql", "schema_v7.sql", "schema_v8.sql", "schema_v9.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -87,6 +90,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.obsmodels  # noqa: F401 — register V5 tables on the Base
         import app.lcmodels  # noqa: F401 — register V7 tables on the Base
         import app.fmmodels  # noqa: F401 — register V8 tables on the Base
+        import app.womodels  # noqa: F401 — register V9 tables on the Base
         Base.metadata.create_all(engine)  # V6 columns/tables live in refmodels (already imported)
         print("Schema created from ORM metadata.")
     return 0
@@ -291,6 +295,88 @@ def cmd_dx_seed(args: argparse.Namespace) -> int:
     from .workbench import seed_example_case
     with session_scope() as s:
         print(seed_example_case(s, args.variant))
+    return 0
+
+
+def cmd_wo_seed(_: argparse.Namespace) -> int:
+    """Seed a water-pump work order that is READY 80% (a crush washer missing)."""
+    from . import service, workshop
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        wo = workshop.open_work_order(s, v, "Water pump replacement", code="WO-0001",
+                                      component_slug="water-pump")
+        for i, t in enumerate(["Drain coolant", "Remove belt + pulley", "Remove old pump",
+                               "Install new pump + gasket", "Refill + bleed"]):
+            workshop.add_task(s, wo, t, seq=i)
+        workshop.add_part(s, wo, "Water pump", part_number="MC-WP-2.0", available=True)
+        workshop.add_part(s, wo, "Coolant (Motorcraft Orange)", available=True)
+        workshop.add_part(s, wo, "Pump gasket", available=True)
+        workshop.add_part(s, wo, "Crush washer", available=False)   # the blocker
+        workshop.add_tool(s, wo, "Socket set", available=True)
+        workshop.add_tool(s, wo, "Torque wrench", available=True)
+        workshop.mark_ready(s, wo)
+        r = workshop.job_readiness(s, wo.id)
+        print(f"Seeded {wo.code} '{wo.title}' → status {wo.status.upper()} · READY {r['ready_pct']}%")
+        if r["blockers"]:
+            print("  blockers: " + "; ".join(r["blockers"]))
+    return 0
+
+
+def cmd_work_orders(_: argparse.Namespace) -> int:
+    from . import service, workshop
+    icon = {"draft": "○", "ready": "🟢", "blocked": "🔴", "in_progress": "🟡",
+            "verification_required": "🟠", "verified": "🔵", "closed": "✅", "abandoned": "⚫"}
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        rows = workshop.list_work_orders(s, v.id)
+        if not rows:
+            print("(no work orders — try `wo-seed`)")
+            return 0
+        for w in rows:
+            handle = w["code"] or f"#{w['id']}"
+            print(f"  {icon.get(w['status'], '·')} {handle}  {w['title']}  "
+                  f"[{w['status']} · {w['repair_state']}]  READY {w['ready_pct']}%")
+    return 0
+
+
+def cmd_wo(args: argparse.Namespace) -> int:
+    from . import workshop
+    with session_scope() as s:
+        w = workshop.work_order_view(s, args.id)
+        if w is None:
+            print(f"No work order #{args.id}.", file=sys.stderr)
+            return 1
+        print(f"{w['code'] or '#'+str(w['id'])} · {w['title']}  [{w['status']} · {w['repair_state']}]")
+        r = w["readiness"]
+        print(f"  READY {r['ready_pct']}%  ({r['satisfied']}/{r['items']})")
+        if r["blockers"]:
+            for b in r["blockers"]:
+                print(f"    ✕ {b}")
+        print("  tasks:")
+        for t in w["tasks"]:
+            print(f"    {'☑' if t['done'] else '☐'} {t['description']}")
+        if w["verifications"]:
+            print("  verifications:")
+            for vf in w["verifications"]:
+                print(f"    · {vf['test']}: {vf['result']}")
+    return 0
+
+
+def cmd_wo_verify(args: argparse.Namespace) -> int:
+    from . import workshop
+    from .womodels import WorkOrder
+    with session_scope() as s:
+        wo = s.get(WorkOrder, args.id)
+        if wo is None:
+            print(f"No work order #{args.id}.", file=sys.stderr)
+            return 1
+        try:
+            workshop.verify(s, wo, args.test, args.result, note=args.note)
+        except ValueError as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+        print(f"Recorded verification '{args.test}' → {args.result}. "
+              f"Work order now {wo.status.upper()} ({wo.repair_state}).")
     return 0
 
 
@@ -890,6 +976,20 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("dx-open", help="open a case from a symptom (auto-seeds candidate failure modes)")
     sp.add_argument("symptom")
     sp.set_defaults(fn=cmd_dx_open)
+
+    sub.add_parser("wo-seed", help="seed an example work order (water pump, READY 80%)").set_defaults(fn=cmd_wo_seed)
+    sub.add_parser("work-orders", help="list work orders").set_defaults(fn=cmd_work_orders)
+
+    sp = sub.add_parser("wo", help="show a work order (readiness + tasks + verification)")
+    sp.add_argument("id", type=int)
+    sp.set_defaults(fn=cmd_wo)
+
+    sp = sub.add_parser("wo-verify", help="record a post-repair verification (pass → VERIFIED)")
+    sp.add_argument("id", type=int)
+    sp.add_argument("test")
+    sp.add_argument("result", choices=["pass", "fail", "pending"])
+    sp.add_argument("--note", default=None)
+    sp.set_defaults(fn=cmd_wo_verify)
 
     sub.add_parser("cases", help="list diagnostic cases").set_defaults(fn=cmd_cases)
 
