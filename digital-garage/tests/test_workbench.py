@@ -121,6 +121,26 @@ def test_finding_ledger_recorded():
     assert "PCV" in f["text"] and f["supporting"] and f["derived_by"]
 
 
+def test_conclude_enforces_constitution():
+    """HYPOTHESIS → FINDING requires confirming evidence (Domain Constitution)."""
+    from app import service, workbench
+    from app.epistemics import EpistemicError
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        case = workbench.open_case(s, v, "conclude check")
+        workbench.add_hypothesis(s, case, "h1", "hypothesis one")
+        # concluding without evidence is rejected
+        with pytest.raises(EpistemicError):
+            workbench.conclude(s, case, "h1", "It was h1.", supporting="")
+        # with confirming evidence it is allowed and marks the hypothesis confirmed
+        finding = workbench.conclude(s, case, "h1", "It was h1.",
+                                     supporting="smoke test failed at coupler")
+        assert finding.id is not None
+        view = workbench.case_view(s, case.id)
+    assert view["findings"][-1]["text"] == "It was h1."
+    assert any(h["key"] == "h1" and h["status"] == "confirmed" for h in view["hypotheses"])
+
+
 def test_invalid_inputs_rejected():
     from app import service, workbench
     with session_scope() as s:

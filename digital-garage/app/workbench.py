@@ -107,6 +107,27 @@ def add_finding(session: Session, case: DiagnosticCase, text: str, *, supporting
     return row
 
 
+def conclude(session: Session, case: DiagnosticCase, hypothesis_key: str, text: str,
+             *, supporting: str, derived_by: str = "workbench") -> CaseFinding:
+    """Promote a hypothesis to a Finding — enforced by the Domain Constitution.
+
+    A HYPOTHESIS → FINDING promotion requires confirming evidence (see
+    docs/DOMAIN-CONSTITUTION.md); `epistemics.promote` raises EpistemicError if
+    `supporting` is empty, so a guess can never be silently asserted as a conclusion.
+    """
+    from . import epistemics as ep
+    bridge = ep.CONFIRMING_EVIDENCE if supporting else None
+    ep.promote(ep.Kind.HYPOTHESIS, ep.Kind.FINDING, bridge)  # raises without evidence
+
+    hyp = session.scalar(select(CaseHypothesis).where(
+        CaseHypothesis.case_id == case.id, CaseHypothesis.key == hypothesis_key))
+    if hyp is None:
+        raise LookupError(f"no hypothesis '{hypothesis_key}' in case {case.id}")
+    hyp.status = "confirmed"
+    session.flush()
+    return add_finding(session, case, text, supporting=supporting, derived_by=derived_by)
+
+
 def _test_contribution(test: CaseTest) -> float:
     if test.result not in ("pass", "fail"):
         return 0.0
