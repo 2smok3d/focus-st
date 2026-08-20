@@ -9,6 +9,10 @@
     python -m app.cli fleet                # fleet overview across all machines
     python -m app.cli seed-twin            # seed the digital twin from on-vehicle facts
     python -m app.cli twin [--variant S]   # reference-vs-actual component state
+    python -m app.cli dx-seed              # seed the worked diagnostic case (low boost)
+    python -m app.cli cases                # list diagnostic cases
+    python -m app.cli case <id>            # the diagnostic workbench view
+    python -m app.cli dx-test <id> <result> # record a test result → re-ranks hypotheses
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -57,7 +61,7 @@ def cmd_init(_: argparse.Namespace) -> int:
             conn.execute(text(schema.read_text()))
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
-        for extra in ("schema_v2.sql", "schema_v3.sql"):
+        for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -66,6 +70,7 @@ def cmd_init(_: argparse.Namespace) -> int:
     else:
         import app.refmodels  # noqa: F401 — register V2 tables on the Base
         import app.twinmodels  # noqa: F401 — register V3 tables on the Base
+        import app.dxmodels  # noqa: F401 — register V4 tables on the Base
         Base.metadata.create_all(engine)
         print("Schema created from ORM metadata.")
     return 0
@@ -127,6 +132,86 @@ def cmd_fleet(_: argparse.Namespace) -> int:
             link = f"→ {variant.slug}" if variant else "(unlinked)"
             print(f"  {v.year} {v.make} {v.model} · {v.vin}  {link}")
             print(f"      states tracked={len(states)} · deviations={devs} · {v.notes or ''}")
+    return 0
+
+
+def cmd_dx_seed(args: argparse.Namespace) -> int:
+    from .workbench import seed_example_case
+    with session_scope() as s:
+        print(seed_example_case(s, args.variant))
+    return 0
+
+
+def cmd_cases(_: argparse.Namespace) -> int:
+    from . import workbench
+    icon = {"open": "🔵", "investigating": "🟡", "resolved": "🟢", "abandoned": "⚫"}
+    with session_scope() as s:
+        rows = workbench.list_cases(s)
+        if not rows:
+            print("(no diagnostic cases — try `dx-seed`)")
+            return 0
+        for c in rows:
+            handle = c["code"] or f"#{c['id']}"
+            sup = f" · leading {c['leading']} ({c['support']:.0%})" if c["leading"] else ""
+            print(f"  {icon.get(c['status'], '·')} {handle}  {c['title']}  [{c['status']}]{sup}")
+    return 0
+
+
+def cmd_case(args: argparse.Namespace) -> int:
+    from . import workbench
+    ricon = {"pass": "✅", "fail": "🔴", "pending": "○", "inconclusive": "◐"}
+    with session_scope() as s:
+        v = workbench.case_view(s, args.id)
+        if v is None:
+            print(f"No case #{args.id}.", file=sys.stderr)
+            return 1
+        print(f"{v['code'] or '#'+str(v['id'])} · {v['title']}  [{v['status']}]")
+        if v["symptoms"]:
+            print("  symptoms: " + "; ".join(v["symptoms"]))
+        if v["known_data"]:
+            print("  known data:")
+            for e in v["known_data"]:
+                comp = f" → {e['component']}" if e["component"] else ""
+                print(f"    · [{e['kind']}] {e['ref'] or ''} {e['detail'] or ''}{comp}")
+        print("  hypotheses (heuristic ranking — not a probability):")
+        for h in v["hypotheses"]:
+            bar = "█" * int(round(h["support"] * 20))
+            print(f"    {h['support']:>5.0%} {bar:<20} {h['description']}  "
+                  f"(score {h['score']}, {h['tests_applied']} test(s) applied)")
+        print("  tests:")
+        for t in v["tests"]:
+            line = f"    {ricon.get(t['result'], '·')} #{t['id']} {t['name']}  [{t['result']}] → {t['bears_on'] or ''}"
+            print(line)
+            if t["interpretation"]:
+                print(f"        {t['interpretation']}")
+        if v["next_test"]:
+            print(f"  ▸ next test: {v['next_test']}")
+        if v["findings"]:
+            print("  findings (evidence ledger):")
+            for f in v["findings"]:
+                print(f"    • {f['text']}")
+                if f["supporting"]:
+                    print(f"        + {f['supporting']}")
+                if f["contradicting"]:
+                    print(f"        − {f['contradicting']}")
+    return 0
+
+
+def cmd_dx_test(args: argparse.Namespace) -> int:
+    from . import workbench
+    with session_scope() as s:
+        try:
+            t = workbench.record_result(s, args.test_id, args.result,
+                                        actual=args.actual, interpretation=args.interpretation)
+        except (LookupError, ValueError) as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
+        ranked = workbench.rank_hypotheses(s, t.case_id)
+        print(f"Recorded test #{t.id} '{t.name}' → {t.result}.")
+        if ranked:
+            lead = ranked[0]
+            print(f"  ↳ leading hypothesis now: {lead['description']} "
+                  f"(support {lead['support']:.0%}, score {lead['score']})")
     return 0
 
 
@@ -528,6 +613,23 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(fn=cmd_commission)
 
     sub.add_parser("fleet", help="fleet overview across all machines").set_defaults(fn=cmd_fleet)
+
+    sp = sub.add_parser("dx-seed", help="seed the worked diagnostic case (low boost)")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_dx_seed)
+
+    sub.add_parser("cases", help="list diagnostic cases").set_defaults(fn=cmd_cases)
+
+    sp = sub.add_parser("case", help="show a diagnostic case (the workbench view)")
+    sp.add_argument("id", type=int)
+    sp.set_defaults(fn=cmd_case)
+
+    sp = sub.add_parser("dx-test", help="record a test result (re-ranks hypotheses)")
+    sp.add_argument("test_id", type=int)
+    sp.add_argument("result", choices=["pass", "fail", "inconclusive", "pending"])
+    sp.add_argument("--actual", default=None)
+    sp.add_argument("--interpretation", default=None)
+    sp.set_defaults(fn=cmd_dx_test)
 
     sp = sub.add_parser("seed-twin", help="seed the digital twin from on-vehicle observations")
     sp.add_argument("--variant", default="focus-st")

@@ -166,10 +166,22 @@ before the previous one is complete and tested.**
   gives the five-machine overview. The core is vehicle-agnostic — a 6th machine is a new
   entry in the `MACHINES` map, no schema or engine change.
 
-- **Phase 4 — Professional tools.** Diagnostic workbench (`diagnostic_cases` linking
-  symptoms → DTCs → components → tests), telemetry PID registry + derived signals +
-  event detection, maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/
-  `OVERDUE`), service ledger, parts intelligence + fitment, build planner.
+- **Phase 4 — Professional tools.** *(started — diagnostic workbench done)* The
+  **diagnostic workbench** ships: `db/schema_v4.sql` + `app/dxmodels.py` +
+  `app/workbench.py` add `diagnostic_cases` with symptoms, known-data evidence
+  (DTCs/mods/issues/telemetry), a tree of tests (TEST → EXPECTED → ACTUAL →
+  INTERPRETATION → RESULT), ranked hypotheses, and an evidence-ledger of findings. A
+  case combines the vehicle's data (a DTC, a mod, the component graph) and **ranks
+  hypotheses through a transparent, documented heuristic** — `score = prior + Σ test
+  contributions`, where a completed test raises or lowers the hypothesis it bears on by
+  its weight and polarity. Rankings are **relative support, never a calibrated
+  probability**; recording a test result **re-ranks live**. The seeded worked case
+  (`DG-0004` low/intermittent boost) leads with the PCV/unmetered-air hypothesis from
+  the P04DB history + post-MAF intake mod, then promotes the boost-leak hypothesis when
+  the smoke test fails. CLI: `dx-seed`, `cases`, `case <id>`, `dx-test <id> <result>`.
+  **Next in Phase 4:** telemetry PID registry + derived signals + event detection,
+  maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/`OVERDUE`), service
+  ledger, parts intelligence + fitment, build planner.
 
 - **Phase 5 — UI V2.** Modularize the frontend into app/components/views (Overview,
   Diagnose, Maintain, Build, Parts, Systems, Data, Knowledge); interactive engine
