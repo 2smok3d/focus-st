@@ -162,6 +162,64 @@ def rank_hypotheses(session: Session, case_id: int) -> list[dict]:
     return scored
 
 
+def open_case_from_symptom(session: Session, vehicle: Vehicle, symptom: str,
+                           *, code: str | None = None) -> DiagnosticCase:
+    """Open a case from a symptom and auto-seed a hypothesis per candidate failure mode.
+
+    Closes the front of the diagnostic loop: symptom → candidate failure modes →
+    hypotheses, each keyed by its failure-mode slug and carrying that mode's primary
+    component (so `recommend_next_test` can pick the best discriminating test).
+    """
+    from . import diaglib
+    case = open_case(session, vehicle, symptom, code=code, symptoms=[symptom],
+                     note="Opened from a symptom; hypotheses = candidate failure modes.")
+    add_evidence(session, case, "observation", ref="symptom", detail=symptom)
+    for cand in diaglib.candidates_for_symptom(session, symptom):
+        fm = diaglib.failure_mode(session, cand["slug"])
+        comp = fm["components"][0] if fm and fm["components"] else None
+        add_hypothesis(session, case, cand["slug"], (fm or {}).get("name", cand["name"]),
+                       component_slug=comp, note=(fm or {}).get("description"))
+    session.flush()
+    return case
+
+
+def confirm_failure_mode(session: Session, case: DiagnosticCase, fm_slug: str,
+                         supporting: str) -> CaseFinding:
+    """Confirm a candidate failure mode as the case's finding — enforced by the
+    constitution (a hypothesis becomes a finding only with confirming evidence). The
+    finding cites the failure mode and its consequences."""
+    from . import diaglib
+    fm = diaglib.failure_mode(session, fm_slug)
+    if fm is None:
+        raise LookupError(f"no failure mode '{fm_slug}'")
+    text = f"Confirmed failure mode: {fm['name']}."
+    if fm.get("consequences"):
+        text += f" Consequence: {fm['consequences']}"
+    return conclude(session, case, fm_slug, text, supporting=supporting)
+
+
+def recommend_next_test(session: Session, case_id: int) -> list[dict]:
+    """Recommend the best next test for a case via the failure-mode library.
+
+    Maps the case's hypotheses (their components) to candidate failure modes, then ranks
+    the discriminating tests by information-gain utility — the single best next test
+    first. Tests whose name matches an already-recorded case test are treated as done.
+    """
+    from . import diaglib
+    from .fmmodels import FailureMode
+    hyps = session.scalars(select(CaseHypothesis).where(CaseHypothesis.case_id == case_id)).all()
+    comp_slugs = [h.component_slug for h in hyps if h.component_slug]
+    # candidates: failure modes reachable via the hypotheses' components, PLUS any
+    # hypothesis whose key is itself a failure-mode slug (from open_case_from_symptom).
+    fm_slugs = {fm for (fm,) in session.execute(select(FailureMode.slug))}
+    candidates = set(diaglib.candidates_for_components(session, comp_slugs))
+    candidates |= {h.key for h in hyps if h.key in fm_slugs}
+    done_names = {t.name for t in session.scalars(select(CaseTest).where(
+        CaseTest.case_id == case_id, CaseTest.result != "pending"))}
+    ranked = diaglib.recommend_next_test(session, sorted(candidates))
+    return [r for r in ranked if r["name"] not in done_names]
+
+
 def case_view(session: Session, case_id: int) -> dict | None:
     """The full workbench view for a case: symptoms, known data, tests, ranked hypotheses,
     findings — everything a human needs to decide the next test."""
@@ -187,6 +245,7 @@ def case_view(session: Session, case_id: int) -> dict | None:
         "findings": [{"text": f.text, "supporting": f.supporting, "contradicting": f.contradicting,
                       "derived_by": f.derived_by} for f in findings],
         "next_test": next_test.name if next_test else None,
+        "recommended_test": (recommend_next_test(session, case_id) or [{}])[0].get("name"),
     }
 
 
