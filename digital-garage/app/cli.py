@@ -20,6 +20,10 @@
     python -m app.cli seed-graph           # seed typed graph overlays (airflow/coolant/…)
     python -m app.cli overlay [domain]     # show a graph overlay (--trace <slug> to follow flow)
     python -m app.cli pc-seed / pc <code>  # physical-component lifecycle
+    python -m app.cli seed-diaglib         # seed the failure-mode + diagnostic-test library
+    python -m app.cli symptom "<text>"     # symptom → candidate failure modes + best next test
+    python -m app.cli failure-mode <slug>  # a failure mode + its discriminating tests
+    python -m app.cli next-test <fm>… [--done …] # rank next tests by info-gain utility
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -69,7 +73,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
         for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
-                      "schema_v6.sql", "schema_v7.sql"):
+                      "schema_v6.sql", "schema_v7.sql", "schema_v8.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -81,6 +85,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.dxmodels  # noqa: F401 — register V4 tables on the Base
         import app.obsmodels  # noqa: F401 — register V5 tables on the Base
         import app.lcmodels  # noqa: F401 — register V7 tables on the Base
+        import app.fmmodels  # noqa: F401 — register V8 tables on the Base
         Base.metadata.create_all(engine)  # V6 columns/tables live in refmodels (already imported)
         print("Schema created from ORM metadata.")
     return 0
@@ -117,6 +122,71 @@ def cmd_seed_graph(args: argparse.Namespace) -> int:
     from .seed_graph import seed_graph
     with session_scope() as s:
         print(seed_graph(s, args.variant))
+    return 0
+
+
+def cmd_seed_diaglib(_: argparse.Namespace) -> int:
+    from .seed_diaglib import seed_diaglib
+    with session_scope() as s:
+        print(seed_diaglib(s))
+    return 0
+
+
+def cmd_failure_mode(args: argparse.Namespace) -> int:
+    from . import diaglib
+    with session_scope() as s:
+        fm = diaglib.failure_mode(s, args.slug)
+        if fm is None:
+            print(f"No failure mode '{args.slug}'.", file=sys.stderr)
+            return 1
+        print(f"{fm['name']}  [{fm['slug']}] · {fm['system']} · severity {fm['severity']}")
+        if fm["description"]:
+            print(f"  {fm['description']}")
+        print(f"  components: {', '.join(fm['components'])}")
+        print(f"  expect:     {fm['expected_observations']}")
+        print(f"  rules out:  {fm['disconfirming_evidence']}")
+        print(f"  consequence: {fm['consequences']}")
+        if fm["tests"]:
+            print("  discriminating tests:")
+            for t in fm["tests"]:
+                print(f"    · {t['name']}  (info {t['info_gain']}, cost {t['cost']}, risk {t['risk']})")
+    return 0
+
+
+def cmd_symptom(args: argparse.Namespace) -> int:
+    from . import diaglib
+    with session_scope() as s:
+        cands = diaglib.candidates_for_symptom(s, args.text)
+        if not cands:
+            print("No candidate failure modes matched.")
+            return 0
+        slugs = [c["slug"] for c in cands]
+        print(f"Candidate failure modes for “{args.text}”:")
+        for c in cands:
+            print(f"  · {c['name']}  [{c['slug']}] · {c['system']}  (match {c['match']})")
+        rec = diaglib.recommend_next_test(s, slugs)
+        if rec:
+            best = rec[0]
+            print(f"\n  ▸ best next test: {best['name']}  "
+                  f"(utility {best['utility']} · info {best['info_gain']}, cost {best['cost']}, risk {best['risk']})")
+            if best["purpose"]:
+                print(f"      {best['purpose']}")
+            if len(rec) > 1:
+                print("    then: " + "; ".join(f"{r['name']} ({r['utility']})" for r in rec[1:4]))
+    return 0
+
+
+def cmd_next_test(args: argparse.Namespace) -> int:
+    from . import diaglib
+    with session_scope() as s:
+        rec = diaglib.recommend_next_test(s, args.candidates, args.done)
+        if not rec:
+            print("(no pending tests for those candidates)")
+            return 0
+        print("Next-test ranking (highest information-gain utility first):")
+        for r in rec:
+            print(f"  {r['utility']:>5}  {r['name']}  → {r['discriminates']}  "
+                  f"(info {r['info_gain']}, cost {r['cost']}, risk {r['risk']})")
     return 0
 
 
@@ -762,6 +832,21 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("seed-graph", help="seed typed graph overlays (airflow/coolant/lubrication)")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_seed_graph)
+
+    sub.add_parser("seed-diaglib", help="seed the failure-mode + diagnostic-test library").set_defaults(fn=cmd_seed_diaglib)
+
+    sp = sub.add_parser("failure-mode", help="show a failure mode + its discriminating tests")
+    sp.add_argument("slug")
+    sp.set_defaults(fn=cmd_failure_mode)
+
+    sp = sub.add_parser("symptom", help="symptom → candidate failure modes + best next test")
+    sp.add_argument("text")
+    sp.set_defaults(fn=cmd_symptom)
+
+    sp = sub.add_parser("next-test", help="rank next tests by info-gain utility for candidates")
+    sp.add_argument("candidates", nargs="+", help="failure-mode slugs under consideration")
+    sp.add_argument("--done", nargs="*", default=[], help="test slugs already performed")
+    sp.set_defaults(fn=cmd_next_test)
 
     sp = sub.add_parser("overlay", help="show a graph overlay (omit domain to list them)")
     sp.add_argument("domain", nargs="?", default=None, help="airflow | coolant | lubrication | ...")

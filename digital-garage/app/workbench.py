@@ -162,6 +162,23 @@ def rank_hypotheses(session: Session, case_id: int) -> list[dict]:
     return scored
 
 
+def recommend_next_test(session: Session, case_id: int) -> list[dict]:
+    """Recommend the best next test for a case via the failure-mode library.
+
+    Maps the case's hypotheses (their components) to candidate failure modes, then ranks
+    the discriminating tests by information-gain utility — the single best next test
+    first. Tests whose name matches an already-recorded case test are treated as done.
+    """
+    from . import diaglib
+    hyps = session.scalars(select(CaseHypothesis).where(CaseHypothesis.case_id == case_id)).all()
+    comp_slugs = [h.component_slug for h in hyps if h.component_slug]
+    candidates = diaglib.candidates_for_components(session, comp_slugs)
+    done_names = {t.name for t in session.scalars(select(CaseTest).where(
+        CaseTest.case_id == case_id, CaseTest.result != "pending"))}
+    ranked = diaglib.recommend_next_test(session, candidates)
+    return [r for r in ranked if r["name"] not in done_names]
+
+
 def case_view(session: Session, case_id: int) -> dict | None:
     """The full workbench view for a case: symptoms, known data, tests, ranked hypotheses,
     findings — everything a human needs to decide the next test."""
@@ -187,6 +204,7 @@ def case_view(session: Session, case_id: int) -> dict | None:
         "findings": [{"text": f.text, "supporting": f.supporting, "contradicting": f.contradicting,
                       "derived_by": f.derived_by} for f in findings],
         "next_test": next_test.name if next_test else None,
+        "recommended_test": (recommend_next_test(session, case_id) or [{}])[0].get("name"),
     }
 
 

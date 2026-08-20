@@ -179,9 +179,24 @@ before the previous one is complete and tested.**
   (`DG-0004` low/intermittent boost) leads with the PCV/unmetered-air hypothesis from
   the P04DB history + post-MAF intake mod, then promotes the boost-leak hypothesis when
   the smoke test fails. CLI: `dx-seed`, `cases`, `case <id>`, `dx-test <id> <result>`.
-  **Next in Phase 4:** telemetry PID registry + derived signals + event detection,
-  maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/`OVERDUE`), service
-  ledger, parts intelligence + fitment, build planner.
+
+- **Milestone B — Diagnostic Core.** *(started)* A reusable **failure-mode library** and
+  **diagnostic-test library** (`db/schema_v8.sql`, `app/fmmodels.py`, `app/diaglib.py`).
+  Failure modes are authored once (components, symptoms, expected observations,
+  disconfirming evidence, consequences) independent of any case; a **symptom maps to
+  candidate failure modes**; each reusable test carries an **information-gain + cost +
+  risk** so `recommend_next_test` picks the *single best next test* by a transparent
+  utility (discriminating power per unit cost/risk) — not a list of ten. Confidence is
+  reported in **bands** (LOW/MODERATE/HIGH/VERY_HIGH), never invented percentages. The
+  workbench consumes it: `workbench.recommend_next_test(case)` maps the case's
+  hypotheses → candidate failure modes → the best next test, surfaced in the case view.
+  CLI: `seed-diaglib`, `symptom "<text>"`, `failure-mode <slug>`, `next-test <fm>…`.
+  **Next:** wiring telemetry-derived observations into failure-mode evidence, and
+  diagnostic-case ↔ failure-mode linkage for full reasoning V2.
+
+  **Remaining Phase 4/later:** telemetry PID registry + derived signals + event
+  detection, maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/`OVERDUE`),
+  service ledger, parts intelligence + fitment, build planner.
 
 - **Phase 5 — UI V2.** Modularize the frontend into app/components/views (Overview,
   Diagnose, Maintain, Build, Parts, Systems, Data, Knowledge); interactive engine
