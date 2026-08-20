@@ -65,7 +65,8 @@ def cmd_init(_: argparse.Namespace) -> int:
             conn.execute(text(schema.read_text()))
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
-        for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql"):
+        for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
+                      "schema_v6.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -76,7 +77,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.twinmodels  # noqa: F401 — register V3 tables on the Base
         import app.dxmodels  # noqa: F401 — register V4 tables on the Base
         import app.obsmodels  # noqa: F401 — register V5 tables on the Base
-        Base.metadata.create_all(engine)
+        Base.metadata.create_all(engine)  # V6 columns/tables live in refmodels (already imported)
         print("Schema created from ORM metadata.")
     return 0
 
@@ -105,6 +106,36 @@ def cmd_migrate_knowledge(args: argparse.Namespace) -> int:
     from .migrate_knowledge import migrate_knowledge
     with session_scope() as s:
         print(migrate_knowledge(s, args.variant))
+    return 0
+
+
+def cmd_seed_graph(args: argparse.Namespace) -> int:
+    from .seed_graph import seed_graph
+    with session_scope() as s:
+        print(seed_graph(s, args.variant))
+    return 0
+
+
+def cmd_overlay(args: argparse.Namespace) -> int:
+    from . import graphs
+    with session_scope() as s:
+        if not args.domain:
+            print("overlays present: " + ", ".join(graphs.domains(s, args.variant)))
+            return 0
+        edges = graphs.overlay_edges(s, args.variant, args.domain)
+        if not edges:
+            print(f"No '{args.domain}' overlay for {args.variant}. "
+                  f"Present: {', '.join(graphs.domains(s, args.variant))}", file=sys.stderr)
+            return 1
+        arrow = {"forward": "→", "bidirectional": "↔"}
+        print(f"{args.domain} overlay · {args.variant}:")
+        for e in edges:
+            med = f" [{e['medium']}]" if e["medium"] else ""
+            print(f"    {e['from_name']} {arrow.get(e['direction'], '→')} {e['to_name']}"
+                  f"  ({e['relation']}{med})")
+        if args.trace:
+            path = graphs.trace(s, args.variant, args.domain, args.trace)
+            print(f"  trace from {args.trace}: " + " → ".join(path))
     return 0
 
 
@@ -682,6 +713,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("migrate-knowledge", help="migrate V1 maintenance + issues → V2 claims")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_migrate_knowledge)
+
+    sp = sub.add_parser("seed-graph", help="seed typed graph overlays (airflow/coolant/lubrication)")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_seed_graph)
+
+    sp = sub.add_parser("overlay", help="show a graph overlay (omit domain to list them)")
+    sp.add_argument("domain", nargs="?", default=None, help="airflow | coolant | lubrication | ...")
+    sp.add_argument("--variant", default="focus-st")
+    sp.add_argument("--trace", default=None, help="trace flow downstream from a component slug")
+    sp.set_defaults(fn=cmd_overlay)
 
     sp = sub.add_parser("commission", help="baseline-commission a machine (or 'all') as a twin")
     sp.add_argument("machine", nargs="?", default="all",
