@@ -13,6 +13,10 @@
     python -m app.cli cases                # list diagnostic cases
     python -m app.cli case <id>            # the diagnostic workbench view
     python -m app.cli dx-test <id> <result> # record a test result → re-ranks hypotheses
+    python -m app.cli obs-seed             # seed an example Observation V2 (compression)
+    python -m app.cli observations         # list observations (rich, unit-aware)
+    python -m app.cli config-at            # the machine's configuration now (a projection)
+    python -m app.cli events               # the append-only machine-event ledger
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -61,7 +65,7 @@ def cmd_init(_: argparse.Namespace) -> int:
             conn.execute(text(schema.read_text()))
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
-        for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql"):
+        for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -71,6 +75,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.refmodels  # noqa: F401 — register V2 tables on the Base
         import app.twinmodels  # noqa: F401 — register V3 tables on the Base
         import app.dxmodels  # noqa: F401 — register V4 tables on the Base
+        import app.obsmodels  # noqa: F401 — register V5 tables on the Base
         Base.metadata.create_all(engine)
         print("Schema created from ORM metadata.")
     return 0
@@ -212,6 +217,77 @@ def cmd_dx_test(args: argparse.Namespace) -> int:
             lead = ranked[0]
             print(f"  ↳ leading hypothesis now: {lead['description']} "
                   f"(support {lead['support']:.0%}, score {lead['score']})")
+    return 0
+
+
+def cmd_obs_seed(args: argparse.Namespace) -> int:
+    from . import observations as ob, service
+    from .refmodels import VehicleVariant
+    from .models import Vehicle
+    from sqlalchemy import select as _select
+    with session_scope() as s:
+        # A cross-machine example (RZ350 compression) proves Observation V2 is not
+        # Focus-specific; falls back to the tracked vehicle if the RZ isn't commissioned.
+        variant = s.scalar(_select(VehicleVariant).where(VehicleVariant.slug == args.variant))
+        veh = s.scalar(_select(Vehicle).where(Vehicle.variant_id == variant.id)) if variant else None
+        if veh is None:
+            veh = service.get_vehicle(s)
+        ob.upsert_instrument(s, "DG-TOOL-41", "Compression gauge", "gauge")
+        env = ob.record_environment(s, veh, ambient=72, ambient_unit="°F", weather="shop")
+        snap = ob.snapshot_config(s, veh, code="baseline")
+        o = ob.record_observation(s, veh, subject_slug="cylinders", method="compression test",
+                                  instrument_code="DG-TOOL-41", value=145, unit="psi",
+                                  operating_condition="warm", config_snapshot_id=snap.id,
+                                  environment_id=env.id, note="left cylinder")
+        print(f"Recorded observation #{o.id} on {veh.make} {veh.model}: "
+              f"compression 145 psi (warm) · config snapshot {snap.code} · env #{env.id}.")
+    return 0
+
+
+def cmd_config_at(args: argparse.Namespace) -> int:
+    from . import observations as ob, service
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        cfg = ob.config_at(s, v)
+        print(f"Configuration of {v.make} {v.model} as of {cfg['as_of']}:")
+        print("  components:")
+        for slug, c in sorted(cfg["components"].items()):
+            part = f" → {c['installed_part']}" if c.get("installed_part") else ""
+            print(f"    · {slug}: {c['condition']} [{c['knowledge_state']}]{part}")
+        if cfg["settings"]:
+            print("  settings:")
+            for k, val in cfg["settings"].items():
+                print(f"    · {k}: {val.get('detail') or val.get('data')}")
+    return 0
+
+
+def cmd_events(_: argparse.Namespace) -> int:
+    from . import observations as ob, service
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        rows = ob.events_for(s, v.id)
+        if not rows:
+            print("(no machine events)")
+            return 0
+        for e in rows:
+            comp = f" [{e['component']}]" if e["component"] else ""
+            print(f"  {e['occurred_at'] or ''}  {e['kind']}{comp}  {e['detail'] or ''}")
+    return 0
+
+
+def cmd_observations(args: argparse.Namespace) -> int:
+    from . import observations as ob, service
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        rows = ob.observations_for(s, v.id, subject_slug=args.subject)
+        if not rows:
+            print("(no observations)")
+            return 0
+        for o in rows:
+            val = f"{o['value']} {o['unit']}" if o["value"] is not None else (o["result"] or "")
+            cond = f" @ {o['operating_condition']}" if o["operating_condition"] else ""
+            print(f"  #{o['id']} {o['subject']}: {val}{cond}  ({o['method'] or o['type']}) "
+                  f"· cfg={o['config_snapshot_id']} env={o['environment_id']}")
     return 0
 
 
@@ -630,6 +706,17 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("--actual", default=None)
     sp.add_argument("--interpretation", default=None)
     sp.set_defaults(fn=cmd_dx_test)
+
+    sp = sub.add_parser("obs-seed", help="seed an example Observation V2 (compression)")
+    sp.add_argument("--variant", default="rz350")
+    sp.set_defaults(fn=cmd_obs_seed)
+
+    sub.add_parser("config-at", help="show the machine's configuration now (a projection)").set_defaults(fn=cmd_config_at)
+    sub.add_parser("events", help="list the machine-event ledger").set_defaults(fn=cmd_events)
+
+    sp = sub.add_parser("observations", help="list observations")
+    sp.add_argument("--subject", default=None)
+    sp.set_defaults(fn=cmd_observations)
 
     sp = sub.add_parser("seed-twin", help="seed the digital twin from on-vehicle observations")
     sp.add_argument("--variant", default="focus-st")
