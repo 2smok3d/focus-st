@@ -123,9 +123,21 @@ before the previous one is complete and tested.**
   community→`CORROBORATED`). It is idempotent, never overwrites a seeded claim (the
   oil-capacity conflict survives), reports unmapped specs instead of guessing, and
   leaves the V1 `specs` rows (and their exports) intact — the Markdown/JSON stay
-  projections. **Next:** normalize maintenance intervals, known issues, and TSB/recall
-  references into the claim model; store citations + document/page/section metadata and
-  only **permissible excerpts** — never copy protected service manuals into the repo.
+  projections. **Maintenance + known issues *(done)*:** `app/migrate_knowledge.py`
+  (`cli migrate-knowledge`) lifts the V1 `maintenance_intervals` and `issues` tables
+  into claims too — maintenance intervals become `maintenance:<item> · interval_miles|
+  interval_months` graded from the interval's source (OEM→`OEM_VERIFIED`,
+  community→`CORROBORATED`); known issues become `issue:<title> · known_issue`, where a
+  VEHICLE_VERIFIED issue is on-vehicle evidence (→`VEHICLE_VERIFIED`, scoped to this car)
+  and a platform issue is community/OEM knowledge (→`CORROBORATED`, scoped to the
+  variant/years). **Recalls / TSBs *(done)*:** `migrate_recalls_to_claims` folds the
+  `recalls` table into `recall:<campaign> · campaign` claims — NHTSA-origin campaigns are
+  government-authoritative (→`OEM_VERIFIED`), KB-noted Ford campaigns keep their
+  conservative recorded grade (→`CORROBORATED`) until confirmed for this VIN. Only
+  *derived structured facts* are stored (campaign number, affected component, remedy
+  summary, status, the "verify by VIN" citation) — never protected manual content.
+  Idempotent, non-destructive; the `due` calculations still read the V1 rows.
+  **Phase 2 complete** — specs, maintenance, issues, and recalls are all claims now.
 
 - **Phase 3 — Digital Twin / Machine State Engine.** *(started)* A machine is a
   **state over time**, not a bag of current records. **Done:** `db/schema_v3.sql` +

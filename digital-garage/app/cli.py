@@ -4,6 +4,7 @@
     python -m app.cli seed [--if-empty]    # load the Focus ST
     python -m app.cli seed-ref             # load the V2 reference model
     python -m app.cli migrate-specs        # migrate V1 specs → V2 claims (non-destructive)
+    python -m app.cli migrate-knowledge    # migrate V1 maintenance + issues + recalls → claims
     python -m app.cli commission [machine] # baseline-commission a machine (or 'all')
     python -m app.cli fleet                # fleet overview across all machines
     python -m app.cli seed-twin            # seed the digital twin from on-vehicle facts
@@ -87,6 +88,13 @@ def cmd_migrate_specs(args: argparse.Namespace) -> int:
     from .migrate_specs import migrate_specs_to_claims
     with session_scope() as s:
         print(migrate_specs_to_claims(s, args.variant))
+    return 0
+
+
+def cmd_migrate_knowledge(args: argparse.Namespace) -> int:
+    from .migrate_knowledge import migrate_knowledge
+    with session_scope() as s:
+        print(migrate_knowledge(s, args.variant))
     return 0
 
 
@@ -509,6 +517,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("migrate-specs", help="migrate V1 specs → V2 claims (non-destructive)")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_migrate_specs)
+
+    sp = sub.add_parser("migrate-knowledge", help="migrate V1 maintenance + issues → V2 claims")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_migrate_knowledge)
 
     sp = sub.add_parser("commission", help="baseline-commission a machine (or 'all') as a twin")
     sp.add_argument("machine", nargs="?", default="all",
