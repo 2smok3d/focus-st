@@ -191,8 +191,22 @@ before the previous one is complete and tested.**
   workbench consumes it: `workbench.recommend_next_test(case)` maps the case's
   hypotheses → candidate failure modes → the best next test, surfaced in the case view.
   CLI: `seed-diaglib`, `symptom "<text>"`, `failure-mode <slug>`, `next-test <fm>…`.
-  **Next:** wiring telemetry-derived observations into failure-mode evidence, and
-  diagnostic-case ↔ failure-mode linkage for full reasoning V2.
+  The loop is closed: `open_case_from_symptom` auto-seeds candidate failure modes as
+  hypotheses, and `confirm_failure_mode` promotes one to a finding **only with confirming
+  evidence** (constitution-enforced), citing the mode's consequence.
+
+- **Milestone C — Workshop Engine.** *(started)* Work orders with the full status
+  lifecycle (`draft → ready/blocked → in_progress → verification_required → verified →
+  closed`) and repair state (`planned → repair_performed → repair_verified`).
+  `db/schema_v9.sql`, `app/womodels.py`, `app/workshop.py`. **Job readiness** (#13)
+  computes what fraction of the required parts/tools/procedure is in hand ("READY 86% —
+  missing: Crush washer"). **Mandatory verification** (#16): completing the work yields
+  `verification_required`/`repair_performed` — never "fixed"; only a **passing post-repair
+  verification** promotes it to `verified`/`repair_verified` (through the constitution's
+  `FINDING → VERIFIED_REPAIR` bridge), and **closing writes an automatic `ServiceEvent`**
+  to the ledger. CLI: `wo-seed`, `work-orders`, `wo <id>`, `wo-verify`.
+  **Next:** procedure-execution mode (step → measurement → abnormal observation) and
+  garage inventory to source the readiness check.
 
   **Remaining Phase 4/later:** telemetry PID registry + derived signals + event
   detection, maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/`OVERDUE`),
