@@ -104,14 +104,25 @@ def test_capability_profiles_differ_by_machine():
 
 
 def test_commission_is_idempotent():
-    from app.commission import commission_all
+    from app.commission import MACHINES, commission_all
     from app.models import Vehicle
     from app.refmodels import VehicleVariant
+
+    def _counts(s):
+        # count only the commissioned machines (robust to other seeds / bench vehicles)
+        slugs = list(MACHINES)
+        vins = [MACHINES[k]["vehicle"]["vin"] for k in slugs]
+        variants = s.scalar(select(func.count()).select_from(VehicleVariant)
+                            .where(VehicleVariant.slug.in_(slugs)))
+        vehicles = s.scalar(select(func.count()).select_from(Vehicle)
+                            .where(Vehicle.vin.in_(vins)))
+        return variants, vehicles
+
     with session_scope() as s:
         commission_all(s)
     with session_scope() as s:
-        commission_all(s)
+        before = _counts(s)
+        commission_all(s)         # second run must not duplicate anything
     with session_scope() as s:
-        # exactly one variant + one vehicle per machine (no duplication on re-run)
-        assert s.scalar(select(func.count()).select_from(VehicleVariant)) == 5  # focus + 4
-        assert s.scalar(select(func.count()).select_from(Vehicle)) == 5
+        after = _counts(s)
+    assert before == after == (len(MACHINES), len(MACHINES))

@@ -17,6 +17,9 @@
     python -m app.cli observations         # list observations (rich, unit-aware)
     python -m app.cli config-at            # the machine's configuration now (a projection)
     python -m app.cli events               # the append-only machine-event ledger
+    python -m app.cli seed-graph           # seed typed graph overlays (airflow/coolant/…)
+    python -m app.cli overlay [domain]     # show a graph overlay (--trace <slug> to follow flow)
+    python -m app.cli pc-seed / pc <code>  # physical-component lifecycle
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -65,7 +68,8 @@ def cmd_init(_: argparse.Namespace) -> int:
             conn.execute(text(schema.read_text()))
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
-        for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql"):
+        for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
+                      "schema_v6.sql", "schema_v7.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -76,7 +80,8 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.twinmodels  # noqa: F401 — register V3 tables on the Base
         import app.dxmodels  # noqa: F401 — register V4 tables on the Base
         import app.obsmodels  # noqa: F401 — register V5 tables on the Base
-        Base.metadata.create_all(engine)
+        import app.lcmodels  # noqa: F401 — register V7 tables on the Base
+        Base.metadata.create_all(engine)  # V6 columns/tables live in refmodels (already imported)
         print("Schema created from ORM metadata.")
     return 0
 
@@ -105,6 +110,77 @@ def cmd_migrate_knowledge(args: argparse.Namespace) -> int:
     from .migrate_knowledge import migrate_knowledge
     with session_scope() as s:
         print(migrate_knowledge(s, args.variant))
+    return 0
+
+
+def cmd_seed_graph(args: argparse.Namespace) -> int:
+    from .seed_graph import seed_graph
+    with session_scope() as s:
+        print(seed_graph(s, args.variant))
+    return 0
+
+
+def cmd_pc_seed(_: argparse.Namespace) -> int:
+    """Seed a physical-component lifecycle example: a TZ250 piston through a race weekend."""
+    from sqlalchemy import select as _select
+    from . import lifecycle as lc
+    from .models import Vehicle
+    with session_scope() as s:
+        tz = s.scalar(_select(Vehicle).where(Vehicle.vin == "YAM-TZ250-1986"))
+        if tz is None:
+            print("Commission the TZ250 first (`commission tz250`).", file=sys.stderr)
+            return 1
+        pc = lc.register(s, "P-0042", "TZ250 right piston", component_slug="pistons",
+                         manufacturer="Yamaha", part_number="—")
+        lc.install(s, pc, tz, "pistons", note="Fresh top-end")
+        lc.add_usage(s, pc, hours=4.7, sessions=3)
+        lc.inspect(s, pc, "healthy", value=0.05, unit="mm", method="ring end-gap", note="within spec")
+        print(f"Seeded physical component {pc.code} on TZ250 · {pc.hours}h / {pc.sessions} sessions.")
+    return 0
+
+
+def cmd_pc(args: argparse.Namespace) -> int:
+    from . import lifecycle as lc
+    with session_scope() as s:
+        d = lc.lifecycle(s, args.code)
+        if d is None:
+            print(f"No physical component '{args.code}'.", file=sys.stderr)
+            return 1
+        u = d["usage"]
+        print(f"{d['code']} · {d['name']}  [{d['status']} · {d['condition']}]")
+        print(f"  usage: {u['hours']}h · {u['sessions']} sessions · {u['miles']} mi · {u['cycles']} cycles")
+        print("  installations:")
+        for i in d["installations"]:
+            span = f"{i['installed_at']}" + (f" → {i['removed_at']}" if i["removed_at"] else " → (current)")
+            print(f"    · {i['vehicle']} / {i['slot']}  {span}")
+        if d["inspections"]:
+            print("  inspections:")
+            for ins in d["inspections"]:
+                val = f" {ins['value']} {ins['unit']}" if ins["value"] is not None else ""
+                print(f"    · {ins['result']}{val}  ({ins['method'] or ''})  {ins['at']}")
+    return 0
+
+
+def cmd_overlay(args: argparse.Namespace) -> int:
+    from . import graphs
+    with session_scope() as s:
+        if not args.domain:
+            print("overlays present: " + ", ".join(graphs.domains(s, args.variant)))
+            return 0
+        edges = graphs.overlay_edges(s, args.variant, args.domain)
+        if not edges:
+            print(f"No '{args.domain}' overlay for {args.variant}. "
+                  f"Present: {', '.join(graphs.domains(s, args.variant))}", file=sys.stderr)
+            return 1
+        arrow = {"forward": "→", "bidirectional": "↔"}
+        print(f"{args.domain} overlay · {args.variant}:")
+        for e in edges:
+            med = f" [{e['medium']}]" if e["medium"] else ""
+            print(f"    {e['from_name']} {arrow.get(e['direction'], '→')} {e['to_name']}"
+                  f"  ({e['relation']}{med})")
+        if args.trace:
+            path = graphs.trace(s, args.variant, args.domain, args.trace)
+            print(f"  trace from {args.trace}: " + " → ".join(path))
     return 0
 
 
@@ -682,6 +758,22 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("migrate-knowledge", help="migrate V1 maintenance + issues → V2 claims")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_migrate_knowledge)
+
+    sp = sub.add_parser("seed-graph", help="seed typed graph overlays (airflow/coolant/lubrication)")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_seed_graph)
+
+    sp = sub.add_parser("overlay", help="show a graph overlay (omit domain to list them)")
+    sp.add_argument("domain", nargs="?", default=None, help="airflow | coolant | lubrication | ...")
+    sp.add_argument("--variant", default="focus-st")
+    sp.add_argument("--trace", default=None, help="trace flow downstream from a component slug")
+    sp.set_defaults(fn=cmd_overlay)
+
+    sub.add_parser("pc-seed", help="seed a physical-component lifecycle example (TZ250 piston)").set_defaults(fn=cmd_pc_seed)
+
+    sp = sub.add_parser("pc", help="show a physical component's lifecycle")
+    sp.add_argument("code")
+    sp.set_defaults(fn=cmd_pc)
 
     sp = sub.add_parser("commission", help="baseline-commission a machine (or 'all') as a twin")
     sp.add_argument("machine", nargs="?", default="all",

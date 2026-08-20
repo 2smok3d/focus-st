@@ -97,10 +97,22 @@ class System(Base):
     __table_args__ = (UniqueConstraint("variant_id", "slug"),)
 
 
+class Assembly(Base):
+    """An Assembly groups Components within a System (Machine → System → Assembly → Component)."""
+    __tablename__ = "assemblies"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    system_id: Mapped[int] = mapped_column(ForeignKey("systems.id", ondelete="CASCADE"))
+    slug: Mapped[str] = mapped_column(Text)
+    name: Mapped[str] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
+    __table_args__ = (UniqueConstraint("system_id", "slug"),)
+
+
 class Component(Base):
     __tablename__ = "components"
     id: Mapped[int] = mapped_column(primary_key=True)
     system_id: Mapped[int] = mapped_column(ForeignKey("systems.id", ondelete="CASCADE"))
+    assembly_id: Mapped[int | None] = mapped_column(ForeignKey("assemblies.id", ondelete="SET NULL"))
     slug: Mapped[str] = mapped_column(Text)
     name: Mapped[str] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(Text)
@@ -117,12 +129,21 @@ RELATIONS = {
 }
 
 
+# Graph overlays — the domain a relationship belongs to (the same components can be
+# traversed as several overlaid graphs).
+DOMAINS = {"function", "mechanical", "airflow", "coolant", "lubrication", "fuel",
+           "electrical", "vacuum", "boost", "exhaust"}
+
+
 class ComponentRelationship(Base):
     __tablename__ = "component_relationships"
     id: Mapped[int] = mapped_column(primary_key=True)
     from_component_id: Mapped[int] = mapped_column(ForeignKey("components.id", ondelete="CASCADE"))
     to_component_id: Mapped[int] = mapped_column(ForeignKey("components.id", ondelete="CASCADE"))
     relation: Mapped[str] = mapped_column(Text)
+    domain: Mapped[str] = mapped_column(Text, default="function")   # which overlay
+    medium: Mapped[str | None] = mapped_column(Text)                # air | coolant | oil | ...
+    direction: Mapped[str] = mapped_column(Text, default="forward")  # forward | bidirectional
     note: Mapped[str | None] = mapped_column(Text)
 
 
