@@ -238,6 +238,15 @@ before the previous one is complete and tested.**
   `quantities`), so a confounded result is never presented as clean. CLI: `build-seed`,
   `build <id>`, `exp-demo`, `experiment <id>`.
 
+- **Milestone F — Knowledge Operations.** *(done)* A **knowledge-quality dashboard**
+  (`app/knowledge.py`, `db/schema_v12.sql`) — a pure projection over the canonical
+  `claims` table: totals, verification distribution, conflicts, and gaps (missing units
+  / applicability). A **research queue** turns those gaps into prioritized tasks
+  (conflicts rank HIGH — potentially safety-relevant), idempotently. And **entity
+  resolution** normalizes messy identifiers ("22R-E" / "22RE" / "22R E" → `22RE`) and
+  resolves registered aliases. Nothing here mutates canonical knowledge — it measures it
+  and proposes work. CLI: `kb-quality`, `kb-research [--generate]`, `resolve <alias>`.
+
   **Remaining later:** maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/
   `OVERDUE`), parts intelligence + fitment, machine baselines + degradation trends,
   the modular UI V2, and evidence-grounded MCP V2.

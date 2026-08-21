@@ -32,6 +32,9 @@
     python -m app.cli telemetry <sid> [--case N] # detect datalog events → case evidence
     python -m app.cli build-seed / build <id> # constraint-solved build scenarios
     python -m app.cli exp-demo / experiment <id> # before/after experiments + confounder check
+    python -m app.cli kb-quality           # knowledge-quality dashboard over the claims
+    python -m app.cli kb-research --generate # gaps → prioritized research tasks
+    python -m app.cli resolve "22R-E"      # resolve an identifier alias to canonical
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -82,7 +85,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         # V2 additive layer (reference model + provenance). Idempotent.
         for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
                       "schema_v6.sql", "schema_v7.sql", "schema_v8.sql", "schema_v9.sql",
-                      "schema_v10.sql", "schema_v11.sql"):
+                      "schema_v10.sql", "schema_v11.sql", "schema_v12.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -98,6 +101,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.womodels  # noqa: F401 — register V9 tables on the Base
         import app.tmodels  # noqa: F401 — register V10 tables on the Base
         import app.engmodels  # noqa: F401 — register V11 tables on the Base
+        import app.kbmodels  # noqa: F401 — register V12 tables on the Base
         Base.metadata.create_all(engine)  # V6 columns/tables live in refmodels (already imported)
         print("Schema created from ORM metadata.")
     return 0
@@ -148,6 +152,47 @@ def cmd_seed_channels(_: argparse.Namespace) -> int:
     from . import telemetry
     with session_scope() as s:
         print(telemetry.seed_channels(s))
+    return 0
+
+
+def cmd_kb_quality(_: argparse.Namespace) -> int:
+    from . import knowledge
+    with session_scope() as s:
+        r = knowledge.quality_report(s)
+        print(f"Knowledge quality · {r['total']} claims")
+        for grade in ("VEHICLE_VERIFIED", "OEM_VERIFIED", "CORROBORATED", "UNVERIFIED"):
+            if grade in r["by_verification"]:
+                d = r["by_verification"][grade]
+                print(f"  {grade:<17} {d['n']:>4}  ({d['pct']}%)")
+        print(f"  conflicts             {r['conflicts']:>4}")
+        print(f"  missing applicability {r['missing_applicability']:>4}")
+        print(f"  missing units         {r['missing_units']:>4}")
+        print(f"  → open gaps           {r['gaps']:>4}")
+    return 0
+
+
+def cmd_kb_research(args: argparse.Namespace) -> int:
+    from . import knowledge
+    pic = {"critical": "🔴", "high": "🟠", "medium": "🟡", "low": "·"}
+    with session_scope() as s:
+        if args.generate:
+            print(knowledge.generate_research_tasks(s))
+        tasks = knowledge.list_research_tasks(s)
+        if not tasks:
+            print("(no open research tasks — try --generate)")
+            return 0
+        print(f"Open research tasks ({len(tasks)}):")
+        for t in tasks:
+            print(f"  {pic.get(t['priority'], '·')} [{t['priority']}] {t['kind']} · {t['subject']}")
+            if t["detail"]:
+                print(f"      {t['detail']}")
+    return 0
+
+
+def cmd_resolve(args: argparse.Namespace) -> int:
+    from . import knowledge
+    with session_scope() as s:
+        print(f"{args.alias}  →  {knowledge.resolve_alias(s, args.alias)}")
     return 0
 
 
@@ -1060,6 +1105,16 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("seed-diaglib", help="seed the failure-mode + diagnostic-test library").set_defaults(fn=cmd_seed_diaglib)
 
     sub.add_parser("seed-channels", help="seed the telemetry channel registry").set_defaults(fn=cmd_seed_channels)
+
+    sub.add_parser("kb-quality", help="knowledge-quality dashboard over the claims").set_defaults(fn=cmd_kb_quality)
+
+    sp = sub.add_parser("kb-research", help="list (and optionally --generate) research tasks")
+    sp.add_argument("--generate", action="store_true", help="scan claims for gaps and enqueue tasks")
+    sp.set_defaults(fn=cmd_kb_research)
+
+    sp = sub.add_parser("resolve", help="resolve an identifier alias to canonical form")
+    sp.add_argument("alias")
+    sp.set_defaults(fn=cmd_resolve)
 
     sub.add_parser("build-seed", help="seed constraint rules + an example build scenario").set_defaults(fn=cmd_build_seed)
 
