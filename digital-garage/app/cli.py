@@ -28,6 +28,8 @@
     python -m app.cli wo-seed              # seed an example work order (job readiness)
     python -m app.cli work-orders / wo <id> # list / show work orders
     python -m app.cli wo-verify <id> <test> pass|fail  # post-repair verification
+    python -m app.cli seed-channels        # seed the telemetry channel registry
+    python -m app.cli telemetry <sid> [--case N] # detect datalog events → case evidence
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -77,7 +79,8 @@ def cmd_init(_: argparse.Namespace) -> int:
         print(f"Schema applied from {schema}")
         # V2 additive layer (reference model + provenance). Idempotent.
         for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
-                      "schema_v6.sql", "schema_v7.sql", "schema_v8.sql", "schema_v9.sql"):
+                      "schema_v6.sql", "schema_v7.sql", "schema_v8.sql", "schema_v9.sql",
+                      "schema_v10.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -91,6 +94,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.lcmodels  # noqa: F401 — register V7 tables on the Base
         import app.fmmodels  # noqa: F401 — register V8 tables on the Base
         import app.womodels  # noqa: F401 — register V9 tables on the Base
+        import app.tmodels  # noqa: F401 — register V10 tables on the Base
         Base.metadata.create_all(engine)  # V6 columns/tables live in refmodels (already imported)
         print("Schema created from ORM metadata.")
     return 0
@@ -134,6 +138,35 @@ def cmd_seed_diaglib(_: argparse.Namespace) -> int:
     from .seed_diaglib import seed_diaglib
     with session_scope() as s:
         print(seed_diaglib(s))
+    return 0
+
+
+def cmd_seed_channels(_: argparse.Namespace) -> int:
+    from . import telemetry
+    with session_scope() as s:
+        print(telemetry.seed_channels(s))
+    return 0
+
+
+def cmd_telemetry(args: argparse.Namespace) -> int:
+    from . import telemetry
+    sev = {"info": "·", "warn": "🟠", "critical": "🔴"}
+    with session_scope() as s:
+        events = telemetry.run_pipeline(s, args.session_id)
+        if not events:
+            print(f"No telemetry events detected on session #{args.session_id}.")
+            return 0
+        print(f"Telemetry events · session #{args.session_id}:")
+        for e in events:
+            span = f"{e['t_start']:g}–{e['t_end']:g}s" if e["t_start"] is not None else ""
+            print(f"  {sev.get(e['severity'], '·')} {e['kind']} {span}  {e['detail']}")
+        if args.case:
+            from .workbench import case_view
+            from .dxmodels import DiagnosticCase
+            case = s.get(DiagnosticCase, args.case)
+            if case is not None:
+                n = telemetry.events_to_case(s, case, events)
+                print(f"  ↳ attached {n} event(s) to case #{args.case} as evidence.")
     return 0
 
 
@@ -936,6 +969,13 @@ def build_parser() -> argparse.ArgumentParser:
     sp.set_defaults(fn=cmd_seed_graph)
 
     sub.add_parser("seed-diaglib", help="seed the failure-mode + diagnostic-test library").set_defaults(fn=cmd_seed_diaglib)
+
+    sub.add_parser("seed-channels", help="seed the telemetry channel registry").set_defaults(fn=cmd_seed_channels)
+
+    sp = sub.add_parser("telemetry", help="detect telemetry events on a datalog session")
+    sp.add_argument("session_id", type=int)
+    sp.add_argument("--case", type=int, default=None, help="also attach events to this case as evidence")
+    sp.set_defaults(fn=cmd_telemetry)
 
     sp = sub.add_parser("failure-mode", help="show a failure mode + its discriminating tests")
     sp.add_argument("slug")
