@@ -15,18 +15,20 @@ import re
 from dataclasses import dataclass
 
 # name → matcher for the channels we call out explicitly
+# NOTE: the commanded/desired variants are listed BEFORE their generic counterparts so
+# `_match` (first-hit) recognizes "Desired Boost" as boost_cmd, not boost_actual.
 _CH = {
     "rpm": re.compile(r"\brpm\b|engine speed", re.I),
+    "boost_cmd": re.compile(r"(desired|commanded|target|cmd).*(boost|map)|boost.*(desired|target|cmd)", re.I),
     "boost_actual": re.compile(r"\bboost\b|manifold|\bmap\b|\bpsi\b", re.I),
-    "boost_cmd": re.compile(r"(desired|commanded|target).*(boost|map)|boost.*(desired|target)", re.I),
     "knock": re.compile(r"knock|detonation|kr\b", re.I),
     "misfire": re.compile(r"misfire", re.I),
     "stft": re.compile(r"short.*trim|\bstft\b", re.I),
     "ltft": re.compile(r"long.*trim|\bltft\b", re.I),
     "coolant": re.compile(r"coolant|\bect\b", re.I),
     "iat": re.compile(r"intake air|charge air|\biat\b|\bact\b|\bcat\b", re.I),
-    "rail_actual": re.compile(r"(fuel\s*rail|rail\s*press).*(actual)?|\bhpfp\b", re.I),
     "rail_cmd": re.compile(r"(desired|commanded).*rail", re.I),
+    "rail_actual": re.compile(r"(fuel\s*rail|rail\s*press).*(actual)?|\bhpfp\b", re.I),
     "lambda": re.compile(r"lambda|afr|equivalence|\bo2\b", re.I),
 }
 

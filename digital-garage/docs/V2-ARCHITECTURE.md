@@ -208,9 +208,28 @@ before the previous one is complete and tested.**
   **Next:** procedure-execution mode (step → measurement → abnormal observation) and
   garage inventory to source the readiness check.
 
-  **Remaining Phase 4/later:** telemetry PID registry + derived signals + event
-  detection, maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/`OVERDUE`),
-  service ledger, parts intelligence + fitment, build planner.
+- **Milestone C — Workshop Engine.** *(done)* Work orders with the full status
+  lifecycle (`draft`→`ready`/`blocked`→`in_progress`→`verification_required`→`verified`
+  →`closed`), **job-readiness analysis** ("READY 86% — missing the crush washer"), and
+  **mandatory post-repair verification**: completing the work yields
+  `REPAIR_PERFORMED`, and only a passing verification reaches `REPAIR_VERIFIED` (the
+  constitution's FINDING→VERIFIED_REPAIR bridge). Closing a verified order writes an
+  automatic **service-ledger** event. `db/schema_v9.sql`, `app/workshop.py`; CLI
+  `wo-seed`, `work-orders`, `wo <id>`, `wo-verify`.
+
+- **Milestone E — Telemetry V2.** *(done)* A canonical **channel registry** + a pure
+  **derive → detect** engine (`db/schema_v10.sql`, `app/telemetry.py`): normalized
+  frames → derived signals (`boost_error`, `charge_temp_delta`) → **event detection**
+  (`WOT_PULL`, `BOOST_DEFICIT`, `KNOCK_EVENT`, `OVER_TEMP`, `MISFIRE_EVENT`, `HEAT_SOAK`).
+  Raw measurements are never mutated. `run_pipeline` persists events per diagnostic
+  session (idempotent); `events_to_case` attaches them to a case as telemetry evidence —
+  closing the loop from a datalog to a diagnosis. The pure engine runs in CI without a
+  DB. Also fixed the channel recognizer to read commanded/desired boost as `boost_cmd`.
+  CLI: `seed-channels`, `telemetry <sid> [--case N]`.
+
+  **Remaining later:** maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/
+  `OVERDUE`), parts intelligence + fitment, build planner (Milestone D), machine
+  baselines + degradation trends.
 
 - **Phase 5 — UI V2.** Modularize the frontend into app/components/views (Overview,
   Diagnose, Maintain, Build, Parts, Systems, Data, Knowledge); interactive engine
