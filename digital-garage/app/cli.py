@@ -30,6 +30,8 @@
     python -m app.cli wo-verify <id> <test> pass|fail  # post-repair verification
     python -m app.cli seed-channels        # seed the telemetry channel registry
     python -m app.cli telemetry <sid> [--case N] # detect datalog events → case evidence
+    python -m app.cli build-seed / build <id> # constraint-solved build scenarios
+    python -m app.cli exp-demo / experiment <id> # before/after experiments + confounder check
     python -m app.cli ref [--variant S]    # reference system → component tree
     python -m app.cli component <slug>     # a component: relationships + claims
     python -m app.cli claim <subj> <prop>  # a claim: evidence + resolved verdict
@@ -80,7 +82,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         # V2 additive layer (reference model + provenance). Idempotent.
         for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
                       "schema_v6.sql", "schema_v7.sql", "schema_v8.sql", "schema_v9.sql",
-                      "schema_v10.sql"):
+                      "schema_v10.sql", "schema_v11.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -95,6 +97,7 @@ def cmd_init(_: argparse.Namespace) -> int:
         import app.fmmodels  # noqa: F401 — register V8 tables on the Base
         import app.womodels  # noqa: F401 — register V9 tables on the Base
         import app.tmodels  # noqa: F401 — register V10 tables on the Base
+        import app.engmodels  # noqa: F401 — register V11 tables on the Base
         Base.metadata.create_all(engine)  # V6 columns/tables live in refmodels (already imported)
         print("Schema created from ORM metadata.")
     return 0
@@ -145,6 +148,92 @@ def cmd_seed_channels(_: argparse.Namespace) -> int:
     from . import telemetry
     with session_scope() as s:
         print(telemetry.seed_channels(s))
+    return 0
+
+
+def cmd_build_seed(_: argparse.Namespace) -> int:
+    """Seed the constraint rules + an example 'big turbo' scenario, and solve it."""
+    from . import builds, service
+    with session_scope() as s:
+        print(builds.seed_constraints(s))
+        v = service.get_vehicle(s)
+        from sqlalchemy import select as _sel
+        from .engmodels import BuildScenario
+        sc = s.scalar(_sel(BuildScenario).where(BuildScenario.vehicle_id == v.id,
+                                                BuildScenario.code == "BUILD-1"))
+        if sc is None:
+            sc = builds.new_scenario(s, v, "Big-turbo 350whp", goal="350 whp reliable", code="BUILD-1")
+            builds.add_item(s, sc, "big-turbo", "Larger turbo", component_slug="turbocharger", est_cost=1800)
+            builds.add_item(s, sc, "intercooler", "FMIC upgrade", component_slug="intercooler", est_cost=450)
+            builds.add_item(s, sc, "tune", "Custom calibration", est_cost=600)
+        r = builds.solve(s, sc.id)
+        print(f"Scenario {sc.code} '{sc.name}' → {'VALID' if r['valid'] else 'INCOMPLETE'} "
+              f"· est ${r['est_cost']:,.0f}")
+        for u in r["requires_unmet"]:
+            print(f"  ✕ requires: {u['object']}  ({u['note']})")
+        for c in r["conflicts"]:
+            print(f"  ! conflict: {c['object']}  ({c['note']})")
+        for rec in r["recommends"]:
+            print(f"  ○ recommends: {rec['object']}  ({rec['note']})")
+    return 0
+
+
+def cmd_exp_demo(_: argparse.Namespace) -> int:
+    from sqlalchemy import select as _sel
+    from . import experiments as ex, observations as ob, service
+    from .engmodels import Experiment
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        if s.scalar(_sel(Experiment).where(Experiment.vehicle_id == v.id, Experiment.code == "EXP-1")):
+            print("Demo experiment EXP-1 already present.")
+            return 0
+        e = ex.open_experiment(s, v, "Did the FMIC lower peak charge-air temp?",
+                               metric="peak_iat", unit="°C", code="EXP-1")
+        envA = ob.record_environment(s, v, ambient=90, ambient_unit="°F", weather="baseline day")
+        envB = ob.record_environment(s, v, ambient=92, ambient_unit="°F", weather="FMIC day")
+        ex.add_run(s, e, "baseline", 61, unit="°C", environment_id=envA.id, note="OEM intercooler")
+        ex.add_run(s, e, "changed", 52, unit="°C", environment_id=envB.id, note="Depo FMIC")
+        r = ex.compare(s, e.id)
+        print(f"Seeded {e.code}: {e.question}")
+        print(f"  baseline {r['baseline_mean']}{e.unit} → changed {r['changed_mean']}{e.unit} "
+              f"(delta {r['delta']:+g}{e.unit}) · {'CONTROLLED' if r['controlled'] else 'CONFOUNDED'}")
+    return 0
+
+
+def cmd_experiment(args: argparse.Namespace) -> int:
+    from . import experiments as ex
+    with session_scope() as s:
+        r = ex.compare(s, args.id)
+        if not r:
+            print(f"No experiment #{args.id}.", file=sys.stderr)
+            return 1
+        print(f"Experiment #{args.id}: {r['question']}")
+        if r["delta"] is not None:
+            print(f"  baseline {r['baseline_mean']:g} → changed {r['changed_mean']:g} {r['unit'] or ''} "
+                  f"(delta {r['delta']:+g})  · n={r['n_baseline']}/{r['n_changed']}")
+        print(f"  {'✓ controlled comparison' if r['controlled'] else '⚠️ poorly controlled'}")
+        for w in r["warnings"]:
+            print(f"    · {w}")
+    return 0
+
+
+def cmd_build(args: argparse.Namespace) -> int:
+    from . import builds
+    with session_scope() as s:
+        r = builds.solve(s, args.id)
+        if not r["items"] and r["scenario_id"] is None:
+            print(f"No scenario #{args.id}.", file=sys.stderr)
+            return 1
+        print(f"Scenario #{args.id}: {'VALID' if r['valid'] else 'INCOMPLETE'} · est ${r['est_cost']:,.0f}")
+        print("  items: " + ", ".join(f"{it['name']} [{it['tag']}]" for it in r["items"]))
+        for u in r["requires_unmet"]:
+            print(f"  ✕ requires {u['object']} — {u['note']}")
+        for c in r["conflicts"]:
+            print(f"  ! conflict with {c['object']} — {c['note']}")
+        for rec in r["recommends"]:
+            print(f"  ○ recommend {rec['object']} — {rec['note']}")
+        for m in r["requires_met"]:
+            print(f"  ✓ requires {m['object']} (present)")
     return 0
 
 
@@ -971,6 +1060,18 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("seed-diaglib", help="seed the failure-mode + diagnostic-test library").set_defaults(fn=cmd_seed_diaglib)
 
     sub.add_parser("seed-channels", help="seed the telemetry channel registry").set_defaults(fn=cmd_seed_channels)
+
+    sub.add_parser("build-seed", help="seed constraint rules + an example build scenario").set_defaults(fn=cmd_build_seed)
+
+    sp = sub.add_parser("build", help="solve a build scenario against the constraint rules")
+    sp.add_argument("id", type=int)
+    sp.set_defaults(fn=cmd_build)
+
+    sub.add_parser("exp-demo", help="seed a worked before/after experiment (FMIC charge temps)").set_defaults(fn=cmd_exp_demo)
+
+    sp = sub.add_parser("experiment", help="compare an experiment's arms (with confounder check)")
+    sp.add_argument("id", type=int)
+    sp.set_defaults(fn=cmd_experiment)
 
     sp = sub.add_parser("telemetry", help="detect telemetry events on a datalog session")
     sp.add_argument("session_id", type=int)
