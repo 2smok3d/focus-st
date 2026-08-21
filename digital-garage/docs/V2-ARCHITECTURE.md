@@ -227,9 +227,20 @@ before the previous one is complete and tested.**
   DB. Also fixed the channel recognizer to read commanded/desired boost as `boost_cmd`.
   CLI: `seed-channels`, `telemetry <sid> [--case N]`.
 
+- **Milestone D — Engineering.** *(done)* A **constraint solver** + **build scenarios**
+  (`db/schema_v11.sql`, `app/builds.py`) and an **experiment engine** (`app/experiments.py`).
+  Builds are **computed, not hard-coded**: a scenario lists what you want and the
+  constraint rules (REQUIRES / RECOMMENDS / CONFLICTS / …) determine what else is needed
+  and what clashes — e.g. `big-turbo` REQUIRES tune + fueling + intercooler, RECOMMENDS
+  oil-cooler, CONFLICTS with the stock charge pipe. The experiment engine compares a
+  baseline vs changed arm and **explicitly warns when the comparison is poorly
+  controlled** (e.g. ambient differs > 5 °C between arms, via the environment snapshots +
+  `quantities`), so a confounded result is never presented as clean. CLI: `build-seed`,
+  `build <id>`, `exp-demo`, `experiment <id>`.
+
   **Remaining later:** maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/
-  `OVERDUE`), parts intelligence + fitment, build planner (Milestone D), machine
-  baselines + degradation trends.
+  `OVERDUE`), parts intelligence + fitment, machine baselines + degradation trends,
+  the modular UI V2, and evidence-grounded MCP V2.
 
 - **Phase 5 — UI V2.** Modularize the frontend into app/components/views (Overview,
   Diagnose, Maintain, Build, Parts, Systems, Data, Knowledge); interactive engine
