@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T16:17:52.625404+00:00",
+  "generated_at": "2026-08-23T23:00:47.682540+00:00",
   "variant": "toyota-pickup",
   "vehicle": {
     "vin": "TOY-22RE-1986",
@@ -120,6 +120,10 @@
     "attention": 0,
     "tracked": 0,
     "items": []
+  },
+  "trends": {
+    "series": [],
+    "drifting": 0
   },
   "knowledge": {
     "total_claims": 9,

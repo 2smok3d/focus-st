@@ -91,6 +91,7 @@ function render(d) {
     ['conflicts', k.conflicts ?? 0],
     ['twin deviations', tw.count ?? 0],
     ['maintenance due', mt.attention ?? 0],
+    ['drift alerts', (d.trends||{}).drifting ?? 0],
     ['open cases', (dg.open_cases||[]).length],
     ['open work orders', ws.open ?? 0],
     ['telemetry channels', (d.telemetry||{}).channels ?? 0],
@@ -167,6 +168,19 @@ function render(d) {
   });
   if (!(mt.items||[]).length) mp.appendChild(el('p','tag','No maintenance intervals on record for this machine.'));
   P.appendChild(mp);
+
+  // Degradation trends
+  const tp = el('div','panel'); tp.appendChild(el('h2', null, 'Degradation Trends'));
+  const series = (d.trends||{}).series || [];
+  const arrow = {rising:'↗', falling:'↘', flat:'→'};
+  if (!series.length) tp.appendChild(el('p','tag','No component has enough observation history to fit a trend yet.'));
+  series.slice(0,6).forEach(t => {
+    const cls = t.drift ? (t.direction==='falling'?'crit':'warn') : '';
+    tp.appendChild(el('div','row', `<span>${esc(t.subject)} · ${esc(t.metric)}</span>`
+      + `<span class="chip ${cls}">${esc(arrow[t.direction]||'')} ${esc((t.pct_change*100).toFixed(0))}%${t.drift?' ‼':''}</span>`));
+    tp.appendChild(el('div','tag', esc(t.summary)));
+  });
+  P.appendChild(tp);
 
   // Systems + overlays
   const sp = el('div','panel'); sp.appendChild(el('h2', null, 'Systems & Graph Overlays'));

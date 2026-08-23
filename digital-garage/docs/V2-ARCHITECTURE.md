@@ -264,12 +264,20 @@ before the previous one is complete and tested.**
   `maintenance` block (counts + per-item rows + `attention`), surfaced as a Maintenance
   panel and a "maintenance due" KPI on the dashboard.
 
+- **Degradation trends (data intelligence).** *(done)* `app/trends.py` fits the Observation
+  V2 history: a pure `fit_trend` (ordinary least squares → slope, R², direction, and a
+  drift classification, deliberately metric-agnostic — it reports direction and drift
+  strength, not good/bad) and `component_trends`, which groups a machine's observations into
+  per-(component, metric, condition) series and reports the notable ones. Confounder-aware:
+  a series measured across a wide ambient-temperature range is flagged. Surfaced via
+  `cli trends`, an `intel.json` `trends` block, and a dashboard panel + "drift alerts" KPI.
+
 - **Milestone G bridge — Vehicle Intelligence projection.** *(done)* `app/intel.py`
   aggregates the whole V2 backend — reference model, digital-twin deviations, open
   diagnostic cases (with leading hypothesis + recommended next test), work-order
-  readiness, maintenance status, telemetry channels, knowledge quality, and the research
-  queue — into one static `intel.json` per machine, the way `garage.json` projects the
-  parts catalog.
+  readiness, maintenance status, degradation trends, telemetry channels, knowledge quality,
+  and the research queue — into one static `intel.json` per machine, the way `garage.json`
+  projects the parts catalog.
   Postgres stays canonical; this is read-only. `cli intel [--all]` writes one machine or
   every commissioned one; the HUD dashboard `web/tools/intel.html?v=<slug>` fetches
   `vehicles/<slug>/intel.json` and offers a fleet chip switcher. **Fleet-wide scoping is

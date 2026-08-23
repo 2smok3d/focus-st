@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T16:17:52.571987+00:00",
+  "generated_at": "2026-08-23T23:00:47.628661+00:00",
   "variant": "rz350",
   "vehicle": {
     "vin": "YAM-RZ350-1985",
@@ -103,6 +103,31 @@
     "attention": 0,
     "tracked": 0,
     "items": []
+  },
+  "trends": {
+    "series": [
+      {
+        "n": 4,
+        "slope_per_day": -0.11,
+        "intercept": 152.2,
+        "r2": 0.9945,
+        "direction": "falling",
+        "span_days": 90.0,
+        "first": 152.2,
+        "last_fitted": 142.3,
+        "delta": -9.9,
+        "pct_change": -0.0672,
+        "drift": true,
+        "mean": 147.25,
+        "subject": "cylinders",
+        "metric": "mechanical",
+        "condition": "warm",
+        "unit": "psi",
+        "confounded": false,
+        "summary": "cylinders mechanical falling 7% over 90d (152.2\u2192142.3 psi, R\u00b2=0.99)."
+      }
+    ],
+    "drifting": 1
   },
   "knowledge": {
     "total_claims": 14,

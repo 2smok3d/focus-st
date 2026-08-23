@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T16:17:52.516148+00:00",
+  "generated_at": "2026-08-23T23:00:47.572567+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -177,6 +177,10 @@
         "verification": "CORROBORATED"
       }
     ]
+  },
+  "trends": {
+    "series": [],
+    "drifting": 0
   },
   "knowledge": {
     "total_claims": 49,

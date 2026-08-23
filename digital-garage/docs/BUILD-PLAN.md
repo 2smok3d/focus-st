@@ -121,12 +121,17 @@ Bring zzr600 / rz350 / tz250 / toyota-pickup from scaffold to fully-modeled.
   `garage.json` would be near-empty, so the cockpits read the V2 projection directly.)
 - **Acceptance:** claim counts populated (F1a ✓); cockpits present live per-machine state (F1b ✓).
 
-### DI — Data intelligence: degradation trends + baselines
-Turn the observation/telemetry history into **trend** intelligence.
-- Per-channel/per-component baselines; drift detection over time; surface in `intel.json`
-  + a dashboard panel. Confounder-aware (reuse the experiment engine's ambient-gap logic).
-- **Acceptance:** a seeded declining trend is detected and flagged; no false trend on flat
-  data; pure trend math is DB-free tested.
+### DI — Data intelligence: degradation trends + baselines *(done)*
+Turn the observation history into **trend** intelligence.
+- `app/trends.py`: a pure `fit_trend` (OLS → slope/R²/direction/drift classification, metric-
+  agnostic) + `component_trends` grouping a machine's observations into per-(component,
+  metric, condition) series. Confounder-aware — a series spanning a wide ambient-°C range is
+  flagged. `cli trends` prints them; `intel.json` carries a `trends` block; the dashboard
+  shows a Degradation Trends panel + a "drift alerts" KPI. The example `obs-seed` now lays
+  down a short warm-compression series so the engine has something to fit.
+- **Acceptance:** the seeded declining series is detected and drift-flagged (RZ350 cylinders
+  ↘ 7% over 90d, R²=0.99 ✓); flat/noisy data yields no drift ✓; pure trend math is DB-free
+  tested ✓.
 
 ### PF — Parts intelligence + fitment
 Connect the PARTS catalog / mods to reference components and known fitment.

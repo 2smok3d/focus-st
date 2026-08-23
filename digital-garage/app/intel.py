@@ -49,6 +49,10 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     from . import service
     maintenance = service.maintenance_summary(session, vehicle.id) if vehicle else None
 
+    # degradation trends — fitted over the observation history
+    from . import trends as trends_mod
+    trend_rows = trends_mod.component_trends(session, vehicle.id) if vehicle else []
+
     # knowledge quality (scoped to this machine) + research tasks
     kq = knowledge.quality_report(session, variant_slug)
     research = knowledge.list_research_tasks(session, variant_slug=variant_slug)[:8]
@@ -72,6 +76,7 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
         "workshop": {"work_orders": work_orders,
                      "open": sum(1 for w in work_orders if w["status"] not in ("closed", "abandoned"))},
         "maintenance": maintenance,
+        "trends": {"series": trend_rows, "drifting": sum(1 for t in trend_rows if t["drift"])},
         "knowledge": {"total_claims": kq["total"], "by_verification": kq["by_verification"],
                       "conflicts": kq["conflicts"], "gaps": kq["gaps"]},
         "research_tasks": research,

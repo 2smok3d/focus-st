@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T16:17:52.597641+00:00",
+  "generated_at": "2026-08-23T23:00:47.652832+00:00",
   "variant": "tz250",
   "vehicle": {
     "vin": "YAM-TZ250-1986",
@@ -80,6 +80,10 @@
     "attention": 0,
     "tracked": 0,
     "items": []
+  },
+  "trends": {
+    "series": [],
+    "drifting": 0
   },
   "knowledge": {
     "total_claims": 13,
