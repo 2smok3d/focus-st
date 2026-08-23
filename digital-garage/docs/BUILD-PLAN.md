@@ -105,12 +105,16 @@ but no normalized claims, no `garage.json` feed, no `MODS.md`. That gap is unit 
 Each item is one PR unit with explicit acceptance criteria. Order is default; it can be
 re-prioritized on request.
 
-### F1 — Populate the fleet to flagship depth *(next unit)*
+### F1 — Populate the fleet to flagship depth
 Bring zzr600 / rz350 / tz250 / toyota-pickup from scaffold to fully-modeled.
-- Normalize each machine's manual/PARTS into graded **claims** (scoped by variant).
-- Generate each a `garage.json` feed + `MODS.md` from the DB; wire `fleet.json` feeds.
-- **Acceptance:** each machine's `intel.json` shows real claim counts; cockpits hydrate
-  from their own feed; projections regenerate from canon.
+- **F1a — reference knowledge.** *(done)* `seed_fleet_knowledge` normalizes each machine's
+  manual spec table into graded, per-variant **claims** (`cli seed-fleet-knowledge`).
+  Honest grading: web-verified → `CORROBORATED`, `⚠️ verify` → `UNVERIFIED` (feeding that
+  machine's own research queue). Each machine's `intel.json` now shows real claim counts
+  (zzr600 18 · rz350 14 · tz250 13 · toyota 9).
+- **F1b — feeds + MODS.** *(next)* Generate each machine a `garage.json` feed + `MODS.md`
+  from the DB and wire `fleet.json` feeds so the cockpits hydrate from canon.
+- **Acceptance:** claim counts populated (F1a ✓); cockpits hydrate from their own feed (F1b).
 
 ### DI — Data intelligence: degradation trends + baselines
 Turn the observation/telemetry history into **trend** intelligence.

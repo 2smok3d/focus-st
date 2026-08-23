@@ -39,6 +39,20 @@ def _seeded():
         seed_fn(s, if_empty=True)
         seed_reference(s)
     yield
+    # This module writes `test-*` claims through the approval boundary into the shared
+    # persistent DB. Purge them (and any derived rows) so they never leak into the
+    # canonical projections regenerated from this database.
+    from sqlalchemy import delete
+    from app.kbmodels import ResearchTask
+    from app.models import ChangeProposal
+    from app.refmodels import Claim, ClaimEvidence
+    with session_scope() as s:
+        ids = [c.id for c in s.scalars(select(Claim).where(Claim.subject_key.like("test-%")))]
+        for cid in ids:
+            s.execute(delete(ClaimEvidence).where(ClaimEvidence.claim_id == cid))
+        s.execute(delete(Claim).where(Claim.id.in_(ids)))
+        s.execute(delete(ResearchTask).where(ResearchTask.subject.like("%test-%")))
+        s.execute(delete(ChangeProposal).where(ChangeProposal.entity == "claim"))
 
 
 def _get_claim(subject_key, prop):

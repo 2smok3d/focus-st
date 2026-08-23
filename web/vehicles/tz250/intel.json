@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T12:54:04.105595+00:00",
+  "generated_at": "2026-08-23T16:17:52.597641+00:00",
   "variant": "tz250",
   "vehicle": {
     "vin": "YAM-TZ250-1986",
@@ -82,12 +82,40 @@
     "items": []
   },
   "knowledge": {
-    "total_claims": 0,
-    "by_verification": {},
+    "total_claims": 13,
+    "by_verification": {
+      "CORROBORATED": {
+        "n": 11,
+        "pct": 84.6
+      },
+      "UNVERIFIED": {
+        "n": 2,
+        "pct": 15.4
+      }
+    },
     "conflicts": 0,
-    "gaps": 0
+    "gaps": 2
   },
-  "research_tasks": [],
+  "research_tasks": [
+    {
+      "id": 7,
+      "kind": "unverified",
+      "priority": "medium",
+      "subject": "variant:tz250:carburetion",
+      "detail": "Unverified: carburetion = 2\u00d7 Mikuni flat-slide (powerjet) \u2014 size by year. Corroborate against a source.",
+      "status": "open",
+      "variant": "tz250"
+    },
+    {
+      "id": 8,
+      "kind": "unverified",
+      "priority": "medium",
+      "subject": "variant:tz250:ignition",
+      "detail": "Unverified: ignition = CDI \u2014 total-loss or minimal charge (by year). Corroborate against a source.",
+      "status": "open",
+      "variant": "tz250"
+    }
+  ],
   "telemetry": {
     "channels": 11
   }

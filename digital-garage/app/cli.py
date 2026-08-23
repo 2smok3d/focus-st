@@ -135,6 +135,13 @@ def cmd_migrate_knowledge(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_seed_fleet_knowledge(_: argparse.Namespace) -> int:
+    from .seed_fleet_knowledge import seed_fleet_knowledge
+    with session_scope() as s:
+        print(seed_fleet_knowledge(s))
+    return 0
+
+
 def cmd_seed_graph(args: argparse.Namespace) -> int:
     from .seed_graph import seed_graph
     with session_scope() as s:
@@ -1111,6 +1118,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("migrate-knowledge", help="migrate V1 maintenance + issues → V2 claims")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_migrate_knowledge)
+
+    sub.add_parser("seed-fleet-knowledge",
+                   help="normalize the fleet's manual spec tables → graded reference claims"
+                   ).set_defaults(fn=cmd_seed_fleet_knowledge)
 
     sp = sub.add_parser("seed-graph", help="seed typed graph overlays (airflow/coolant/lubrication)")
     sp.add_argument("--variant", default="focus-st")

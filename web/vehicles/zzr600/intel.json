@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T12:54:04.056859+00:00",
+  "generated_at": "2026-08-23T16:17:52.544717+00:00",
   "variant": "zzr600",
   "vehicle": {
     "vin": "KAW-ZX600D-1991",
@@ -100,12 +100,40 @@
     "items": []
   },
   "knowledge": {
-    "total_claims": 0,
-    "by_verification": {},
+    "total_claims": 18,
+    "by_verification": {
+      "CORROBORATED": {
+        "n": 16,
+        "pct": 88.9
+      },
+      "UNVERIFIED": {
+        "n": 2,
+        "pct": 11.1
+      }
+    },
     "conflicts": 0,
-    "gaps": 0
+    "gaps": 2
   },
-  "research_tasks": [],
+  "research_tasks": [
+    {
+      "id": 4,
+      "kind": "unverified",
+      "priority": "medium",
+      "subject": "variant:zzr600:final_drive",
+      "detail": "Unverified: final_drive = Chain (525 \u2014 confirm pitch/links). Corroborate against a source.",
+      "status": "open",
+      "variant": "zzr600"
+    },
+    {
+      "id": 5,
+      "kind": "unverified",
+      "priority": "medium",
+      "subject": "variant:zzr600:tires_d_era",
+      "detail": "Unverified: tires_d_era = ~120/60ZR17 F \u00b7 ~160/60ZR17 R \u2014 D and E differ. Corroborate against a source.",
+      "status": "open",
+      "variant": "zzr600"
+    }
+  ],
   "telemetry": {
     "channels": 11
   }

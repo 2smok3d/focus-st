@@ -247,9 +247,13 @@ before the previous one is complete and tested.**
   resolves registered aliases. Nothing here mutates canonical knowledge — it measures it
   and proposes work. CLI: `kb-quality`, `kb-research [--generate]`, `resolve <alias>`.
 
-  **Remaining later:** maintenance status engine (`UNKNOWN`/`CURRENT`/`DUE_SOON`/`DUE`/
-  `OVERDUE`), parts intelligence + fitment, machine baselines + degradation trends,
-  the modular UI V2, and evidence-grounded MCP V2.
+  **Fleet knowledge.** *(done)* `seed_fleet_knowledge` (`cli seed-fleet-knowledge`)
+  normalizes the four non-flagship machines' manual spec tables into graded, per-variant
+  claims — web-verified → `CORROBORATED`, `⚠️ verify` → `UNVERIFIED` — so every machine's
+  quality dashboard and research queue carry real, honestly-graded knowledge, not zeros.
+
+  **Remaining later:** per-machine `garage.json` feeds + `MODS.md`, parts intelligence +
+  fitment, machine baselines + degradation trends, and the modular UI V2.
 
 - **Maintenance status in the intelligence layer.** *(done)* `service.maintenance_summary`
   projects the maintenance-due engine (`domain.maintenance_due`) into status buckets for

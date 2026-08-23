@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T12:54:04.132060+00:00",
+  "generated_at": "2026-08-23T16:17:52.625404+00:00",
   "variant": "toyota-pickup",
   "vehicle": {
     "vin": "TOY-22RE-1986",
@@ -122,12 +122,31 @@
     "items": []
   },
   "knowledge": {
-    "total_claims": 0,
-    "by_verification": {},
+    "total_claims": 9,
+    "by_verification": {
+      "CORROBORATED": {
+        "n": 8,
+        "pct": 88.9
+      },
+      "UNVERIFIED": {
+        "n": 1,
+        "pct": 11.1
+      }
+    },
     "conflicts": 0,
-    "gaps": 0
+    "gaps": 1
   },
-  "research_tasks": [],
+  "research_tasks": [
+    {
+      "id": 9,
+      "kind": "unverified",
+      "priority": "medium",
+      "subject": "variant:toyota-pickup:front_susp",
+      "detail": "Unverified: front_susp = IFS (1986 2WD) \u2014 verify vs 4WD solid axle. Corroborate against a source.",
+      "status": "open",
+      "variant": "toyota-pickup"
+    }
+  ],
   "telemetry": {
     "channels": 11
   }
