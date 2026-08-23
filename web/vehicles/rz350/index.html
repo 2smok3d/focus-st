@@ -139,6 +139,61 @@
     for jetting, <b>ignition/CDI</b> checks, and <b>powervalve</b> operation. When in doubt, jet
     rich and read the plugs — a lean two-stroke is a seized two-stroke.</div>
 
+  <div class="sec"><span class="n">◆</span><h2>Live Intelligence</h2><span class="ln"></span>
+    <span id="live-badge" style="display:none;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--green,#29c07a);border:1px solid var(--green,#29c07a);border-radius:20px;padding:2px 8px">● LIVE</span>
+    <a class="act" id="live-more" href="../../tools/intel.html">▤ Full dashboard →</a></div>
+  <div id="live" hidden>
+    <div id="live-stamp" style="margin-bottom:14px;border:1px solid var(--line);border-radius:12px;padding:12px 15px;font-size:12.5px;color:var(--ink2);line-height:1.55"></div>
+    <div class="grid g4" id="live-kpis" style="margin-bottom:16px"></div>
+    <div class="grid g3" id="live-panels"></div>
+  </div>
+  <script>
+  (function(){
+    var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+    var slug=(location.pathname.match(/vehicles\/([^\/]+)/)||[])[1]||"";
+    var more=document.getElementById('live-more'); if(slug){more.href="../../tools/intel.html?v="+slug;}
+    var GRADE={VEHICLE_VERIFIED:'var(--green,#29c07a)',OEM_VERIFIED:'var(--blue,#4f9dff)',CORROBORATED:'var(--amber,#e8a33d)',UNVERIFIED:'#6a6a72'};
+    fetch('intel.json',{cache:'no-store'}).then(function(r){return r.ok?r.json():Promise.reject();}).then(function(d){
+      var k=d.knowledge||{}, tw=d.twin||{}, dg=d.diagnostics||{}, mt=d.maintenance||{}, rq=d.research_tasks||[];
+      var stamp=document.getElementById('live-stamp');
+      stamp.innerHTML='Live from <b>intel.json</b>, projected from the digital-garage backend · generated '
+        +esc((d.generated_at||'').slice(0,16).replace('T',' '))+' UTC. Reference claims are graded by evidence; ⚠️ items are unverified.';
+      var kpis=[['claims',k.total_claims==null?0:k.total_claims],['twin deviations',tw.count||0],
+        ['open cases',(dg.open_cases||[]).length],['research tasks',rq.length]];
+      document.getElementById('live-kpis').innerHTML=kpis.map(function(p){
+        return '<div class="tile"><div class="k">'+esc(p[0])+'</div><div class="v">'+esc(p[1])+'</div></div>';}).join('');
+      var panels=[];
+      // Knowledge quality
+      var bv=k.by_verification||{}, krows='';
+      ['VEHICLE_VERIFIED','OEM_VERIFIED','CORROBORATED','UNVERIFIED'].forEach(function(g){
+        if(!bv[g])return;
+        krows+='<div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;margin:7px 0 3px"><span>'+esc(g)+'</span><span>'+esc(bv[g].n)+' · '+esc(bv[g].pct)+'%</span></div>'
+          +'<div style="height:7px;border-radius:5px;background:#2a2a30;overflow:hidden"><i style="display:block;height:100%;width:'+esc(bv[g].pct)+'%;background:'+GRADE[g]+'"></i></div>';
+      });
+      if(!krows){krows='<div class="ds">No reference claims yet.</div>';}
+      panels.push('<div class="card" style="padding:14px 16px"><div class="nm" style="font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:8px">Knowledge Quality</div>'+krows+'</div>');
+      // Twin deviations
+      var devs=tw.deviations||[], drows='';
+      devs.forEach(function(x){
+        var col=x.condition==='failed'?'var(--red,#e8000d)':(x.condition==='modified'?'var(--amber,#e8a33d)':'var(--ink3)');
+        drows+='<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-top:1px solid var(--line);font-size:12.5px"><span>'+esc(x.slug)+(x.installed_part?' → '+esc(x.installed_part):'')+'</span><span class="mono" style="color:'+col+'">'+esc(x.condition)+'</span></div>';
+      });
+      if(!drows){drows='<div class="ds">No recorded deviations from stock.</div>';}
+      panels.push('<div class="card" style="padding:14px 16px"><div class="nm" style="font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:6px">Digital Twin</div>'+drows+'</div>');
+      // Research queue
+      var rrows='';
+      rq.slice(0,6).forEach(function(t){
+        rrows+='<div style="padding:6px 0;border-top:1px solid var(--line);font-size:12.5px"><span class="mono" style="font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);border:1px solid var(--line2);border-radius:5px;padding:1px 5px;margin-right:6px">'+esc(t.priority)+'</span>'+esc(t.subject)+'</div>';
+      });
+      if(!rrows){rrows='<div class="ds">No open research tasks.</div>';}
+      panels.push('<div class="card" style="padding:14px 16px"><div class="nm" style="font-family:var(--disp);font-weight:600;font-size:14px;margin-bottom:6px">Research Queue</div>'+rrows+'</div>');
+      document.getElementById('live-panels').innerHTML=panels.join('');
+      document.getElementById('live').hidden=false;
+      document.getElementById('live-badge').style.display='inline-block';
+    }).catch(function(){/* no feed yet — keep the static cockpit as-is */});
+  })();
+  </script>
+
   <footer>
     <a href="../../index.html">◆ The Garage</a>
     <a href="../../tools/parts.html?v=rz350">✦ Parts tracker</a>
