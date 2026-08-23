@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T12:54:04.082674+00:00",
+  "generated_at": "2026-08-23T16:17:52.571987+00:00",
   "variant": "rz350",
   "vehicle": {
     "vin": "YAM-RZ350-1985",
@@ -105,12 +105,31 @@
     "items": []
   },
   "knowledge": {
-    "total_claims": 0,
-    "by_verification": {},
+    "total_claims": 14,
+    "by_verification": {
+      "CORROBORATED": {
+        "n": 13,
+        "pct": 92.9
+      },
+      "UNVERIFIED": {
+        "n": 1,
+        "pct": 7.1
+      }
+    },
     "conflicts": 0,
-    "gaps": 0
+    "gaps": 1
   },
-  "research_tasks": [],
+  "research_tasks": [
+    {
+      "id": 6,
+      "kind": "unverified",
+      "priority": "medium",
+      "subject": "variant:rz350:rear_brake",
+      "detail": "Unverified: rear_brake = Disc (some earlier drum \u2014 verify this bike). Corroborate against a source.",
+      "status": "open",
+      "variant": "rz350"
+    }
+  ],
   "telemetry": {
     "channels": 11
   }
