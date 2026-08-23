@@ -142,6 +142,21 @@ def cmd_seed_fleet_knowledge(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_trends(args: argparse.Namespace) -> int:
+    from . import service, trends
+    icon = {"rising": "↗", "falling": "↘", "flat": "→"}
+    with session_scope() as s:
+        veh = service.get_vehicle(s, args.vin) if args.vin else service.get_vehicle(s)
+        rows = trends.component_trends(s, veh.id)
+        if not rows:
+            print("No component has enough observation history to fit a trend yet.")
+            return 0
+        for t in rows:
+            flag = " ‼ DRIFT" if t["drift"] else ""
+            print(f"  {icon.get(t['direction'], '·')} {t['summary']}{flag}")
+    return 0
+
+
 def cmd_seed_graph(args: argparse.Namespace) -> int:
     from .seed_graph import seed_graph
     with session_scope() as s:
@@ -657,26 +672,47 @@ def cmd_dx_test(args: argparse.Namespace) -> int:
 
 
 def cmd_obs_seed(args: argparse.Namespace) -> int:
-    from . import observations as ob, service
-    from .refmodels import VehicleVariant
-    from .models import Vehicle
+    import datetime as _dt
+
+    from sqlalchemy import func as _func
     from sqlalchemy import select as _select
+
+    from . import observations as ob, service
+    from .models import Vehicle
+    from .obsmodels import Observation
+    from .refmodels import VehicleVariant
     with session_scope() as s:
-        # A cross-machine example (RZ350 compression) proves Observation V2 is not
+        # A cross-machine EXAMPLE (RZ350 compression) proves Observation V2 is not
         # Focus-specific; falls back to the tracked vehicle if the RZ isn't commissioned.
+        # This is demo data — a short warm-compression series that trends over time — so
+        # the degradation-trend engine has something to fit. Idempotent.
         variant = s.scalar(_select(VehicleVariant).where(VehicleVariant.slug == args.variant))
         veh = s.scalar(_select(Vehicle).where(Vehicle.variant_id == variant.id)) if variant else None
         if veh is None:
             veh = service.get_vehicle(s)
+        existing = s.scalar(_select(_func.count()).select_from(Observation).where(
+            Observation.vehicle_id == veh.id, Observation.subject_slug == "cylinders",
+            Observation.operating_condition == "warm")) or 0
+        if existing >= 4:
+            print(f"Observation series already present on {veh.make} {veh.model} "
+                  f"({existing} warm-compression points) — nothing to seed.")
+            return 0
         ob.upsert_instrument(s, "DG-TOOL-41", "Compression gauge", "gauge")
         env = ob.record_environment(s, veh, ambient=72, ambient_unit="°F", weather="shop")
         snap = ob.snapshot_config(s, veh, code="baseline")
-        o = ob.record_observation(s, veh, subject_slug="cylinders", method="compression test",
-                                  instrument_code="DG-TOOL-41", value=145, unit="psi",
-                                  operating_condition="warm", config_snapshot_id=snap.id,
-                                  environment_id=env.id, note="left cylinder")
-        print(f"Recorded observation #{o.id} on {veh.make} {veh.model}: "
-              f"compression 145 psi (warm) · config snapshot {snap.code} · env #{env.id}.")
+        now = _dt.datetime.now(_dt.timezone.utc)
+        # A mild, steady decline — the kind of thing a trend should catch early.
+        series = [(90, 152), (60, 149), (30, 146), (0, 142)]  # (days ago, warm psi)
+        last = None
+        for days_ago, psi in series:
+            last = ob.record_observation(
+                s, veh, subject_slug="cylinders", method="compression test",
+                instrument_code="DG-TOOL-41", value=psi, unit="psi", operating_condition="warm",
+                config_snapshot_id=snap.id, environment_id=env.id,
+                observed_at=now - _dt.timedelta(days=days_ago),
+                note="left cylinder · sample series")
+        print(f"Recorded {len(series)}-point warm-compression series on "
+              f"{veh.make} {veh.model} (152→142 psi over 90d) · latest obs #{last.id}.")
     return 0
 
 
@@ -1122,6 +1158,10 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("seed-fleet-knowledge",
                    help="normalize the fleet's manual spec tables → graded reference claims"
                    ).set_defaults(fn=cmd_seed_fleet_knowledge)
+
+    sp = sub.add_parser("trends", help="fit degradation trends over the observation history")
+    sp.add_argument("--vin", default=None)
+    sp.set_defaults(fn=cmd_trends)
 
     sp = sub.add_parser("seed-graph", help="seed typed graph overlays (airflow/coolant/lubrication)")
     sp.add_argument("--variant", default="focus-st")
