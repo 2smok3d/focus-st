@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T10:18:29.112943+00:00",
+  "generated_at": "2026-08-23T12:54:04.030720+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -82,6 +82,101 @@
       }
     ],
     "open": 1
+  },
+  "maintenance": {
+    "current_miles": 86390,
+    "counts": {
+      "overdue": 0,
+      "due_soon": 0,
+      "needs_log": 9,
+      "unknown": 0,
+      "ok": 0
+    },
+    "attention": 0,
+    "tracked": 9,
+    "items": [
+      {
+        "item": "Engine oil & filter",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "item": "Tire rotation",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "item": "Cabin air filter",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "item": "Engine air filter",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "item": "MMT6 transmission fluid",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "item": "Spark plugs",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "item": "Brake fluid",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "item": "Coolant",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "item": "Clutch fluid (shares brake reservoir)",
+        "status": "needs_log",
+        "detail": "No service on record for an item with a defined interval.",
+        "miles_remaining": null,
+        "last_miles": null,
+        "last_date": null,
+        "verification": "CORROBORATED"
+      }
+    ]
   },
   "knowledge": {
     "total_claims": 49,

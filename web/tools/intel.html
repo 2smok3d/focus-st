@@ -85,11 +85,12 @@ function render(d) {
   document.getElementById('title').textContent = (d.vehicle && d.vehicle.name) || d.variant || 'Vehicle Intelligence';
   document.getElementById('stamp').textContent = 'projected ' + (d.generated_at || '').replace('T',' ').slice(0,16) + ' UTC';
 
-  const k = d.knowledge || {}, tw = d.twin || {}, dg = d.diagnostics || {}, ws = d.workshop || {};
+  const k = d.knowledge || {}, tw = d.twin || {}, dg = d.diagnostics || {}, ws = d.workshop || {}, mt = d.maintenance || {};
   const kpis = [
     ['claims', k.total_claims ?? '—'],
     ['conflicts', k.conflicts ?? 0],
     ['twin deviations', tw.count ?? 0],
+    ['maintenance due', mt.attention ?? 0],
     ['open cases', (dg.open_cases||[]).length],
     ['open work orders', ws.open ?? 0],
     ['telemetry channels', (d.telemetry||{}).channels ?? 0],
@@ -146,6 +147,26 @@ function render(d) {
     wp.appendChild(el('div','tag', `${esc(w.status)} · ${esc(w.repair_state)}`));
   });
   P.appendChild(wp);
+
+  // Maintenance
+  const mp = el('div','panel');
+  const miles = mt.current_miles != null ? ` — @ ${Number(mt.current_miles).toLocaleString()} mi` : '';
+  mp.appendChild(el('h2', null, 'Maintenance' + esc(miles)));
+  const mstate = {overdue:'crit', due_soon:'warn', needs_log:'', unknown:'', ok:'ok'};
+  const mlabel = {overdue:'OVERDUE', due_soon:'DUE SOON', needs_log:'NO LOG', unknown:'UNKNOWN', ok:'OK'};
+  const mc = mt.counts || {};
+  const chipRow = el('div','row');
+  chipRow.appendChild(el('span','tag', 'status'));
+  chipRow.appendChild(el('span', null, ['overdue','due_soon','needs_log','ok'].filter(s=>mc[s])
+    .map(s=>`<span class="chip ${mstate[s]}">${mc[s]} ${esc(mlabel[s])}</span>`).join(' ') || '<span class="tag">no intervals tracked</span>'));
+  mp.appendChild(chipRow);
+  (mt.items||[]).slice(0,8).forEach(it => {
+    const cls = mstate[it.status] || '';
+    mp.appendChild(el('div','row', `<span>${esc(it.item)}</span><span class="chip ${cls}">${esc(mlabel[it.status]||it.status)}</span>`));
+    if (it.detail) mp.appendChild(el('div','tag', esc(it.detail)));
+  });
+  if (!(mt.items||[]).length) mp.appendChild(el('p','tag','No maintenance intervals on record for this machine.'));
+  P.appendChild(mp);
 
   // Systems + overlays
   const sp = el('div','panel'); sp.appendChild(el('h2', null, 'Systems & Graph Overlays'));

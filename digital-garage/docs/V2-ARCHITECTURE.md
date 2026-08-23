@@ -251,11 +251,21 @@ before the previous one is complete and tested.**
   `OVERDUE`), parts intelligence + fitment, machine baselines + degradation trends,
   the modular UI V2, and evidence-grounded MCP V2.
 
+- **Maintenance status in the intelligence layer.** *(done)* `service.maintenance_summary`
+  projects the maintenance-due engine (`domain.maintenance_due`) into status buckets for
+  one machine, measured against its latest odometer reading. Crucially it keeps
+  **`needs_log` distinct from `overdue`**: an interval with no service on record isn't
+  *known* to be past due — calling it OVERDUE would be a claim we can't back — so it reads
+  `needs_log` and does not count toward the "act now" total. `build_intel` carries a
+  `maintenance` block (counts + per-item rows + `attention`), surfaced as a Maintenance
+  panel and a "maintenance due" KPI on the dashboard.
+
 - **Milestone G bridge — Vehicle Intelligence projection.** *(done)* `app/intel.py`
   aggregates the whole V2 backend — reference model, digital-twin deviations, open
   diagnostic cases (with leading hypothesis + recommended next test), work-order
-  readiness, telemetry channels, knowledge quality, and the research queue — into one
-  static `intel.json` per machine, the way `garage.json` projects the parts catalog.
+  readiness, maintenance status, telemetry channels, knowledge quality, and the research
+  queue — into one static `intel.json` per machine, the way `garage.json` projects the
+  parts catalog.
   Postgres stays canonical; this is read-only. `cli intel [--all]` writes one machine or
   every commissioned one; the HUD dashboard `web/tools/intel.html?v=<slug>` fetches
   `vehicles/<slug>/intel.json` and offers a fleet chip switcher. **Fleet-wide scoping is
