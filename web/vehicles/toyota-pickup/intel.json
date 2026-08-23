@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:00:47.682540+00:00",
+  "generated_at": "2026-08-23T23:08:30.500719+00:00",
   "variant": "toyota-pickup",
   "vehicle": {
     "vin": "TOY-22RE-1986",
@@ -124,6 +124,21 @@
   "trends": {
     "series": [],
     "drifting": 0
+  },
+  "parts": {
+    "slots": 12,
+    "matched": 6,
+    "confident": 5,
+    "unmatched": 6,
+    "coverage_pct": 50.0,
+    "unmatched_slots": [
+      "Engine \u2014 source + install",
+      "Steering Column + Wheel",
+      "HVAC + Controls + Pedals",
+      "Brake System Refresh",
+      "Suspension Refresh",
+      "Tires + Wheels"
+    ]
   },
   "knowledge": {
     "total_claims": 9,

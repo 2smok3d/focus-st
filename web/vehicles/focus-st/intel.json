@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:00:47.572567+00:00",
+  "generated_at": "2026-08-23T23:08:30.354790+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -181,6 +181,27 @@
   "trends": {
     "series": [],
     "drifting": 0
+  },
+  "parts": {
+    "slots": 54,
+    "matched": 13,
+    "confident": 9,
+    "unmatched": 41,
+    "coverage_pct": 24.1,
+    "unmatched_slots": [
+      "Oil Filter",
+      "Engine Oil",
+      "ECU / Tune",
+      "Downpipe",
+      "Cat-Back",
+      "Oil Cooler",
+      "Clutch",
+      "Gearbox Fluid",
+      "Differential",
+      "Shifter",
+      "Motor Mounts",
+      "Springs / Coilovers"
+    ]
   },
   "knowledge": {
     "total_claims": 49,

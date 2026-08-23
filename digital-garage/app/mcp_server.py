@@ -228,6 +228,22 @@ def knowledge_quality(slug: str = "focus-st") -> dict:
 
 
 @mcp.tool
+def part_fitment(slug: str = "focus-st") -> dict:
+    """Resolve a machine's PARTS.md catalog slots against its reference component graph:
+    which catalog entries map to a known component (and therefore fit the variant's
+    years/market), which are only weak matches to confirm, and which are unmapped."""
+    from . import fitment
+    with session_scope() as s:
+        r = fitment.catalog_fitment(s, slug)
+    return {"variant": r["variant"], "slots": r["slots"], "matched": r["matched"],
+            "confident": r["confident"], "coverage_pct": r["coverage_pct"],
+            "unmatched_slots": r["unmatched_slots"],
+            "mapped": [{"slot": x["slot"], "component": x["component"], "score": x["score"],
+                        "verdict": x["verdict"], "applies_to": x["applies_to"]}
+                       for x in r["rows"] if x["component"]]}
+
+
+@mcp.tool
 def propose_claim(subject_type: str, subject_key: str, prop: str,
                   evidence_authority: int, value: str | None = None, unit: str | None = None,
                   evidence_stance: str = "supports", on_vehicle: bool = False,

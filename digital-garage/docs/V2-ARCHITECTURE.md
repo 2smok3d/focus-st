@@ -264,6 +264,14 @@ before the previous one is complete and tested.**
   `maintenance` block (counts + per-item rows + `attention`), surfaced as a Maintenance
   panel and a "maintenance due" KPI on the dashboard.
 
+- **Parts intelligence + fitment.** *(done)* `app/fitment.py` bridges the hand-authored
+  `PARTS.md` catalog to the reference component graph: a pure slot parser + a transparent
+  token matcher (generic words demoted so matches rest on distinctive tokens) resolve each
+  catalog slot to a component, and `catalog_fitment` tiers the verdict by confidence
+  (fits / likely / unmapped), scoping a mapped slot's fitment to the variant's years/market.
+  Surfaced via `cli fitment`, the `part_fitment` MCP tool, an `intel.json` `parts` block,
+  and a dashboard panel. Read-only — it measures how well the catalog lines up with canon.
+
 - **Degradation trends (data intelligence).** *(done)* `app/trends.py` fits the Observation
   V2 history: a pure `fit_trend` (ordinary least squares → slope, R², direction, and a
   drift classification, deliberately metric-agnostic — it reports direction and drift

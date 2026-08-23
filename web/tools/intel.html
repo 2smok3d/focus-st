@@ -92,6 +92,7 @@ function render(d) {
     ['twin deviations', tw.count ?? 0],
     ['maintenance due', mt.attention ?? 0],
     ['drift alerts', (d.trends||{}).drifting ?? 0],
+    ['parts mapped', (d.parts||{}).matched ?? 0],
     ['open cases', (dg.open_cases||[]).length],
     ['open work orders', ws.open ?? 0],
     ['telemetry channels', (d.telemetry||{}).channels ?? 0],
@@ -181,6 +182,21 @@ function render(d) {
     tp.appendChild(el('div','tag', esc(t.summary)));
   });
   P.appendChild(tp);
+
+  // Parts fitment
+  const pp = el('div','panel'); pp.appendChild(el('h2', null, 'Parts Fitment'));
+  const pf = d.parts;
+  if (!pf || !pf.slots) pp.appendChild(el('p','tag','No parts catalog resolved for this machine.'));
+  else {
+    pp.appendChild(el('div','row', `<span class="tag">catalog slots → components</span>`
+      + `<span class="mono">${esc(pf.matched)}/${esc(pf.slots)} · ${esc(pf.coverage_pct)}%</span>`));
+    const bar = el('div','bar'); const fill = el('i'); fill.style.width = pf.coverage_pct+'%';
+    fill.style.background = 'var(--green,#29c07a)'; bar.appendChild(fill); pp.appendChild(bar);
+    pp.appendChild(el('div','row', `<span class="tag">confident matches</span><span class="mono ok">${esc(pf.confident)}</span>`));
+    pp.appendChild(el('div','row', `<span class="tag">unmapped slots</span><span class="mono ${pf.unmatched? 'warn':'ok'}">${esc(pf.unmatched)}</span>`));
+    (pf.unmatched_slots||[]).slice(0,8).forEach(s => pp.appendChild(el('div','tag', '· '+esc(s))));
+  }
+  P.appendChild(pp);
 
   // Systems + overlays
   const sp = el('div','panel'); sp.appendChild(el('h2', null, 'Systems & Graph Overlays'));

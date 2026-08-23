@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:00:47.652832+00:00",
+  "generated_at": "2026-08-23T23:08:30.464373+00:00",
   "variant": "tz250",
   "vehicle": {
     "vin": "YAM-TZ250-1986",
@@ -84,6 +84,21 @@
   "trends": {
     "series": [],
     "drifting": 0
+  },
+  "parts": {
+    "slots": 11,
+    "matched": 5,
+    "confident": 5,
+    "unmatched": 6,
+    "coverage_pct": 45.5,
+    "unmatched_slots": [
+      "Carburetors",
+      "Premix Oil",
+      "Expansion Chambers",
+      "Sprockets / Gearing",
+      "Slick Tires",
+      "Brake Pads"
+    ]
   },
   "knowledge": {
     "total_claims": 13,

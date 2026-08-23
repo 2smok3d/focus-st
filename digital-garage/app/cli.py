@@ -157,6 +157,19 @@ def cmd_trends(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fitment(args: argparse.Namespace) -> int:
+    from . import fitment
+    icon = {"fits": "✅", "likely": "≈", "unmapped": "⚠️"}
+    with session_scope() as s:
+        r = fitment.catalog_fitment(s, args.variant)
+    print(f"Parts fitment · {args.variant}: {r['matched']}/{r['slots']} slots mapped "
+          f"({r['coverage_pct']}%), {r['confident']} confident.")
+    for row in r["rows"]:
+        tgt = f"→ {row['component']} ({row['score']:.2f})" if row["component"] else "→ (no reference component)"
+        print(f"  {icon.get(row['verdict'], '·')} {row['slot']:<34} {tgt}")
+    return 0
+
+
 def cmd_seed_graph(args: argparse.Namespace) -> int:
     from .seed_graph import seed_graph
     with session_scope() as s:
@@ -1162,6 +1175,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("trends", help="fit degradation trends over the observation history")
     sp.add_argument("--vin", default=None)
     sp.set_defaults(fn=cmd_trends)
+
+    sp = sub.add_parser("fitment", help="resolve PARTS.md catalog slots → reference components")
+    sp.add_argument("--variant", default="focus-st")
+    sp.set_defaults(fn=cmd_fitment)
 
     sp = sub.add_parser("seed-graph", help="seed typed graph overlays (airflow/coolant/lubrication)")
     sp.add_argument("--variant", default="focus-st")

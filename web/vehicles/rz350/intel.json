@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:00:47.628661+00:00",
+  "generated_at": "2026-08-23T23:08:30.432572+00:00",
   "variant": "rz350",
   "vehicle": {
     "vin": "YAM-RZ350-1985",
@@ -128,6 +128,22 @@
       }
     ],
     "drifting": 1
+  },
+  "parts": {
+    "slots": 11,
+    "matched": 4,
+    "confident": 4,
+    "unmatched": 7,
+    "coverage_pct": 36.4,
+    "unmatched_slots": [
+      "Carburetors",
+      "Petcock",
+      "Spark Plugs",
+      "Exhaust",
+      "Chain &amp; Sprockets",
+      "Front Brake",
+      "Tires"
+    ]
   },
   "knowledge": {
     "total_claims": 14,
