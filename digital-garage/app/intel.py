@@ -45,6 +45,10 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     # workshop — work orders + readiness
     work_orders = workshop.list_work_orders(session, vehicle.id) if vehicle else []
 
+    # maintenance — due-engine projected into status buckets (against latest odometer)
+    from . import service
+    maintenance = service.maintenance_summary(session, vehicle.id) if vehicle else None
+
     # knowledge quality (scoped to this machine) + research tasks
     kq = knowledge.quality_report(session, variant_slug)
     research = knowledge.list_research_tasks(session, variant_slug=variant_slug)[:8]
@@ -67,6 +71,7 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
                         "total_cases": len(cases)},
         "workshop": {"work_orders": work_orders,
                      "open": sum(1 for w in work_orders if w["status"] not in ("closed", "abandoned"))},
+        "maintenance": maintenance,
         "knowledge": {"total_claims": kq["total"], "by_verification": kq["by_verification"],
                       "conflicts": kq["conflicts"], "gaps": kq["gaps"]},
         "research_tasks": research,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T10:18:29.136725+00:00",
+  "generated_at": "2026-08-23T12:54:04.056859+00:00",
   "variant": "zzr600",
   "vehicle": {
     "vin": "KAW-ZX600D-1991",
@@ -85,6 +85,19 @@
   "workshop": {
     "work_orders": [],
     "open": 0
+  },
+  "maintenance": {
+    "current_miles": null,
+    "counts": {
+      "overdue": 0,
+      "due_soon": 0,
+      "needs_log": 0,
+      "unknown": 0,
+      "ok": 0
+    },
+    "attention": 0,
+    "tracked": 0,
+    "items": []
   },
   "knowledge": {
     "total_claims": 0,

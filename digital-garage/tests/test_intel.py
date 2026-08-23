@@ -80,6 +80,24 @@ def test_write_intel_emits_valid_json(tmp_path):
     assert doc["variant"] == "focus-st" and "generated_at" in doc
 
 
+def test_intel_carries_maintenance_status():
+    """The projection surfaces the maintenance-due engine bucketed by status, and an
+    interval with no service on record reads `needs_log` — never a false `overdue`."""
+    from app.intel import build_intel
+    with session_scope() as s:
+        d = build_intel(s, "focus-st")
+    m = d["maintenance"]
+    assert m and m["tracked"] >= 1
+    assert set(m["counts"]) == {"overdue", "due_soon", "needs_log", "unknown", "ok"}
+    # seeded FST has intervals but no service events → all needs_log, nothing to act on
+    assert m["counts"]["needs_log"] >= 1
+    assert m["attention"] == m["counts"]["overdue"] + m["counts"]["due_soon"]
+    # an item lacking history must not be reported as overdue
+    for it in m["items"]:
+        if it["last_miles"] is None and it["last_date"] is None:
+            assert it["status"] != "overdue"
+
+
 def test_build_intel_is_fleet_wide_and_variant_scoped():
     """A non-focus machine projects its own state, and knowledge is scoped per-variant:
     the ZZR600's claim count must not bleed the Focus ST's claims into its intel."""

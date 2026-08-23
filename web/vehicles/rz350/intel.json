@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T10:18:29.160633+00:00",
+  "generated_at": "2026-08-23T12:54:04.082674+00:00",
   "variant": "rz350",
   "vehicle": {
     "vin": "YAM-RZ350-1985",
@@ -90,6 +90,19 @@
   "workshop": {
     "work_orders": [],
     "open": 0
+  },
+  "maintenance": {
+    "current_miles": null,
+    "counts": {
+      "overdue": 0,
+      "due_soon": 0,
+      "needs_log": 0,
+      "unknown": 0,
+      "ok": 0
+    },
+    "attention": 0,
+    "tracked": 0,
+    "items": []
   },
   "knowledge": {
     "total_claims": 0,

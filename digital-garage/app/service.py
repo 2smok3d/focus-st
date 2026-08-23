@@ -21,6 +21,7 @@ from .models import (
     MaintenanceInterval,
     Measurement,
     Mod,
+    OdometerReading,
     Part,
     Recall,
     ServiceEvent,
@@ -84,6 +85,51 @@ def due_list(session: Session, vehicle_id: int, current_miles: int | None,
     order = {"overdue": 0, "due-soon": 1, "unknown": 2, "ok": 3}
     out.sort(key=lambda r: (order.get(r["status"], 9), r["miles_remaining"] if r["miles_remaining"] is not None else 1 << 30))
     return out
+
+
+def latest_odometer(session: Session, vehicle_id: int) -> int | None:
+    """Most-recent recorded mileage, or None if the vehicle has no odometer history."""
+    row = session.scalar(
+        select(OdometerReading)
+        .where(OdometerReading.vehicle_id == vehicle_id)
+        .order_by(OdometerReading.recorded_at.desc())
+    )
+    return row.miles if row else None
+
+
+# The five maintenance states the intelligence layer speaks. `needs_log` is kept
+# distinct from `overdue`: an item with a defined interval but no service on record
+# isn't *known* to be past due — we simply have no history for it, and saying
+# OVERDUE would be a claim we can't back.
+MAINT_STATES = ("overdue", "due_soon", "needs_log", "unknown", "ok")
+
+
+def maintenance_summary(session: Session, vehicle_id: int,
+                        today: dt.date | None = None) -> dict:
+    """Project the maintenance-due engine into status buckets for one machine,
+    measured against its latest odometer reading. Read-only."""
+    current_miles = latest_odometer(session, vehicle_id)
+    counts = {s: 0 for s in MAINT_STATES}
+    items: list[dict] = []
+    for r in due_list(session, vehicle_id, current_miles=current_miles, today=today):
+        logged = r["last_miles"] is not None or r["last_date"] is not None
+        state = r["status"].replace("-", "_")            # "due-soon" → "due_soon"
+        if state == "overdue" and not logged:
+            state = "needs_log"
+        counts[state] = counts.get(state, 0) + 1
+        items.append({"item": r["item"], "status": state, "detail": r["detail"],
+                      "miles_remaining": r["miles_remaining"],
+                      "last_miles": r["last_miles"], "last_date": r["last_date"],
+                      "verification": r.get("verification")})
+    order = {s: i for i, s in enumerate(MAINT_STATES)}
+    items.sort(key=lambda x: order.get(x["status"], 9))
+    return {
+        "current_miles": current_miles,
+        "counts": counts,
+        "attention": counts["overdue"] + counts["due_soon"],  # what a human should act on now
+        "tracked": len(items),
+        "items": items,
+    }
 
 
 # ---------------------------------------------------------------------------
