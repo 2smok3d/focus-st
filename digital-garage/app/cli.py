@@ -155,6 +155,15 @@ def cmd_seed_channels(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_intel(args: argparse.Namespace) -> int:
+    from pathlib import Path as _P
+    from . import intel
+    with session_scope() as s:
+        out = intel.write_intel(s, args.variant, out=_P(args.out) if args.out else None)
+    print(f"Wrote {out}")
+    return 0
+
+
 def cmd_kb_quality(_: argparse.Namespace) -> int:
     from . import knowledge
     with session_scope() as s:
@@ -1105,6 +1114,11 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("seed-diaglib", help="seed the failure-mode + diagnostic-test library").set_defaults(fn=cmd_seed_diaglib)
 
     sub.add_parser("seed-channels", help="seed the telemetry channel registry").set_defaults(fn=cmd_seed_channels)
+
+    sp = sub.add_parser("intel", help="project the full V2 platform state → intel.json")
+    sp.add_argument("--variant", default="focus-st")
+    sp.add_argument("--out", default=None)
+    sp.set_defaults(fn=cmd_intel)
 
     sub.add_parser("kb-quality", help="knowledge-quality dashboard over the claims").set_defaults(fn=cmd_kb_quality)
 

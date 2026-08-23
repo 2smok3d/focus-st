@@ -144,7 +144,9 @@ const TOOLS=[
   {href:'vehicles/focus-st/index.html',ic:'<rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M8 18v2M16 18v2" stroke-linecap="round"/>',
    h:'Focus ST Cockpit',p:'The full vehicle dossier — specs, projects, engine bay, maintenance, recalls, live manual.',tag:'focus-st'},
   {href:'tools/parts.html?v=focus-st',ic:'<path d="M12 2l2.5 5 5.5.8-4 3.9.9 5.5L12 20l-4.9 2.6.9-5.5-4-3.9 5.5-.8z" stroke-linecap="round" stroke-linejoin="round"/>',
-   h:'Parts Tracker',p:'Add parts, browse the catalog, log installs — writes straight to the repo database.',tag:'focus-st · PWA'}
+   h:'Parts Tracker',p:'Add parts, browse the catalog, log installs — writes straight to the repo database.',tag:'focus-st · PWA'},
+  {href:'tools/intel.html',ic:'<path d="M4 19V5M4 15l4-4 3 3 5-6 4 4" stroke-linecap="round" stroke-linejoin="round"/>',
+   h:'Vehicle Intelligence',p:'The full picture — knowledge quality, digital-twin deviations, open diagnostic cases, work orders, research queue.',tag:'focus-st · projection'}
 ];
 $('#tools').innerHTML=TOOLS.map(t=>`<a class="card link accent tool" href="${t.href}">${svg(t.ic)}<h3>${t.h}</h3><p>${t.p}</p><span class="tag">${t.tag}</span></a>`).join('');
 
