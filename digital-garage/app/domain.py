@@ -207,6 +207,10 @@ PROPOSABLE_ENTITIES: dict[str, set[str]] = {
     "spec": {"category", "name", "value", "unit", "verification"},
     "service_event": {"item", "performed_at", "miles", "cost", "vendor", "note"},
     "parts": {"name", "part_number", "category", "oem", "approx_price", "url", "note"},
+    # A V2 reference claim proposed through the approval boundary. `evidence` is a list of
+    # {authority, stance, on_vehicle, label}; the verdict is computed on approval, not set here.
+    "claim": {"subject_type", "subject_key", "prop", "value", "unit",
+              "applicability", "evidence"},
 }
 
 

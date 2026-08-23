@@ -88,6 +88,12 @@ Everything below is on `master`. PR numbers in brackets.
 - **Maintenance status in the intelligence layer.** Due-engine bucketed per machine,
   `needs_log` kept distinct from `overdue`. [#19]
 
+### Phase 6 — Evidence-grounded MCP V2
+- **The agent answers with provenance.** MCP read tools over the reference/provenance
+  model (`get_variant`/`get_systems`/`get_component`/`get_claim`/`list_claims`/
+  `list_conflicts`/`knowledge_quality`) + `propose_claim` through the approval boundary
+  (verdict computed from evidence on approval; corroboration is monotonic).
+
 **Fleet depth today:** Focus ST is fully populated (claims, feed, MODS, twin). The other
 four are **scaffolded** — cockpit + manual + PARTS + `intel.json` + a commissioned twin,
 but no normalized claims, no `garage.json` feed, no `MODS.md`. That gap is unit F1 below.
@@ -99,19 +105,7 @@ but no normalized claims, no `garage.json` feed, no `MODS.md`. That gap is unit 
 Each item is one PR unit with explicit acceptance criteria. Order is default; it can be
 re-prioritized on request.
 
-### P6 — Evidence-grounded MCP V2 *(in progress — current unit)*
-Expose the V2 reference/provenance model to the agent so it answers **with provenance**,
-and let it propose claims through the approval boundary.
-- **Read tools:** `get_variant`, `get_systems`, `get_component` (claims + typed edges),
-  `get_claim` (evidence + freshly re-resolved verdict), `list_claims`, `list_conflicts`,
-  `knowledge_quality`.
-- **Write tool:** `propose_claim` — records a pending proposal; **no mutation**. On human
-  approval, the claim + evidence are created and the verdict resolved via provenance.
-- **Acceptance:** read tools return graded, provenance-carrying dicts; `propose_claim`
-  never mutates canon; approving a claim proposal creates it with a computed verdict;
-  corroborating evidence strengthens monotonically; pure + DB tests green; docs updated.
-
-### F1 — Populate the fleet to flagship depth
+### F1 — Populate the fleet to flagship depth *(next unit)*
 Bring zzr600 / rz350 / tz250 / toyota-pickup from scaffold to fully-modeled.
 - Normalize each machine's manual/PARTS into graded **claims** (scoped by variant).
 - Generate each a `garage.json` feed + `MODS.md` from the DB; wire `fleet.json` feeds.

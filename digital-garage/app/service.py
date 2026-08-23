@@ -12,6 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from . import domain
+from . import provenance as pv
 from .models import (
     CanFrame,
     ChangeProposal,
@@ -37,6 +38,9 @@ _ENTITY_MODELS = {
     "service_event": ServiceEvent,
     "parts": Part,
 }
+
+# Stances an evidence row can take toward a claim (from the provenance engine).
+_EVIDENCE_STANCES = pv.STANCES
 
 # Columns that must be coerced from ISO strings (JSON has no date type).
 _DATE_FIELDS = {"installed_on", "opened_at", "resolved_at", "performed_at"}
@@ -150,6 +154,86 @@ def propose_change(session: Session, vehicle_id: int, entity: str, patch: dict,
     session.add(prop)
     session.flush()
     return {"proposal_id": prop.id, "status": "pending", "entity": entity, "patch": patch}
+
+
+def _validate_claim_patch(patch: dict) -> None:
+    """Structural checks a claim proposal must pass before it can be queued. The
+    verdict is NOT decided here — it is computed from evidence on approval."""
+    for req in ("subject_type", "subject_key", "prop"):
+        if not patch.get(req):
+            raise ValueError(f"claim proposal missing required field '{req}'.")
+    evidence = patch.get("evidence") or []
+    if not isinstance(evidence, list) or not evidence:
+        raise ValueError("claim proposal needs at least one evidence item.")
+    for e in evidence:
+        if not isinstance(e, dict):
+            raise ValueError("each evidence item must be an object.")
+        auth = e.get("authority")
+        if not isinstance(auth, int) or not (1 <= auth <= 6):
+            raise ValueError("evidence.authority must be an int 1 (best) .. 6 (unknown).")
+        stance = e.get("stance", pv.SUPPORTS)
+        if stance not in _EVIDENCE_STANCES:
+            raise ValueError(f"evidence.stance must be one of {sorted(_EVIDENCE_STANCES)}.")
+
+
+def propose_claim(session: Session, vehicle_id: int, *, subject_type: str, subject_key: str,
+                  prop: str, value: str | None = None, unit: str | None = None,
+                  applicability: dict | None = None, evidence: list[dict],
+                  rationale: str | None = None, proposed_by: str = "agent") -> dict:
+    """Propose a V2 reference *claim* for human approval. Records a pending proposal
+    and NEVER mutates canonical knowledge. The claim's trust grade is computed from
+    its evidence on approval, not asserted here."""
+    patch = {"subject_type": subject_type, "subject_key": subject_key, "prop": prop,
+             "value": value, "unit": unit, "applicability": applicability,
+             "evidence": evidence}
+    ok, msg = domain.validate_patch("claim", {k: v for k, v in patch.items() if v is not None})
+    if not ok:
+        raise ValueError(msg)
+    _validate_claim_patch(patch)
+    prop_row = ChangeProposal(vehicle_id=vehicle_id, entity="claim", op="insert",
+                              patch=patch, rationale=rationale, proposed_by=proposed_by,
+                              status="pending")
+    session.add(prop_row)
+    session.flush()
+    return {"proposal_id": prop_row.id, "status": "pending", "entity": "claim",
+            "subject": f"{subject_type}:{subject_key}:{prop}"}
+
+
+def _apply_claim_proposal(session: Session, patch: dict) -> int:
+    """Create (or corroborate) a claim from an approved proposal and re-resolve its
+    verdict from ALL its evidence. Monotonic by construction: added evidence can only
+    re-resolve against the full set, so a weaker source never demotes a stronger one."""
+    from .refmodels import Claim, ClaimEvidence
+
+    claim = session.scalar(select(Claim).where(
+        Claim.subject_type == patch["subject_type"],
+        Claim.subject_key == patch["subject_key"],
+        Claim.prop == patch["prop"]))
+    if claim is None:
+        claim = Claim(subject_type=patch["subject_type"], subject_key=patch["subject_key"],
+                      prop=patch["prop"], value=patch.get("value"), unit=patch.get("unit"),
+                      applicability=patch.get("applicability"))
+        session.add(claim)
+        session.flush()
+
+    for e in patch["evidence"]:
+        session.add(ClaimEvidence(
+            claim_id=claim.id, authority=e["authority"], stance=e.get("stance", pv.SUPPORTS),
+            on_vehicle=bool(e.get("on_vehicle", False)), source_label=e.get("label")))
+    session.flush()
+
+    # Re-resolve from the claim's full evidence set (existing + newly added).
+    rows = session.scalars(select(ClaimEvidence).where(ClaimEvidence.claim_id == claim.id)).all()
+    ev_objs = [pv.Evidence(authority=r.authority, stance=r.stance,
+                           on_vehicle=r.on_vehicle, source_label=r.source_label or "")
+               for r in rows]
+    verdict = pv.resolve_verdict(ev_objs)
+    claim.verification = verdict.verification.name
+    claim.confidence = verdict.confidence
+    claim.conflict = verdict.conflict
+    claim.notes = verdict.rationale
+    session.flush()
+    return claim.id
 
 
 def list_sessions(session: Session, vehicle_id: int) -> list[dict]:
@@ -318,6 +402,18 @@ def approve_proposal(session: Session, proposal_id: int, approved_by: str) -> di
         raise LookupError(f"Proposal {proposal_id} not found.")
     if prop.status != "pending":
         raise ValueError(f"Proposal {proposal_id} is already {prop.status}.")
+
+    # A claim proposal has its own apply path — it writes into the V2 reference model
+    # (claim + evidence) and resolves the verdict, not a vehicle-scoped V1 entity.
+    if prop.entity == "claim":
+        applied_id = _apply_claim_proposal(session, prop.patch)
+        prop.status = "approved"
+        prop.approved_by = approved_by.strip()
+        prop.decided_at = dt.datetime.now(dt.timezone.utc)
+        prop.applied_id = applied_id
+        session.flush()
+        return {"proposal_id": prop.id, "status": "approved", "approved_by": prop.approved_by,
+                "entity": "claim", "applied_id": applied_id}
 
     Model = _ENTITY_MODELS[prop.entity]
     data = _coerce(prop.patch)

@@ -278,9 +278,14 @@ before the previous one is complete and tested.**
   Diagnose, Maintain, Build, Parts, Systems, Data, Knowledge); interactive engine
   bay as a system navigator; universal search over claims + components + codes.
 
-- **Phase 6 — Intelligence.** Evidence-grounded MCP V2 (`get_system`,
-  `get_component`, `get_claim`, `get_evidence`) so the agent answers *with*
-  provenance and proposes claims through the same human-approval boundary.
+- **Phase 6 — Intelligence.** *(done)* Evidence-grounded MCP V2 (`app/mcp_server.py`):
+  read tools `get_variant`, `get_systems`, `get_component`, `get_claim` (evidence + a
+  freshly re-resolved verdict), `list_claims`, `list_conflicts`, `knowledge_quality` — so
+  the agent answers *with* provenance, citing the evidence rather than a bare value. The
+  one write, `propose_claim`, records a pending proposal and never mutates canon; on human
+  approval `service._apply_claim_proposal` creates the claim + evidence and resolves the
+  verdict from the *full* evidence set (monotonic — corroboration can only hold or climb a
+  grade, never demote it). Same approval queue as V1; `claim` is a proposable entity.
 
 ---
 
