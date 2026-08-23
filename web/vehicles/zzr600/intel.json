@@ -1,0 +1,99 @@
+{
+  "generated_at": "2026-08-23T10:18:29.136725+00:00",
+  "variant": "zzr600",
+  "vehicle": {
+    "vin": "KAW-ZX600D-1991",
+    "name": "1991 Kawasaki ZZR600"
+  },
+  "reference": {
+    "slug": "zzr600",
+    "name": "ZZR600",
+    "trim": "ZX600-D (1st gen, ram-air)",
+    "market": "US",
+    "years": "1991",
+    "manufacturer": "Kawasaki",
+    "platform": "ZZR600 (ZX600-D)",
+    "platform_code": "ZX600-D",
+    "engine": {
+      "code": "ZX600D I4",
+      "displacement_cc": 599,
+      "config": "I4 DOHC 16v liquid-cooled",
+      "aspiration": "carbureted (ram-air)",
+      "power": "~98 hp (crank)",
+      "torque": "~46 lb-ft @ 9,500"
+    },
+    "transmission": {
+      "code": "6-speed",
+      "type": "6-speed manual",
+      "gears": 6
+    }
+  },
+  "systems": [
+    {
+      "slug": "cooling",
+      "name": "Cooling",
+      "components": 3
+    },
+    {
+      "slug": "driveline",
+      "name": "Driveline",
+      "components": 2
+    },
+    {
+      "slug": "electrical",
+      "name": "Electrical / Charging",
+      "components": 3
+    },
+    {
+      "slug": "engine",
+      "name": "Engine",
+      "components": 4
+    },
+    {
+      "slug": "fuel",
+      "name": "Fuel / Carburetion",
+      "components": 3
+    },
+    {
+      "slug": "ignition",
+      "name": "Ignition",
+      "components": 3
+    }
+  ],
+  "overlays": [],
+  "twin": {
+    "deviations": [
+      {
+        "slug": "carburetors",
+        "condition": "suspect",
+        "installed_part": null,
+        "knowledge_state": "INFERRED"
+      },
+      {
+        "slug": "regulator-rectifier",
+        "condition": "suspect",
+        "installed_part": null,
+        "knowledge_state": "INFERRED"
+      }
+    ],
+    "count": 2
+  },
+  "diagnostics": {
+    "open_cases": [],
+    "total_cases": 0
+  },
+  "workshop": {
+    "work_orders": [],
+    "open": 0
+  },
+  "knowledge": {
+    "total_claims": 0,
+    "by_verification": {},
+    "conflicts": 0,
+    "gaps": 0
+  },
+  "research_tasks": [],
+  "telemetry": {
+    "channels": 11
+  }
+}

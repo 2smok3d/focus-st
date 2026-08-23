@@ -251,6 +251,19 @@ before the previous one is complete and tested.**
   `OVERDUE`), parts intelligence + fitment, machine baselines + degradation trends,
   the modular UI V2, and evidence-grounded MCP V2.
 
+- **Milestone G bridge — Vehicle Intelligence projection.** *(done)* `app/intel.py`
+  aggregates the whole V2 backend — reference model, digital-twin deviations, open
+  diagnostic cases (with leading hypothesis + recommended next test), work-order
+  readiness, telemetry channels, knowledge quality, and the research queue — into one
+  static `intel.json` per machine, the way `garage.json` projects the parts catalog.
+  Postgres stays canonical; this is read-only. `cli intel [--all]` writes one machine or
+  every commissioned one; the HUD dashboard `web/tools/intel.html?v=<slug>` fetches
+  `vehicles/<slug>/intel.json` and offers a fleet chip switcher. **Fleet-wide scoping is
+  strict:** `quality_report(variant)` counts only claims whose applicability names that
+  machine, and the research queue is tagged per-variant (`db/schema_v13.sql`,
+  `research_tasks.variant`) so a Focus ST gap never surfaces on the ZZR600's page —
+  `NULL` = fleet-wide.
+
 - **Phase 5 — UI V2.** Modularize the frontend into app/components/views (Overview,
   Diagnose, Maintain, Build, Parts, Systems, Data, Knowledge); interactive engine
   bay as a system navigator; universal search over claims + components + codes.

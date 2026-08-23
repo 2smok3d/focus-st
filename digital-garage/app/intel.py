@@ -45,9 +45,9 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     # workshop — work orders + readiness
     work_orders = workshop.list_work_orders(session, vehicle.id) if vehicle else []
 
-    # knowledge quality + research tasks
-    kq = knowledge.quality_report(session)
-    research = knowledge.list_research_tasks(session)[:8]
+    # knowledge quality (scoped to this machine) + research tasks
+    kq = knowledge.quality_report(session, variant_slug)
+    research = knowledge.list_research_tasks(session, variant_slug=variant_slug)[:8]
 
     # telemetry channels
     from .tmodels import TelemetryChannel
@@ -86,3 +86,12 @@ def write_intel(session: Session, variant_slug: str = "focus-st", *, out: Path |
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(build_intel(session, variant_slug), indent=2))
     return out
+
+
+def write_intel_all(session: Session) -> list[Path]:
+    """Write intel.json for every commissioned machine (a linked vehicle_variant)."""
+    from .models import Vehicle
+    from .refmodels import VehicleVariant
+    linked = {v.variant_id for v in session.scalars(select(Vehicle)) if v.variant_id}
+    slugs = [vv.slug for vv in session.scalars(select(VehicleVariant)) if vv.id in linked]
+    return [write_intel(session, slug) for slug in slugs]

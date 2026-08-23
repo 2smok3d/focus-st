@@ -1,0 +1,121 @@
+{
+  "generated_at": "2026-08-23T10:18:29.205818+00:00",
+  "variant": "toyota-pickup",
+  "vehicle": {
+    "vin": "TOY-22RE-1986",
+    "name": "1986 Toyota Pickup"
+  },
+  "reference": {
+    "slug": "toyota-pickup",
+    "name": "Pickup 22RE",
+    "trim": "Single cab, RWD",
+    "market": "US",
+    "years": "1986",
+    "manufacturer": "Toyota",
+    "platform": "Pickup (N50, single cab)",
+    "platform_code": "N50",
+    "engine": {
+      "code": "22RE",
+      "displacement_cc": 2366,
+      "config": "SOHC 8v EFI I4 \u00b7 iron block, alloy head",
+      "aspiration": "naturally aspirated (EFI)",
+      "power": "~105 hp",
+      "torque": "136\u2013140 lb-ft @ 2,800\u20133,600"
+    },
+    "transmission": {
+      "code": "W56",
+      "type": "5-speed manual",
+      "gears": 5
+    }
+  },
+  "systems": [
+    {
+      "slug": "body",
+      "name": "Body",
+      "components": 2
+    },
+    {
+      "slug": "cooling",
+      "name": "Cooling",
+      "components": 2
+    },
+    {
+      "slug": "driveline",
+      "name": "Driveline",
+      "components": 3
+    },
+    {
+      "slug": "electrical",
+      "name": "Electrical",
+      "components": 3
+    },
+    {
+      "slug": "engine",
+      "name": "Engine (22RE)",
+      "components": 5
+    },
+    {
+      "slug": "fuel",
+      "name": "Fuel (EFI)",
+      "components": 3
+    },
+    {
+      "slug": "ignition",
+      "name": "Ignition",
+      "components": 3
+    },
+    {
+      "slug": "interior",
+      "name": "Interior",
+      "components": 3
+    }
+  ],
+  "overlays": [],
+  "twin": {
+    "deviations": [
+      {
+        "slug": "block",
+        "condition": "removed",
+        "installed_part": null,
+        "knowledge_state": "DIRECTLY_OBSERVED"
+      },
+      {
+        "slug": "dash",
+        "condition": "removed",
+        "installed_part": null,
+        "knowledge_state": "DIRECTLY_OBSERVED"
+      },
+      {
+        "slug": "interior-trim",
+        "condition": "removed",
+        "installed_part": null,
+        "knowledge_state": "DIRECTLY_OBSERVED"
+      },
+      {
+        "slug": "seats",
+        "condition": "removed",
+        "installed_part": null,
+        "knowledge_state": "DIRECTLY_OBSERVED"
+      }
+    ],
+    "count": 4
+  },
+  "diagnostics": {
+    "open_cases": [],
+    "total_cases": 0
+  },
+  "workshop": {
+    "work_orders": [],
+    "open": 0
+  },
+  "knowledge": {
+    "total_claims": 0,
+    "by_verification": {},
+    "conflicts": 0,
+    "gaps": 0
+  },
+  "research_tasks": [],
+  "telemetry": {
+    "channels": 11
+  }
+}

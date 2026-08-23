@@ -37,7 +37,10 @@
         <div class="eyebrow">Vehicle Intelligence</div>
         <h1 id="title" class="disp" style="margin:2px 0 0;font-family:var(--disp);font-size:30px;">Loading…</h1>
       </div>
-      <div class="stamp" id="stamp"></div>
+      <div style="text-align:right">
+        <div id="fleet" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:4px"></div>
+        <div class="stamp" id="stamp"></div>
+      </div>
     </div>
 
     <div id="kpis" class="kpis"></div>
@@ -50,17 +53,29 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;
 const el = (t, cls, html) => { const e = document.createElement(t); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
 const gradeColor = g => ({VEHICLE_VERIFIED:'var(--green,#29c07a)', OEM_VERIFIED:'var(--blue,#4f9dff)', CORROBORATED:'var(--amber,#e8a33d)', UNVERIFIED:'#6a6a72'}[g] || '#6a6a72');
 
+const FLEET = ['focus-st','zzr600','rz350','tz250','toyota-pickup'];
+const NAMES = {'focus-st':'Focus ST','zzr600':'ZZR600','rz350':'RZ350','tz250':'TZ250','toyota-pickup':'Pickup 22RE'};
+const slug = (new URLSearchParams(location.search).get('v') || 'focus-st');
+
+function fleetBar() {
+  const bar = document.getElementById('fleet');
+  bar.innerHTML = FLEET.map(s =>
+    `<a class="chip" href="?v=${s}" style="text-decoration:none;${s===slug?'border-color:var(--red,#e8000d);color:var(--ink,#eee)':''}">${esc(NAMES[s]||s)}</a>`
+  ).join('');
+}
+
 async function load() {
+  fleetBar();
   let d;
   try {
-    const r = await fetch('../vehicles/focus-st/intel.json', {cache:'no-store'});
+    const r = await fetch(`../vehicles/${encodeURIComponent(slug)}/intel.json`, {cache:'no-store'});
     if (!r.ok) throw new Error(r.status);
     d = await r.json();
   } catch (e) {
-    document.getElementById('title').textContent = 'Vehicle Intelligence';
+    document.getElementById('title').textContent = (NAMES[slug]||slug) + ' — Intelligence';
     const err = document.getElementById('err');
     err.hidden = false;
-    err.textContent = 'intel.json not available yet — generate it with `python -m app.cli intel` in digital-garage.';
+    err.textContent = 'intel.json not available for this machine yet — generate it with `python -m app.cli intel --all` in digital-garage.';
     return;
   }
   render(d);

@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-08-23T10:18:29.181327+00:00",
+  "variant": "tz250",
+  "vehicle": {
+    "vin": "YAM-TZ250-1986",
+    "name": "1986 Yamaha TZ250"
+  },
+  "reference": {
+    "slug": "tz250",
+    "name": "TZ250",
+    "trim": "Over-the-counter GP racer (premix)",
+    "market": "JDM/race",
+    "years": "1986",
+    "manufacturer": "Yamaha",
+    "platform": "TZ250 (production racer)",
+    "platform_code": "TZ250",
+    "engine": {
+      "code": "TZ250 2T twin",
+      "displacement_cc": 249,
+      "config": "2-stroke reed-valve parallel twin \u00b7 liquid-cooled",
+      "aspiration": "carbureted (2\u00d7 Mikuni flat-slide, powerjet)",
+      "power": "~55\u201365 hp",
+      "torque": "\u2014"
+    },
+    "transmission": {
+      "code": "6-speed close-ratio",
+      "type": "6-speed manual (dry clutch)",
+      "gears": 6
+    }
+  },
+  "systems": [
+    {
+      "slug": "cooling",
+      "name": "Cooling",
+      "components": 2
+    },
+    {
+      "slug": "driveline",
+      "name": "Driveline",
+      "components": 2
+    },
+    {
+      "slug": "engine",
+      "name": "Engine (2-stroke race)",
+      "components": 5
+    },
+    {
+      "slug": "fuel",
+      "name": "Fuel / Carburetion",
+      "components": 1
+    },
+    {
+      "slug": "ignition",
+      "name": "Ignition",
+      "components": 2
+    }
+  ],
+  "overlays": [],
+  "twin": {
+    "deviations": [],
+    "count": 0
+  },
+  "diagnostics": {
+    "open_cases": [],
+    "total_cases": 0
+  },
+  "workshop": {
+    "work_orders": [],
+    "open": 0
+  },
+  "knowledge": {
+    "total_claims": 0,
+    "by_verification": {},
+    "conflicts": 0,
+    "gaps": 0
+  },
+  "research_tasks": [],
+  "telemetry": {
+    "channels": 11
+  }
+}

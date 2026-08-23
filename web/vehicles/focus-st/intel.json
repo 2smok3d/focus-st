@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T10:01:59.399100+00:00",
+  "generated_at": "2026-08-23T10:18:29.112943+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -61,11 +61,11 @@
   "diagnostics": {
     "open_cases": [
       {
-        "code": "DG-0004",
-        "title": "Low / intermittent boost",
+        "code": "#1",
+        "title": "validation",
         "status": "open",
-        "leading": "PCV / intake unmetered-air leak",
-        "recommended_test": "Visual intake + PCV plumbing inspection"
+        "leading": null,
+        "recommended_test": null
       }
     ],
     "total_cases": 1
@@ -73,12 +73,12 @@
   "workshop": {
     "work_orders": [
       {
-        "id": 2,
-        "code": "WO-0001",
+        "id": 1,
+        "code": "WO-T",
         "title": "Water pump replacement",
-        "status": "blocked",
+        "status": "draft",
         "repair_state": "planned",
-        "ready_pct": 86
+        "ready_pct": 80
       }
     ],
     "open": 1
@@ -86,6 +86,10 @@
   "knowledge": {
     "total_claims": 49,
     "by_verification": {
+      "CORROBORATED": {
+        "n": 25,
+        "pct": 51.0
+      },
       "OEM_VERIFIED": {
         "n": 20,
         "pct": 40.8
@@ -93,10 +97,6 @@
       "VEHICLE_VERIFIED": {
         "n": 4,
         "pct": 8.2
-      },
-      "CORROBORATED": {
-        "n": 25,
-        "pct": 51.0
       }
     },
     "conflicts": 1,
@@ -109,7 +109,8 @@
       "priority": "high",
       "subject": "component:lubrication:oil_capacity",
       "detail": "Conflicting evidence on oil_capacity = 4.3 \u2014 resolve by VIN/OEM doc.",
-      "status": "open"
+      "status": "open",
+      "variant": "focus-st"
     }
   ],
   "telemetry": {
