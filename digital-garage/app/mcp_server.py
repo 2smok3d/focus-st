@@ -165,6 +165,92 @@ def propose_change(entity: str, patch: dict, op: str = "insert",
                                       proposed_by="mcp-agent")
 
 
+# --- V2 reference model + provenance (answer WITH provenance) ---------------
+@mcp.tool
+def get_variant(slug: str = "focus-st") -> dict | None:
+    """Reference header for a machine variant (make/platform/engine/transmission).
+    `slug` selects the machine (focus-st, zzr600, rz350, tz250, toyota-pickup)."""
+    from . import refservice
+    with session_scope() as s:
+        return refservice.variant_header(s, slug)
+
+
+@mcp.tool
+def get_systems(slug: str = "focus-st") -> list[dict]:
+    """The reference system tree for a machine (systems → subsystems → components)."""
+    from . import refservice
+    with session_scope() as s:
+        return refservice.system_tree(s, slug)
+
+
+@mcp.tool
+def get_component(comp_slug: str, slug: str = "focus-st") -> dict | None:
+    """A component with its system, typed relationships (airflow/coolant/…), and the
+    claims attached to it — each claim carrying its verification grade."""
+    from . import refservice
+    with session_scope() as s:
+        return refservice.get_component(s, slug, comp_slug)
+
+
+@mcp.tool
+def get_claim(subject_key: str, prop: str) -> dict | None:
+    """A single claim with its full evidence chain and a freshly re-resolved verdict
+    (verification grade + confidence + whether it conflicts). This is how you answer
+    *with provenance*: cite the evidence, not just the value."""
+    from . import refservice
+    with session_scope() as s:
+        return refservice.get_claim(s, subject_key, prop)
+
+
+@mcp.tool
+def list_claims(subject_type: str, subject_key: str) -> list[dict]:
+    """Every claim about one subject (e.g. subject_type='component', subject_key='intercooler')."""
+    from . import refservice
+    with session_scope() as s:
+        return refservice.claims_for(s, subject_type, subject_key)
+
+
+@mcp.tool
+def list_conflicts() -> list[dict]:
+    """Every claim currently flagged as conflicting — the disagreement surface to resolve."""
+    from . import refservice
+    with session_scope() as s:
+        return refservice.list_conflicts(s)
+
+
+@mcp.tool
+def knowledge_quality(slug: str = "focus-st") -> dict:
+    """Knowledge-quality report for a machine: claim totals, verification distribution,
+    conflicts, and gaps (missing units/applicability)."""
+    from . import knowledge
+    with session_scope() as s:
+        return knowledge.quality_report(s, slug)
+
+
+@mcp.tool
+def propose_claim(subject_type: str, subject_key: str, prop: str,
+                  evidence_authority: int, value: str | None = None, unit: str | None = None,
+                  evidence_stance: str = "supports", on_vehicle: bool = False,
+                  evidence_label: str | None = None, applicability: dict | None = None,
+                  rationale: str | None = None) -> dict:
+    """Propose a V2 reference CLAIM for HUMAN APPROVAL. This does NOT change canonical
+    knowledge — it records a pending proposal a person approves via `cli approve`.
+
+    A claim is only as good as its evidence, so you MUST supply the evidence backing it:
+    `evidence_authority` is 1 (OEM/best) .. 6 (unknown); `evidence_stance` is 'supports',
+    'contradicts', or 'supersedes'; set `on_vehicle=True` if it's an observation of THIS
+    machine. The trust grade is computed from that evidence on approval — never asserted.
+    Give a clear `rationale`; the human reviewing needs your reasoning."""
+    with session_scope() as s:
+        v = service.get_vehicle(s)
+        return service.propose_claim(
+            s, v.id, subject_type=subject_type, subject_key=subject_key, prop=prop,
+            value=value, unit=unit, applicability=applicability,
+            evidence=[{"authority": evidence_authority, "stance": evidence_stance,
+                       "on_vehicle": on_vehicle, "label": evidence_label}],
+            rationale=rationale, proposed_by="mcp-agent")
+
+
 @mcp.tool
 def log_receipt(text: str) -> dict:
     """Parse a pasted purchase/service receipt and file it as a pending proposal
