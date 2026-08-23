@@ -112,9 +112,14 @@ Bring zzr600 / rz350 / tz250 / toyota-pickup from scaffold to fully-modeled.
   Honest grading: web-verified → `CORROBORATED`, `⚠️ verify` → `UNVERIFIED` (feeding that
   machine's own research queue). Each machine's `intel.json` now shows real claim counts
   (zzr600 18 · rz350 14 · tz250 13 · toyota 9).
-- **F1b — feeds + MODS.** *(next)* Generate each machine a `garage.json` feed + `MODS.md`
-  from the DB and wire `fleet.json` feeds so the cockpits hydrate from canon.
-- **Acceptance:** claim counts populated (F1a ✓); cockpits hydrate from their own feed (F1b).
+- **F1b — live fleet cockpits.** *(done)* Each fleet cockpit
+  (`web/vehicles/<slug>/index.html`) gained a **Live Intelligence** section that fetches
+  its `intel.json` and renders the machine's live V2 state — knowledge-quality bars,
+  digital-twin deviations, open cases, and its research queue — with a `● LIVE` badge,
+  themed by the page's accent, degrading silently if no feed is present. (The fleet's
+  richest data lives in the V2 layer, already projected to `intel.json`; a V1-style
+  `garage.json` would be near-empty, so the cockpits read the V2 projection directly.)
+- **Acceptance:** claim counts populated (F1a ✓); cockpits present live per-machine state (F1b ✓).
 
 ### DI — Data intelligence: degradation trends + baselines
 Turn the observation/telemetry history into **trend** intelligence.
