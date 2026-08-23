@@ -133,11 +133,18 @@ Turn the observation history into **trend** intelligence.
   ↘ 7% over 90d, R²=0.99 ✓); flat/noisy data yields no drift ✓; pure trend math is DB-free
   tested ✓.
 
-### PF — Parts intelligence + fitment
-Connect the PARTS catalog / mods to reference components and known fitment.
-- Map catalog slots → components; carry fitment applicability (variant/years/market);
-  flag mods against the twin. Surface fitment confidence on the dashboard.
-- **Acceptance:** a part resolves to a component with a fitment verdict; mismatches warn.
+### PF — Parts intelligence + fitment *(done)*
+Connect the PARTS catalog to reference components and known fitment.
+- `app/fitment.py`: a pure `PARTS.md` slot parser + a transparent token matcher (generic
+  words demoted so a match rests on a distinctive token, not on sharing "valve"/"oil");
+  `catalog_fitment` resolves every slot to a component and tiers the verdict by confidence
+  — **fits** (strong overlap), **likely** (weak, confirm), **unmapped** (warn). A mapped
+  slot's fitment is scoped to the variant's years/market from the reference header.
+- Surfaced via `cli fitment`, the `part_fitment` MCP tool, an `intel.json` `parts` block,
+  and a dashboard Parts Fitment panel + a "parts mapped" KPI.
+- **Acceptance:** slots resolve to components with a fitment verdict (Spark Plugs →
+  spark-plugs, Intercooler → intercooler ✓); generic false positives rejected (Oil Filter,
+  Engine Oil → unmapped ✓); mismatches warn ✓.
 
 ### UI — Modular UI V2
 Modularize the frontend into views (Overview / Diagnose / Maintain / Build / Parts /

@@ -53,6 +53,10 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     from . import trends as trends_mod
     trend_rows = trends_mod.component_trends(session, vehicle.id) if vehicle else []
 
+    # parts fitment — catalog slots resolved against the reference component graph
+    from . import fitment as fitment_mod
+    fit = fitment_mod.catalog_fitment(session, variant_slug) if variant else None
+
     # knowledge quality (scoped to this machine) + research tasks
     kq = knowledge.quality_report(session, variant_slug)
     research = knowledge.list_research_tasks(session, variant_slug=variant_slug)[:8]
@@ -77,6 +81,9 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
                      "open": sum(1 for w in work_orders if w["status"] not in ("closed", "abandoned"))},
         "maintenance": maintenance,
         "trends": {"series": trend_rows, "drifting": sum(1 for t in trend_rows if t["drift"])},
+        "parts": {"slots": fit["slots"], "matched": fit["matched"], "confident": fit["confident"],
+                  "unmatched": fit["unmatched"], "coverage_pct": fit["coverage_pct"],
+                  "unmatched_slots": fit["unmatched_slots"][:12]} if fit else None,
         "knowledge": {"total_claims": kq["total"], "by_verification": kq["by_verification"],
                       "conflicts": kq["conflicts"], "gaps": kq["gaps"]},
         "research_tasks": research,

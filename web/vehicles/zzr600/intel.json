@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:00:47.598484+00:00",
+  "generated_at": "2026-08-23T23:08:30.392725+00:00",
   "variant": "zzr600",
   "vehicle": {
     "vin": "KAW-ZX600D-1991",
@@ -102,6 +102,22 @@
   "trends": {
     "series": [],
     "drifting": 0
+  },
+  "parts": {
+    "slots": 13,
+    "matched": 6,
+    "confident": 4,
+    "unmatched": 7,
+    "coverage_pct": 46.2,
+    "unmatched_slots": [
+      "Front Tire",
+      "Rear Tire",
+      "Front Pads",
+      "Brake Lines",
+      "Carburetors",
+      "Intake Boots",
+      "Fork Seals & Oil"
+    ]
   },
   "knowledge": {
     "total_claims": 18,
