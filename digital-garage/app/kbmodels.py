@@ -21,6 +21,7 @@ class ResearchTask(Base):
     subject: Mapped[str] = mapped_column(Text)
     detail: Mapped[str | None] = mapped_column(Text)
     status: Mapped[str] = mapped_column(Text, default="open")
+    variant: Mapped[str | None] = mapped_column(Text)  # machine the task is scoped to (NULL = fleet-wide)
     dedupe_key: Mapped[str | None] = mapped_column(Text, unique=True)
     created_at: Mapped[dt.datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

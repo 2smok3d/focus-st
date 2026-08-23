@@ -44,7 +44,7 @@ def _seeded():
     with engine.begin() as conn:
         for f in ("schema.sql", "schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
                   "schema_v6.sql", "schema_v7.sql", "schema_v8.sql", "schema_v9.sql", "schema_v10.sql",
-                  "schema_v11.sql", "schema_v12.sql"):
+                  "schema_v11.sql", "schema_v12.sql", "schema_v13.sql"):
             conn.execute(text((DB / f).read_text()))
     from app.migrate_knowledge import migrate_knowledge
     from app.migrate_specs import migrate_specs_to_claims
@@ -81,6 +81,22 @@ def test_research_tasks_generated_from_conflict_and_idempotent(_seeded):
     assert conflict_tasks and conflict_tasks[0]["priority"] == "high"
     # highest priority sorts first
     assert tasks[0]["priority"] in ("critical", "high")
+
+
+@dbonly
+def test_research_tasks_are_variant_scoped(_seeded):
+    """A machine's research queue shows its own gaps (plus fleet-wide/unscoped ones),
+    never another machine's — the seeded conflict is a Focus ST claim."""
+    from app.knowledge import generate_research_tasks, list_research_tasks
+    with session_scope() as s:
+        generate_research_tasks(s)
+    with session_scope() as s:
+        fst = list_research_tasks(s, variant_slug="focus-st")
+        zzr = list_research_tasks(s, variant_slug="zzr600")
+    # the Focus ST conflict is scoped to focus-st and must not surface on the ZZR600
+    fst_subjects = {t["subject"] for t in fst}
+    assert any("oil_capacity" in sub for sub in fst_subjects)
+    assert not any(t["variant"] == "focus-st" for t in zzr)
 
 
 @dbonly

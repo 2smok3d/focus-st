@@ -85,7 +85,8 @@ def cmd_init(_: argparse.Namespace) -> int:
         # V2 additive layer (reference model + provenance). Idempotent.
         for extra in ("schema_v2.sql", "schema_v3.sql", "schema_v4.sql", "schema_v5.sql",
                       "schema_v6.sql", "schema_v7.sql", "schema_v8.sql", "schema_v9.sql",
-                      "schema_v10.sql", "schema_v11.sql", "schema_v12.sql"):
+                      "schema_v10.sql", "schema_v11.sql", "schema_v12.sql",
+                      "schema_v13.sql"):
             path = db / extra
             if path.exists():
                 with engine.begin() as conn:
@@ -159,8 +160,12 @@ def cmd_intel(args: argparse.Namespace) -> int:
     from pathlib import Path as _P
     from . import intel
     with session_scope() as s:
-        out = intel.write_intel(s, args.variant, out=_P(args.out) if args.out else None)
-    print(f"Wrote {out}")
+        if args.all:
+            for out in intel.write_intel_all(s):
+                print(f"Wrote {out}")
+        else:
+            out = intel.write_intel(s, args.variant, out=_P(args.out) if args.out else None)
+            print(f"Wrote {out}")
     return 0
 
 
@@ -1117,6 +1122,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     sp = sub.add_parser("intel", help="project the full V2 platform state → intel.json")
     sp.add_argument("--variant", default="focus-st")
+    sp.add_argument("--all", action="store_true", help="write intel.json for every commissioned machine")
     sp.add_argument("--out", default=None)
     sp.set_defaults(fn=cmd_intel)
 

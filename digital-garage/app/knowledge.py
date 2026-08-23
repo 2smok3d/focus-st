@@ -49,17 +49,20 @@ def add_alias(session: Session, alias: str, canonical: str, *, kind: str | None 
 
 
 # ---- quality dashboard ----------------------------------------------------
-def quality_report(session: Session) -> dict:
-    """Counts + gaps over the canonical claims table."""
-    total = session.scalar(select(func.count()).select_from(Claim)) or 0
+def quality_report(session: Session, variant_slug: str | None = None) -> dict:
+    """Counts + gaps over the canonical claims table, optionally scoped to a variant
+    (claims whose applicability names that variant)."""
+    scope = (Claim.applicability["variant"].astext == variant_slug,) if variant_slug else ()
+    total = session.scalar(select(func.count()).select_from(Claim).where(*scope)) or 0
     by_verification = dict(session.execute(
-        select(Claim.verification, func.count()).group_by(Claim.verification)).all())
-    conflicts = session.scalar(select(func.count()).select_from(Claim).where(Claim.conflict.is_(True))) or 0
+        select(Claim.verification, func.count()).where(*scope).group_by(Claim.verification)).all())
+    conflicts = session.scalar(
+        select(func.count()).select_from(Claim).where(Claim.conflict.is_(True), *scope)) or 0
     missing_applicability = session.scalar(
-        select(func.count()).select_from(Claim).where(Claim.applicability.is_(None))) or 0
+        select(func.count()).select_from(Claim).where(Claim.applicability.is_(None), *scope)) or 0
     # numeric-valued claims lacking a unit are a real gap (firing order etc. are fine).
     missing_units = 0
-    for value, unit in session.execute(select(Claim.value, Claim.unit)):
+    for value, unit in session.execute(select(Claim.value, Claim.unit).where(*scope)):
         if unit is None and value is not None and _NUMERIC.match(str(value)):
             missing_units += 1
 
@@ -82,37 +85,47 @@ def generate_research_tasks(session: Session) -> str:
     """Scan claims for gaps and enqueue prioritized research tasks (idempotent)."""
     created = 0
 
-    def enqueue(kind, priority, subject, detail, dedupe):
+    def enqueue(kind, priority, subject, detail, dedupe, variant):
         nonlocal created
-        if session.scalar(select(ResearchTask).where(ResearchTask.dedupe_key == dedupe)) is None:
+        row = session.scalar(select(ResearchTask).where(ResearchTask.dedupe_key == dedupe))
+        if row is None:
             session.add(ResearchTask(kind=kind, priority=priority, subject=subject,
-                                     detail=detail, dedupe_key=dedupe))
+                                     detail=detail, dedupe_key=dedupe, variant=variant))
             created += 1
+        elif row.variant is None and variant is not None:
+            row.variant = variant  # backfill scope onto a task enqueued before it was known
 
     for c in session.scalars(select(Claim)):
         key = f"{c.subject_type}:{c.subject_key}:{c.prop}"
+        variant = (c.applicability or {}).get("variant") if c.applicability else None
         if c.conflict:
             enqueue("conflict", "high", key,
                     f"Conflicting evidence on {c.prop} = {c.value} — resolve by VIN/OEM doc.",
-                    f"conflict:{key}")
+                    f"conflict:{key}", variant)
         elif c.verification == "UNVERIFIED":
             enqueue("unverified", "medium", key,
                     f"Unverified: {c.prop} = {c.value}. Corroborate against a source.",
-                    f"unverified:{key}")
+                    f"unverified:{key}", variant)
         if c.applicability is None:
             enqueue("missing_applicability", "low", key,
                     f"No applicability on {c.prop} — scope by variant/years/market.",
-                    f"missing_applicability:{key}")
+                    f"missing_applicability:{key}", variant)
         if c.unit is None and c.value is not None and _NUMERIC.match(str(c.value)):
             enqueue("missing_unit", "low", key,
-                    f"Numeric claim {c.prop} = {c.value} has no unit.", f"missing_unit:{key}")
+                    f"Numeric claim {c.prop} = {c.value} has no unit.", f"missing_unit:{key}", variant)
     session.flush()
     return f"Research tasks generated: +{created} new."
 
 
-def list_research_tasks(session: Session, *, status: str = "open") -> list[dict]:
+def list_research_tasks(session: Session, *, status: str = "open",
+                        variant_slug: str | None = None) -> list[dict]:
+    """Open research tasks, newest-priority-first. When `variant_slug` is given, returns
+    that machine's tasks plus fleet-wide (unscoped) ones — never another machine's gaps."""
     order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
-    rows = session.scalars(select(ResearchTask).where(ResearchTask.status == status)).all()
+    q = select(ResearchTask).where(ResearchTask.status == status)
+    if variant_slug is not None:
+        q = q.where((ResearchTask.variant == variant_slug) | ResearchTask.variant.is_(None))
+    rows = session.scalars(q).all()
     rows.sort(key=lambda t: order.get(t.priority, 9))
     return [{"id": t.id, "kind": t.kind, "priority": t.priority, "subject": t.subject,
-             "detail": t.detail, "status": t.status} for t in rows]
+             "detail": t.detail, "status": t.status, "variant": t.variant} for t in rows]

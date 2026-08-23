@@ -78,3 +78,34 @@ def test_write_intel_emits_valid_json(tmp_path):
     assert p == out
     doc = json.loads(out.read_text())              # must be valid JSON
     assert doc["variant"] == "focus-st" and "generated_at" in doc
+
+
+def test_build_intel_is_fleet_wide_and_variant_scoped():
+    """A non-focus machine projects its own state, and knowledge is scoped per-variant:
+    the ZZR600's claim count must not bleed the Focus ST's claims into its intel."""
+    from app.commission import commission_machine
+    from app.intel import build_intel
+    with session_scope() as s:
+        commission_machine(s, "zzr600")          # idempotent
+        z = build_intel(s, "zzr600")
+        f = build_intel(s, "focus-st")
+    # the projection is about the ZZR600, not the Focus ST
+    assert z["variant"] == "zzr600"
+    assert z["vehicle"] and z["vehicle"]["vin"] != f["vehicle"]["vin"]
+    # it carries its own reference model + systems tree
+    assert z["reference"] and z["systems"]
+    # per-variant knowledge scoping: focus-st migrated claims must not appear under zzr600
+    assert z["knowledge"]["total_claims"] < f["knowledge"]["total_claims"]
+
+
+def test_write_intel_all_covers_every_commissioned_machine():
+    from app.commission import commission_all
+    from app.intel import write_intel_all
+    with session_scope() as s:
+        commission_all(s)                          # idempotent
+        paths = write_intel_all(s)
+    slugs = {p.parent.name for p in paths}
+    assert {"focus-st", "zzr600", "rz350", "tz250", "toyota-pickup"} <= slugs
+    for p in paths:
+        doc = json.loads(p.read_text())
+        assert doc["variant"] == p.parent.name and "generated_at" in doc
