@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vehicle Intelligence — The Garage</title>
+<link rel="stylesheet" href="../assets/hud.css">
+<style>
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 16px 16px 64px; }
+  .head { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin: 8px 0 18px; }
+  .kpis { display:grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:18px; }
+  .kpi { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; }
+  .kpi b { font-family:var(--disp); font-size:26px; display:block; line-height:1.1; }
+  .kpi span { color:var(--muted, #8a8a92); font-size:12px; text-transform:uppercase; letter-spacing:.06em; }
+  .panels { display:grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap:14px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; }
+  .panel h2 { font-family:var(--disp); font-size:15px; letter-spacing:.04em; margin:0 0 10px; text-transform:uppercase; }
+  .row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid var(--line); }
+  .row:first-of-type { border-top:0; }
+  .tag { font-family:var(--mono); font-size:11px; color:var(--muted,#8a8a92); }
+  .bar { height:8px; border-radius:6px; background:#2a2a30; overflow:hidden; }
+  .bar > i { display:block; height:100%; }
+  .chip { font-family:var(--mono); font-size:11px; padding:2px 7px; border:1px solid var(--line); border-radius:20px; }
+  .list { display:flex; flex-direction:column; gap:6px; }
+  a.crumb { color:var(--muted,#8a8a92); text-decoration:none; font-family:var(--mono); font-size:12px; }
+  .stamp { color:var(--muted,#8a8a92); font-family:var(--mono); font-size:11px; }
+  .warn { color: var(--amber, #e8a33d); }
+  .crit { color: var(--red, #e8000d); }
+  .ok { color: var(--green, #29c07a); }
+</style>
+</head>
+<body class="hud">
+  <div class="wrap">
+    <a class="crumb" href="../index.html">← The Garage</a>
+    <div class="head">
+      <div>
+        <div class="eyebrow">Vehicle Intelligence</div>
+        <h1 id="title" class="disp" style="margin:2px 0 0;font-family:var(--disp);font-size:30px;">Loading…</h1>
+      </div>
+      <div class="stamp" id="stamp"></div>
+    </div>
+
+    <div id="kpis" class="kpis"></div>
+    <div id="panels" class="panels"></div>
+    <p id="err" class="empty" hidden></p>
+  </div>
+
+<script>
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const el = (t, cls, html) => { const e = document.createElement(t); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const gradeColor = g => ({VEHICLE_VERIFIED:'var(--green,#29c07a)', OEM_VERIFIED:'var(--blue,#4f9dff)', CORROBORATED:'var(--amber,#e8a33d)', UNVERIFIED:'#6a6a72'}[g] || '#6a6a72');
+
+async function load() {
+  let d;
+  try {
+    const r = await fetch('../vehicles/focus-st/intel.json', {cache:'no-store'});
+    if (!r.ok) throw new Error(r.status);
+    d = await r.json();
+  } catch (e) {
+    document.getElementById('title').textContent = 'Vehicle Intelligence';
+    const err = document.getElementById('err');
+    err.hidden = false;
+    err.textContent = 'intel.json not available yet — generate it with `python -m app.cli intel` in digital-garage.';
+    return;
+  }
+  render(d);
+}
+
+function render(d) {
+  document.getElementById('title').textContent = (d.vehicle && d.vehicle.name) || d.variant || 'Vehicle Intelligence';
+  document.getElementById('stamp').textContent = 'projected ' + (d.generated_at || '').replace('T',' ').slice(0,16) + ' UTC';
+
+  const k = d.knowledge || {}, tw = d.twin || {}, dg = d.diagnostics || {}, ws = d.workshop || {};
+  const kpis = [
+    ['claims', k.total_claims ?? '—'],
+    ['conflicts', k.conflicts ?? 0],
+    ['twin deviations', tw.count ?? 0],
+    ['open cases', (dg.open_cases||[]).length],
+    ['open work orders', ws.open ?? 0],
+    ['telemetry channels', (d.telemetry||{}).channels ?? 0],
+  ];
+  const kc = document.getElementById('kpis');
+  kpis.forEach(([label, val]) => kc.appendChild(el('div','kpi', `<b>${esc(val)}</b><span>${esc(label)}</span>`)));
+
+  const P = document.getElementById('panels');
+
+  // Knowledge quality
+  const kp = el('div','panel'); kp.appendChild(el('h2', null, 'Knowledge Quality'));
+  const bv = k.by_verification || {};
+  ['VEHICLE_VERIFIED','OEM_VERIFIED','CORROBORATED','UNVERIFIED'].forEach(g => {
+    if (!bv[g]) return;
+    const row = el('div','row');
+    row.appendChild(el('span', null, `<span class="tag">${esc(g)}</span>`));
+    const right = el('span', null, `<span class="mono">${esc(bv[g].n)} · ${esc(bv[g].pct)}%</span>`);
+    row.appendChild(right); kp.appendChild(row);
+    const bar = el('div','bar'); const fill = el('i'); fill.style.width = bv[g].pct+'%'; fill.style.background = gradeColor(g);
+    bar.appendChild(fill); kp.appendChild(bar);
+  });
+  kp.appendChild(el('div','row', `<span class="tag">open gaps</span><span class="mono ${k.gaps? 'warn':'ok'}">${esc(k.gaps ?? 0)}</span>`));
+  P.appendChild(kp);
+
+  // Diagnostics
+  const dp = el('div','panel'); dp.appendChild(el('h2', null, 'Diagnostics'));
+  const cases = dg.open_cases || [];
+  if (!cases.length) dp.appendChild(el('p','tag','No open diagnostic cases.'));
+  cases.forEach(c => {
+    dp.appendChild(el('div','row', `<span><b>${esc(c.code)}</b> ${esc(c.title)}</span><span class="chip">${esc(c.status)}</span>`));
+    if (c.leading) dp.appendChild(el('div','tag', `leading: ${esc(c.leading)}`));
+    if (c.recommended_test) dp.appendChild(el('div','tag', `▸ next test: ${esc(c.recommended_test)}`));
+  });
+  P.appendChild(dp);
+
+  // Digital twin deviations
+  const twp = el('div','panel'); twp.appendChild(el('h2', null, 'Digital Twin — Deviations from Stock'));
+  const devs = tw.deviations || [];
+  if (!devs.length) twp.appendChild(el('p','tag','No recorded deviations.'));
+  devs.forEach(x => {
+    const cls = x.condition === 'failed' ? 'crit' : (x.condition === 'modified' ? 'warn' : '');
+    twp.appendChild(el('div','row', `<span>${esc(x.slug)}${x.installed_part? ' → '+esc(x.installed_part):''}</span>`
+      + `<span class="chip ${cls}">${esc(x.condition)}</span>`));
+  });
+  P.appendChild(twp);
+
+  // Workshop
+  const wp = el('div','panel'); wp.appendChild(el('h2', null, 'Workshop'));
+  const wos = ws.work_orders || [];
+  if (!wos.length) wp.appendChild(el('p','tag','No work orders.'));
+  wos.forEach(w => {
+    wp.appendChild(el('div','row', `<span><b>${esc(w.code||('#'+w.id))}</b> ${esc(w.title)}</span>`
+      + `<span class="mono">READY ${esc(w.ready_pct)}%</span>`));
+    wp.appendChild(el('div','tag', `${esc(w.status)} · ${esc(w.repair_state)}`));
+  });
+  P.appendChild(wp);
+
+  // Systems + overlays
+  const sp = el('div','panel'); sp.appendChild(el('h2', null, 'Systems & Graph Overlays'));
+  (d.systems||[]).forEach(s => sp.appendChild(el('div','row', `<span>${esc(s.name)}</span><span class="mono">${esc(s.components)} components</span>`)));
+  sp.appendChild(el('div','row', `<span class="tag">overlays</span><span>${(d.overlays||[]).map(o=>`<span class="chip">${esc(o)}</span>`).join(' ')}</span>`));
+  P.appendChild(sp);
+
+  // Research queue
+  const rp = el('div','panel'); rp.appendChild(el('h2', null, 'Research Queue'));
+  const rts = d.research_tasks || [];
+  if (!rts.length) rp.appendChild(el('p','tag','No open research tasks.'));
+  rts.forEach(t => {
+    const cls = t.priority==='high'||t.priority==='critical' ? 'crit' : (t.priority==='medium'?'warn':'');
+    rp.appendChild(el('div','row', `<span>${esc(t.subject)}</span><span class="chip ${cls}">${esc(t.priority)}</span>`));
+    if (t.detail) rp.appendChild(el('div','tag', esc(t.detail)));
+  });
+  P.appendChild(rp);
+}
+load();
+</script>
+</body>
+</html>

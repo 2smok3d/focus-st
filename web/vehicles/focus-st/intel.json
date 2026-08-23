@@ -1,0 +1,118 @@
+{
+  "generated_at": "2026-08-23T10:01:59.399100+00:00",
+  "variant": "focus-st",
+  "vehicle": {
+    "vin": "1FADP3L94HL223134",
+    "name": "2017 Ford Focus"
+  },
+  "reference": {
+    "slug": "focus-st",
+    "name": "Focus ST",
+    "trim": "ST (MK3.5)",
+    "market": "NA",
+    "years": "2015\u20132018",
+    "manufacturer": "Ford",
+    "platform": "Focus MK3",
+    "platform_code": "C346 / MK3",
+    "engine": {
+      "code": "R9DA / 2.0 EcoBoost",
+      "displacement_cc": 1999,
+      "config": "I4 DOHC 16v",
+      "aspiration": "turbo GTDI",
+      "power": "252 hp @ 5,500",
+      "torque": "270 lb-ft @ 2,500"
+    },
+    "transmission": {
+      "code": "MT82",
+      "type": "6-speed manual",
+      "gears": 6
+    }
+  },
+  "systems": [
+    {
+      "slug": "powertrain",
+      "name": "Powertrain",
+      "components": 23
+    }
+  ],
+  "overlays": [
+    "airflow",
+    "coolant",
+    "function",
+    "lubrication"
+  ],
+  "twin": {
+    "deviations": [
+      {
+        "slug": "intercooler",
+        "condition": "modified",
+        "installed_part": "Depo 'Beast' FMIC",
+        "knowledge_state": "DIRECTLY_OBSERVED"
+      },
+      {
+        "slug": "radiator",
+        "condition": "failed",
+        "installed_part": null,
+        "knowledge_state": "DIRECTLY_OBSERVED"
+      }
+    ],
+    "count": 2
+  },
+  "diagnostics": {
+    "open_cases": [
+      {
+        "code": "DG-0004",
+        "title": "Low / intermittent boost",
+        "status": "open",
+        "leading": "PCV / intake unmetered-air leak",
+        "recommended_test": "Visual intake + PCV plumbing inspection"
+      }
+    ],
+    "total_cases": 1
+  },
+  "workshop": {
+    "work_orders": [
+      {
+        "id": 2,
+        "code": "WO-0001",
+        "title": "Water pump replacement",
+        "status": "blocked",
+        "repair_state": "planned",
+        "ready_pct": 86
+      }
+    ],
+    "open": 1
+  },
+  "knowledge": {
+    "total_claims": 49,
+    "by_verification": {
+      "OEM_VERIFIED": {
+        "n": 20,
+        "pct": 40.8
+      },
+      "VEHICLE_VERIFIED": {
+        "n": 4,
+        "pct": 8.2
+      },
+      "CORROBORATED": {
+        "n": 25,
+        "pct": 51.0
+      }
+    },
+    "conflicts": 1,
+    "gaps": 1
+  },
+  "research_tasks": [
+    {
+      "id": 1,
+      "kind": "conflict",
+      "priority": "high",
+      "subject": "component:lubrication:oil_capacity",
+      "detail": "Conflicting evidence on oil_capacity = 4.3 \u2014 resolve by VIN/OEM doc.",
+      "status": "open"
+    }
+  ],
+  "telemetry": {
+    "channels": 11
+  }
+}
