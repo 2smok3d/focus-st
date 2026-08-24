@@ -137,6 +137,24 @@ def test_intel_carries_anomaly_block():
         assert all({"value", "score", "direction"} <= set(p) for p in series["anomalies"])
 
 
+def test_intel_carries_rul_forecast():
+    """The projection carries the RUL block — the machine's usage rate and per-item
+    projected due-by dates. Shape + honesty: usage is labelled known/unknown, and the
+    coming_up rollup counts only items projected within the horizon."""
+    from app.intel import build_intel
+    with session_scope() as s:
+        d = build_intel(s, "focus-st")
+    r = d["rul"]
+    assert r is not None
+    assert set(r["usage"]) >= {"miles_per_day", "miles_per_year", "readings", "known"}
+    assert isinstance(r["projected"], list)
+    for p in r["projected"]:
+        assert {"item", "projected_date", "days_remaining", "basis"} <= set(p)
+        assert p["basis"] in ("mileage", "time")
+    assert r["coming_up"] == sum(1 for p in r["projected"]
+                                 if 0 <= p["days_remaining"] <= r["horizon_days"])
+
+
 def test_intel_carries_maintenance_status():
     """The projection surfaces the maintenance-due engine bucketed by status, and an
     interval with no service on record reads `needs_log` — never a false `overdue`."""

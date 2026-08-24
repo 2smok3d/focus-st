@@ -335,6 +335,12 @@ def v2_anomalies(s: Session = Depends(get_session)):
     return anomaly.component_anomalies(s, service.get_vehicle(s).id)
 
 
+@app.get("/v2/rul")
+def v2_rul(s: Session = Depends(get_session)):
+    from . import rul
+    return rul.maintenance_rul(s, service.get_vehicle(s).id)
+
+
 @app.get("/v2/fitment/{slug}")
 def v2_fitment(slug: str, s: Session = Depends(get_session)):
     from . import fitment

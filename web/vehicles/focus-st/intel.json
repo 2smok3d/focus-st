@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T15:58:47.961282+00:00",
+  "generated_at": "2026-08-24T18:27:12.107884+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -187,6 +187,19 @@
     "series": [],
     "flagged": 0,
     "series_affected": 0
+  },
+  "rul": {
+    "usage": {
+      "miles_per_day": null,
+      "miles_per_year": null,
+      "readings": 1,
+      "span_days": 0.0,
+      "known": false
+    },
+    "horizon_days": 90,
+    "coming_up": 0,
+    "overdue": 0,
+    "projected": []
   },
   "parts": {
     "slots": 54,

@@ -256,6 +256,18 @@ def list_anomalies() -> list[dict]:
 
 
 @mcp.tool
+def maintenance_forecast() -> dict:
+    """Predictive maintenance for the tracked vehicle (RUL). Fits the machine's usage rate
+    (miles/day) from its odometer history and projects a due-by *date* for each maintenance
+    item, comparing its mileage and time limits on one axis (whichever arrives first). These
+    are projections, clearly labelled — never asserted as fact. When odometer history is too
+    thin to establish a rate, mileage-based items have no date and say so."""
+    from . import rul
+    with session_scope() as s:
+        return rul.maintenance_rul(s, service.get_vehicle(s).id)
+
+
+@mcp.tool
 def propose_claim(subject_type: str, subject_key: str, prop: str,
                   evidence_authority: int, value: str | None = None, unit: str | None = None,
                   evidence_stance: str = "supports", on_vehicle: bool = False,
