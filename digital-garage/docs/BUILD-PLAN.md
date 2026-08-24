@@ -144,13 +144,15 @@ lubrication) that already exist in the reference graph and in `intel.json` (`ove
 - **Acceptance:** an overlay toggle shows only that domain's edges; clicking a component
   opens its claims; renders headless with zero errors.
 
-### API2 — REST API V2 (parity with the MCP read surface)
-`app/main.py` (FastAPI) is still V1-only (`/vehicle`, `/specs`, `/mods`, …). Add read
-endpoints mirroring the MCP V2 tools, reusing refservice / intel / trends / fitment:
-`/v2/variant/{slug}`, `/systems`, `/component/{slug}`, `/claim`, `/conflicts`,
-`/intel/{slug}`, `/trends`, `/fitment`. Read-only — the only write stays the proposal queue.
+### API2 — REST API V2 (parity with the MCP read surface) *(done)*
+`app/main.py` gained read-only V2 endpoints mirroring the MCP tools, reusing refservice /
+knowledge / trends / fitment / intel: `/v2/variant/{slug}`, `/v2/systems/{slug}`,
+`/v2/component/{slug}/{comp}`, `/v2/claim`, `/v2/claims`, `/v2/conflicts`,
+`/v2/knowledge/{slug}`, `/v2/trends`, `/v2/fitment/{slug}`, `/v2/intel/{slug}`. The only
+write surface stays the `/proposals` queue.
 - **Acceptance:** each endpoint returns the same dict the CLI/MCP does; a `TestClient`
-  smoke test covers them; no new mutation surface.
+  smoke test covers them (variant/systems/component/claim/conflicts/knowledge/intel/
+  fitment) and asserts the V2 routes reject writes; no new mutation surface. ✓
 
 ### CI2 — Full DB-backed CI *(done)*
 `ci.yml`'s `digital-garage tests` job now runs a **Postgres 16 service** (mapped
