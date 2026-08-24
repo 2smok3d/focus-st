@@ -169,6 +169,22 @@ def cmd_trends(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_anomalies(args: argparse.Namespace) -> int:
+    from . import anomaly, service
+    with session_scope() as s:
+        veh = service.get_vehicle(s, args.vin) if args.vin else service.get_vehicle(s)
+        rows = anomaly.component_anomalies(s, veh.id)
+        if not rows:
+            print("No anomalies in the observation history (or too little history to judge).")
+            return 0
+        for a in rows:
+            print(f"  ⚑ {a['summary']}")
+            for pt in a["anomalies"]:
+                print(f"      • {pt['value']} {a['unit']} ({pt['direction']}, z={pt['score']}, "
+                      f"Δ{pt['deviation']:+} vs baseline)")
+    return 0
+
+
 def cmd_fitment(args: argparse.Namespace) -> int:
     from . import fitment
     icon = {"fits": "✅", "likely": "≈", "unmapped": "⚠️"}
@@ -1187,6 +1203,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("trends", help="fit degradation trends over the observation history")
     sp.add_argument("--vin", default=None)
     sp.set_defaults(fn=cmd_trends)
+
+    sp = sub.add_parser("anomalies", help="flag robust outliers in the observation history")
+    sp.add_argument("--vin", default=None)
+    sp.set_defaults(fn=cmd_anomalies)
 
     sp = sub.add_parser("fitment", help="resolve PARTS.md catalog slots → reference components")
     sp.add_argument("--variant", default="focus-st")

@@ -160,6 +160,7 @@ function render(d) {
   const kpis = [
     ['claims', k.total_claims ?? '—'], ['conflicts', k.conflicts ?? 0], ['twin deviations', tw.count ?? 0],
     ['maintenance due', mt.attention ?? 0], ['drift alerts', (d.trends||{}).drifting ?? 0],
+    ['anomalies', (d.anomalies||{}).flagged ?? 0],
     ['parts mapped', (d.parts||{}).matched ?? 0], ['open cases', (dg.open_cases||[]).length],
     ['open work orders', ws.open ?? 0], ['telemetry channels', (d.telemetry||{}).channels ?? 0],
   ];
@@ -248,6 +249,17 @@ function render(d) {
     tp.appendChild(el('div','tag', esc(t.summary)));
   });
   add('maintain', tp);
+
+  // Anomalies — robust point-outliers in the observation history (ANOM)
+  const ap = el('div','panel'); ap.appendChild(el('h2', null, 'Anomalies'));
+  const anoms = (d.anomalies||{}).series || [];
+  if (!anoms.length) ap.appendChild(el('p','tag','No anomalies in the observation history — every series sits within its robust baseline.'));
+  anoms.slice(0,8).forEach(a => {
+    ap.appendChild(el('div','row', `<span>${esc(a.subject)} · ${esc(a.metric)}</span>`
+      + `<span class="chip ${a.confounded?'warn':'crit'}">⚑ ${esc(a.count)}${a.confounded?' ⚠':''}</span>`));
+    ap.appendChild(el('div','tag', esc(a.summary)));
+  });
+  add('diagnose', ap);
 
   // Parts fitment
   const pp = el('div','panel'); pp.appendChild(el('h2', null, 'Parts Fitment'));
