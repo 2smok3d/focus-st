@@ -146,11 +146,18 @@ Connect the PARTS catalog to reference components and known fitment.
   spark-plugs, Intercooler → intercooler ✓); generic false positives rejected (Oil Filter,
   Engine Oil → unmapped ✓); mismatches warn ✓.
 
-### UI — Modular UI V2
-Modularize the frontend into views (Overview / Diagnose / Maintain / Build / Parts /
-Systems / Data / Knowledge); interactive engine-bay system navigator; universal search
-over claims + components + codes.
-- **Acceptance:** views are independent; navigator reads the overlays; search hits canon.
+### UI — Modular UI V2 *(1+3 done)*
+- **Modular views.** *(done)* `web/tools/intel.html` is now a tabbed app — Overview /
+  Knowledge / Diagnose / Maintain / Parts / Systems — each panel tagged with its view and
+  filtered by the tab bar (Overview shows all nine).
+- **Universal search.** *(done)* One search box over the machine's claims + reference
+  components + DTC codes: `intel.json` carries a compact `search_index` (components +
+  claims), the client loads the shared code database, and matches render as typed result
+  cards (claim / part / code) — codes deep-link to the code tool. Panels hide while
+  searching; clearing restores the active view.
+- **Engine-bay navigator** *(later)* — an interactive system map over the graph overlays.
+- **Acceptance:** views are independent (✓); search hits canon across claims/components/
+  codes (✓ — "torque" → claims, "intercooler" → part, "boost" → codes).
 
 ---
 

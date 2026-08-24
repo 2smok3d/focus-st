@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:08:30.392725+00:00",
+  "generated_at": "2026-08-24T08:25:07.535031+00:00",
   "variant": "zzr600",
   "vehicle": {
     "vin": "KAW-ZX600D-1991",
@@ -156,5 +156,245 @@
   ],
   "telemetry": {
     "channels": 11
+  },
+  "search_index": {
+    "components": [
+      {
+        "slug": "radiator",
+        "name": "Radiator",
+        "system": "Cooling"
+      },
+      {
+        "slug": "thermostat",
+        "name": "Thermostat",
+        "system": "Cooling"
+      },
+      {
+        "slug": "water-pump",
+        "name": "Water Pump",
+        "system": "Cooling"
+      },
+      {
+        "slug": "chain",
+        "name": "Drive Chain (525)",
+        "system": "Driveline"
+      },
+      {
+        "slug": "sprockets",
+        "name": "Sprockets",
+        "system": "Driveline"
+      },
+      {
+        "slug": "battery",
+        "name": "Battery",
+        "system": "Electrical / Charging"
+      },
+      {
+        "slug": "regulator-rectifier",
+        "name": "Regulator/Rectifier",
+        "system": "Electrical / Charging"
+      },
+      {
+        "slug": "stator",
+        "name": "Stator",
+        "system": "Electrical / Charging"
+      },
+      {
+        "slug": "clutch",
+        "name": "Clutch",
+        "system": "Engine"
+      },
+      {
+        "slug": "crankshaft",
+        "name": "Crankshaft",
+        "system": "Engine"
+      },
+      {
+        "slug": "cylinder-head",
+        "name": "Cylinder Head",
+        "system": "Engine"
+      },
+      {
+        "slug": "valvetrain",
+        "name": "Valvetrain (shim-under-bucket)",
+        "system": "Engine"
+      },
+      {
+        "slug": "carburetors",
+        "name": "Carburetors (4\u00d7 Keihin CVKD36)",
+        "system": "Fuel / Carburetion"
+      },
+      {
+        "slug": "float-bowls",
+        "name": "Float Bowls",
+        "system": "Fuel / Carburetion"
+      },
+      {
+        "slug": "petcock",
+        "name": "Petcock",
+        "system": "Fuel / Carburetion"
+      },
+      {
+        "slug": "cdi",
+        "name": "CDI / Igniter",
+        "system": "Ignition"
+      },
+      {
+        "slug": "coils",
+        "name": "Ignition Coils",
+        "system": "Ignition"
+      },
+      {
+        "slug": "spark-plugs",
+        "name": "Spark Plugs (NGK CR9E)",
+        "system": "Ignition"
+      }
+    ],
+    "claims": [
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "power",
+        "value": "~98 hp @ 11,500 rpm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "displacement",
+        "value": "599 cc",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "cylinders_valves",
+        "value": "Inline-4 \u00b7 DOHC \u00b7 16v \u00b7 liquid-cooled",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "bore_stroke",
+        "value": "66.0 \u00d7 43.8 mm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "torque",
+        "value": "~62\u201364 Nm (~46 lb-ft) @ 9,500 rpm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "carburetion",
+        "value": "4\u00d7 Keihin CVKD36 (36 mm CV) \u00b7 ram-air",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "ignition",
+        "value": "Digital (CDI-type) \u00b7 NGK CR9E",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "transmission",
+        "value": "6-speed \u00b7 wet multiplate clutch",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "final_drive",
+        "value": "Chain (525 \u2014 confirm pitch/links)",
+        "unit": null,
+        "verification": "UNVERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "frame",
+        "value": "Aluminium perimeter (\"e-box\")",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "front_susp",
+        "value": "41 mm telescopic fork",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "rear_susp",
+        "value": "Uni-Trak single shock, adjustable preload",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "front_brake",
+        "value": "Twin discs (~300 mm)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "rear_brake",
+        "value": "Single disc (~230\u2013250 mm)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "wheelbase",
+        "value": "~1,399 mm (55.1 in)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "dry_weight",
+        "value": "~377 lb (~171 kg)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "fuel_capacity",
+        "value": "~18 L incl. reserve",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "zzr600",
+        "prop": "tires_d_era",
+        "value": "~120/60ZR17 F \u00b7 ~160/60ZR17 R \u2014 D and E differ",
+        "unit": null,
+        "verification": "UNVERIFIED"
+      }
+    ]
   }
 }

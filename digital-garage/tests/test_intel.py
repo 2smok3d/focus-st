@@ -80,6 +80,21 @@ def test_write_intel_emits_valid_json(tmp_path):
     assert doc["variant"] == "focus-st" and "generated_at" in doc
 
 
+def test_intel_carries_search_index():
+    """The projection carries a self-contained universal-search index — the machine's
+    reference components (with their system) and its graded claims."""
+    from app.intel import build_intel
+    with session_scope() as s:
+        d = build_intel(s, "focus-st")
+    si = d["search_index"]
+    assert si["components"] and si["claims"]
+    # components carry slug + name + system for search + display
+    assert all({"slug", "name", "system"} <= set(c) for c in si["components"])
+    # a known component and a known claim property are searchable
+    assert any(c["slug"] == "intercooler" for c in si["components"])
+    assert any(cl["prop"] == "lug_torque" for cl in si["claims"])
+
+
 def test_intel_carries_maintenance_status():
     """The projection surfaces the maintenance-due engine bucketed by status, and an
     interval with no service on record reads `needs_log` — never a false `overdue`."""

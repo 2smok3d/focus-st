@@ -65,6 +65,9 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     from .tmodels import TelemetryChannel
     n_channels = session.scalar(select(func.count()).select_from(TelemetryChannel)) or 0
 
+    # universal-search index — components + this machine's claims, flat and self-contained
+    search_index = _search_index(session, variant_slug, tree) if variant else {"components": [], "claims": []}
+
     return {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "variant": variant_slug,
@@ -88,7 +91,34 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
                       "conflicts": kq["conflicts"], "gaps": kq["gaps"]},
         "research_tasks": research,
         "telemetry": {"channels": n_channels},
+        "search_index": search_index,
     }
+
+
+def _search_index(session: Session, variant_slug: str, tree: list[dict]) -> dict:
+    """A compact, self-contained index for the dashboard's universal search: the
+    machine's reference components (with their system) and its graded claims. DTC codes
+    are global, so the client loads those from the shared code database itself."""
+    from .refmodels import Claim
+
+    components = []
+    for node in tree:
+        _collect_components(node, node.get("name", ""), components)
+
+    claims = []
+    for c in session.scalars(select(Claim).where(
+            Claim.applicability["variant"].astext == variant_slug)):
+        claims.append({"subject_type": c.subject_type, "subject_key": c.subject_key,
+                       "prop": c.prop, "value": c.value, "unit": c.unit,
+                       "verification": c.verification})
+    return {"components": components, "claims": claims}
+
+
+def _collect_components(node: dict, system_name: str, out: list[dict]) -> None:
+    for comp in node.get("components", []):
+        out.append({"slug": comp.get("slug"), "name": comp.get("name"), "system": system_name})
+    for child in node.get("children", []):
+        _collect_components(child, child.get("name", system_name), out)
 
 
 def _count_components(node: dict) -> list[int]:

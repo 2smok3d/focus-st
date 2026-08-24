@@ -6,8 +6,20 @@
 <title>Vehicle Intelligence — The Garage</title>
 <link rel="stylesheet" href="../assets/hud.css">
 <style>
+  [hidden] { display: none !important; }   /* beat .kpis/.panels display:grid when toggled off */
   .wrap { max-width: 1100px; margin: 0 auto; padding: 16px 16px 64px; }
-  .head { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin: 8px 0 18px; }
+  .head { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px; margin: 8px 0 14px; }
+  .toolbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin: 0 0 16px; }
+  .search { flex:1; min-width:220px; display:flex; align-items:center; gap:8px; background:var(--panel);
+            border:1px solid var(--line); border-radius:var(--radius); padding:8px 12px; }
+  .search input { flex:1; background:transparent; border:0; color:var(--ink,#eee); font-family:var(--mono);
+                  font-size:13px; outline:none; }
+  .search .k { font-family:var(--mono); font-size:11px; color:var(--muted,#8a8a92); }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+  .tab { font-family:var(--mono); font-size:12px; letter-spacing:.03em; text-transform:uppercase; cursor:pointer;
+         padding:5px 12px; border:1px solid var(--line); border-radius:20px; color:var(--muted,#8a8a92);
+         background:var(--panel); user-select:none; }
+  .tab[aria-selected="true"] { border-color:var(--red,#e8000d); color:var(--ink,#eee); }
   .kpis { display:grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:18px; }
   .kpi { background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; }
   .kpi b { font-family:var(--disp); font-size:26px; display:block; line-height:1.1; }
@@ -21,12 +33,15 @@
   .bar { height:8px; border-radius:6px; background:#2a2a30; overflow:hidden; }
   .bar > i { display:block; height:100%; }
   .chip { font-family:var(--mono); font-size:11px; padding:2px 7px; border:1px solid var(--line); border-radius:20px; }
-  .list { display:flex; flex-direction:column; gap:6px; }
   a.crumb { color:var(--muted,#8a8a92); text-decoration:none; font-family:var(--mono); font-size:12px; }
   .stamp { color:var(--muted,#8a8a92); font-family:var(--mono); font-size:11px; }
-  .warn { color: var(--amber, #e8a33d); }
-  .crit { color: var(--red, #e8000d); }
-  .ok { color: var(--green, #29c07a); }
+  .warn { color: var(--amber, #e8a33d); } .crit { color: var(--red, #e8000d); } .ok { color: var(--green, #29c07a); }
+  .results { display:flex; flex-direction:column; gap:8px; }
+  .result { display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line);
+            border-radius:11px; padding:10px 13px; text-decoration:none; color:var(--ink,#eee); cursor:pointer; }
+  .result .b { font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase; padding:2px 6px;
+               border:1px solid var(--line2,#2a2a30); border-radius:5px; color:var(--muted,#8a8a92); flex:none; width:52px; text-align:center; }
+  .result .t { flex:1; font-size:13px; } .result .t .s { font-family:var(--mono); font-size:11px; color:var(--muted,#8a8a92); margin-top:2px; }
 </style>
 </head>
 <body class="hud">
@@ -43,8 +58,16 @@
       </div>
     </div>
 
+    <div class="toolbar">
+      <label class="search"><span class="k">⌕</span>
+        <input id="q" type="search" placeholder="Search claims, components, DTC codes…" autocomplete="off" aria-label="Universal search">
+      </label>
+    </div>
+    <div id="tabs" class="tabs" role="tablist"></div>
+
     <div id="kpis" class="kpis"></div>
     <div id="panels" class="panels"></div>
+    <div id="results" class="results" hidden></div>
     <p id="err" class="empty" hidden></p>
   </div>
 
@@ -57,9 +80,14 @@ const FLEET = ['focus-st','zzr600','rz350','tz250','toyota-pickup'];
 const NAMES = {'focus-st':'Focus ST','zzr600':'ZZR600','rz350':'RZ350','tz250':'TZ250','toyota-pickup':'Pickup 22RE'};
 const slug = (new URLSearchParams(location.search).get('v') || 'focus-st');
 
+// The modular views. Each panel is tagged with one; Overview shows them all.
+const VIEWS = [['overview','Overview'],['knowledge','Knowledge'],['diagnose','Diagnose'],
+               ['maintain','Maintain'],['parts','Parts'],['systems','Systems']];
+let activeView = 'overview';
+let codesCache = null;
+
 function fleetBar() {
-  const bar = document.getElementById('fleet');
-  bar.innerHTML = FLEET.map(s =>
+  document.getElementById('fleet').innerHTML = FLEET.map(s =>
     `<a class="chip" href="?v=${s}" style="text-decoration:none;${s===slug?'border-color:var(--red,#e8000d);color:var(--ink,#eee)':''}">${esc(NAMES[s]||s)}</a>`
   ).join('');
 }
@@ -79,6 +107,31 @@ async function load() {
     return;
   }
   render(d);
+  wireSearch(d);
+}
+
+function tabBar() {
+  const tb = document.getElementById('tabs');
+  tb.innerHTML = '';
+  VIEWS.forEach(([id, label]) => {
+    const t = el('div','tab', esc(label));
+    t.setAttribute('role','tab');
+    t.setAttribute('aria-selected', id === activeView ? 'true' : 'false');
+    t.onclick = () => showView(id);
+    tb.appendChild(t);
+  });
+}
+
+function showView(id) {
+  activeView = id;
+  document.getElementById('q').value = '';
+  document.getElementById('results').hidden = true;
+  document.getElementById('kpis').hidden = false;
+  document.getElementById('panels').hidden = false;
+  tabBar();
+  document.querySelectorAll('#panels .panel').forEach(p => {
+    p.hidden = !(id === 'overview' || p.dataset.view === id);
+  });
 }
 
 function render(d) {
@@ -87,20 +140,16 @@ function render(d) {
 
   const k = d.knowledge || {}, tw = d.twin || {}, dg = d.diagnostics || {}, ws = d.workshop || {}, mt = d.maintenance || {};
   const kpis = [
-    ['claims', k.total_claims ?? '—'],
-    ['conflicts', k.conflicts ?? 0],
-    ['twin deviations', tw.count ?? 0],
-    ['maintenance due', mt.attention ?? 0],
-    ['drift alerts', (d.trends||{}).drifting ?? 0],
-    ['parts mapped', (d.parts||{}).matched ?? 0],
-    ['open cases', (dg.open_cases||[]).length],
-    ['open work orders', ws.open ?? 0],
-    ['telemetry channels', (d.telemetry||{}).channels ?? 0],
+    ['claims', k.total_claims ?? '—'], ['conflicts', k.conflicts ?? 0], ['twin deviations', tw.count ?? 0],
+    ['maintenance due', mt.attention ?? 0], ['drift alerts', (d.trends||{}).drifting ?? 0],
+    ['parts mapped', (d.parts||{}).matched ?? 0], ['open cases', (dg.open_cases||[]).length],
+    ['open work orders', ws.open ?? 0], ['telemetry channels', (d.telemetry||{}).channels ?? 0],
   ];
   const kc = document.getElementById('kpis');
   kpis.forEach(([label, val]) => kc.appendChild(el('div','kpi', `<b>${esc(val)}</b><span>${esc(label)}</span>`)));
 
   const P = document.getElementById('panels');
+  const add = (view, panel) => { panel.dataset.view = view; P.appendChild(panel); };
 
   // Knowledge quality
   const kp = el('div','panel'); kp.appendChild(el('h2', null, 'Knowledge Quality'));
@@ -109,13 +158,13 @@ function render(d) {
     if (!bv[g]) return;
     const row = el('div','row');
     row.appendChild(el('span', null, `<span class="tag">${esc(g)}</span>`));
-    const right = el('span', null, `<span class="mono">${esc(bv[g].n)} · ${esc(bv[g].pct)}%</span>`);
-    row.appendChild(right); kp.appendChild(row);
+    row.appendChild(el('span', null, `<span class="mono">${esc(bv[g].n)} · ${esc(bv[g].pct)}%</span>`));
+    kp.appendChild(row);
     const bar = el('div','bar'); const fill = el('i'); fill.style.width = bv[g].pct+'%'; fill.style.background = gradeColor(g);
     bar.appendChild(fill); kp.appendChild(bar);
   });
   kp.appendChild(el('div','row', `<span class="tag">open gaps</span><span class="mono ${k.gaps? 'warn':'ok'}">${esc(k.gaps ?? 0)}</span>`));
-  P.appendChild(kp);
+  add('knowledge', kp);
 
   // Diagnostics
   const dp = el('div','panel'); dp.appendChild(el('h2', null, 'Diagnostics'));
@@ -126,7 +175,7 @@ function render(d) {
     if (c.leading) dp.appendChild(el('div','tag', `leading: ${esc(c.leading)}`));
     if (c.recommended_test) dp.appendChild(el('div','tag', `▸ next test: ${esc(c.recommended_test)}`));
   });
-  P.appendChild(dp);
+  add('diagnose', dp);
 
   // Digital twin deviations
   const twp = el('div','panel'); twp.appendChild(el('h2', null, 'Digital Twin — Deviations from Stock'));
@@ -137,7 +186,7 @@ function render(d) {
     twp.appendChild(el('div','row', `<span>${esc(x.slug)}${x.installed_part? ' → '+esc(x.installed_part):''}</span>`
       + `<span class="chip ${cls}">${esc(x.condition)}</span>`));
   });
-  P.appendChild(twp);
+  add('diagnose', twp);
 
   // Workshop
   const wp = el('div','panel'); wp.appendChild(el('h2', null, 'Workshop'));
@@ -148,7 +197,7 @@ function render(d) {
       + `<span class="mono">READY ${esc(w.ready_pct)}%</span>`));
     wp.appendChild(el('div','tag', `${esc(w.status)} · ${esc(w.repair_state)}`));
   });
-  P.appendChild(wp);
+  add('diagnose', wp);
 
   // Maintenance
   const mp = el('div','panel');
@@ -163,12 +212,11 @@ function render(d) {
     .map(s=>`<span class="chip ${mstate[s]}">${mc[s]} ${esc(mlabel[s])}</span>`).join(' ') || '<span class="tag">no intervals tracked</span>'));
   mp.appendChild(chipRow);
   (mt.items||[]).slice(0,8).forEach(it => {
-    const cls = mstate[it.status] || '';
-    mp.appendChild(el('div','row', `<span>${esc(it.item)}</span><span class="chip ${cls}">${esc(mlabel[it.status]||it.status)}</span>`));
+    mp.appendChild(el('div','row', `<span>${esc(it.item)}</span><span class="chip ${mstate[it.status]||''}">${esc(mlabel[it.status]||it.status)}</span>`));
     if (it.detail) mp.appendChild(el('div','tag', esc(it.detail)));
   });
   if (!(mt.items||[]).length) mp.appendChild(el('p','tag','No maintenance intervals on record for this machine.'));
-  P.appendChild(mp);
+  add('maintain', mp);
 
   // Degradation trends
   const tp = el('div','panel'); tp.appendChild(el('h2', null, 'Degradation Trends'));
@@ -181,7 +229,7 @@ function render(d) {
       + `<span class="chip ${cls}">${esc(arrow[t.direction]||'')} ${esc((t.pct_change*100).toFixed(0))}%${t.drift?' ‼':''}</span>`));
     tp.appendChild(el('div','tag', esc(t.summary)));
   });
-  P.appendChild(tp);
+  add('maintain', tp);
 
   // Parts fitment
   const pp = el('div','panel'); pp.appendChild(el('h2', null, 'Parts Fitment'));
@@ -196,13 +244,13 @@ function render(d) {
     pp.appendChild(el('div','row', `<span class="tag">unmapped slots</span><span class="mono ${pf.unmatched? 'warn':'ok'}">${esc(pf.unmatched)}</span>`));
     (pf.unmatched_slots||[]).slice(0,8).forEach(s => pp.appendChild(el('div','tag', '· '+esc(s))));
   }
-  P.appendChild(pp);
+  add('parts', pp);
 
   // Systems + overlays
   const sp = el('div','panel'); sp.appendChild(el('h2', null, 'Systems & Graph Overlays'));
   (d.systems||[]).forEach(s => sp.appendChild(el('div','row', `<span>${esc(s.name)}</span><span class="mono">${esc(s.components)} components</span>`)));
   sp.appendChild(el('div','row', `<span class="tag">overlays</span><span>${(d.overlays||[]).map(o=>`<span class="chip">${esc(o)}</span>`).join(' ')}</span>`));
-  P.appendChild(sp);
+  add('systems', sp);
 
   // Research queue
   const rp = el('div','panel'); rp.appendChild(el('h2', null, 'Research Queue'));
@@ -213,7 +261,59 @@ function render(d) {
     rp.appendChild(el('div','row', `<span>${esc(t.subject)}</span><span class="chip ${cls}">${esc(t.priority)}</span>`));
     if (t.detail) rp.appendChild(el('div','tag', esc(t.detail)));
   });
-  P.appendChild(rp);
+  add('knowledge', rp);
+
+  tabBar();
+  showView('overview');
+}
+
+// ---- universal search over claims + components + DTC codes ----------------
+async function loadCodes() {
+  if (codesCache) return codesCache;
+  try {
+    const r = await fetch('../../data/dtc-codes.json', {cache:'force-cache'});
+    codesCache = (await r.json()).codes || [];
+  } catch (e) { codesCache = []; }
+  return codesCache;
+}
+
+function wireSearch(d) {
+  const idx = d.search_index || {components:[], claims:[]};
+  const input = document.getElementById('q');
+  const box = document.getElementById('results');
+  let codes = [];
+  loadCodes().then(c => { codes = c; if (input.value.trim()) run(input.value); });
+
+  function run(qraw) {
+    const q = qraw.trim().toLowerCase();
+    if (!q) { showView(activeView); return; }
+    document.getElementById('kpis').hidden = true;
+    document.getElementById('panels').hidden = true;
+    box.hidden = false; box.innerHTML = '';
+    const out = [];
+    (idx.claims||[]).forEach(c => {
+      const hay = `${c.subject_key} ${c.prop} ${c.value||''} ${c.subject_type}`.toLowerCase();
+      if (hay.includes(q)) out.push({b:'claim', t:`${c.subject_key} · ${c.prop}`,
+        s:`${c.value!=null?c.value:''}${c.unit?' '+c.unit:''} · ${c.verification||''}`, act:()=>showView('knowledge')});
+    });
+    (idx.components||[]).forEach(c => {
+      const hay = `${c.slug} ${c.name} ${c.system}`.toLowerCase();
+      if (hay.includes(q)) out.push({b:'part', t:esc(c.name), s:`${c.system||''} · ${c.slug}`, act:()=>showView('systems')});
+    });
+    (codes||[]).forEach(c => {
+      const hay = `${c.code} ${c.title} ${c.system} ${(c.tags||[]).join(' ')}`.toLowerCase();
+      if (hay.includes(q)) out.push({b:'code', t:`${c.code} — ${c.title}`, s:c.system||'',
+        href:`dtc.html?code=${encodeURIComponent(c.code)}`});
+    });
+    if (!out.length) { box.appendChild(el('p','tag','No claims, components, or codes match “'+esc(qraw)+'”.')); return; }
+    out.slice(0, 40).forEach(r => {
+      const node = el(r.href ? 'a' : 'div', 'result',
+        `<span class="b">${esc(r.b)}</span><span class="t">${r.t}<div class="s">${esc(r.s)}</div></span>`);
+      if (r.href) node.href = r.href; else node.onclick = r.act;
+      box.appendChild(node);
+    });
+  }
+  input.addEventListener('input', () => run(input.value));
 }
 load();
 </script>

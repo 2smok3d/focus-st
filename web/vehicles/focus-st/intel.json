@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:08:30.354790+00:00",
+  "generated_at": "2026-08-24T08:25:07.493487+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -235,5 +235,518 @@
   ],
   "telemetry": {
     "channels": 11
+  },
+  "search_index": {
+    "components": [
+      {
+        "slug": "coolant",
+        "name": "Coolant",
+        "system": "Cooling"
+      },
+      {
+        "slug": "radiator",
+        "name": "Radiator",
+        "system": "Cooling"
+      },
+      {
+        "slug": "thermostat",
+        "name": "Thermostat",
+        "system": "Cooling"
+      },
+      {
+        "slug": "water-pump",
+        "name": "Water Pump",
+        "system": "Cooling"
+      },
+      {
+        "slug": "head",
+        "name": "Cylinder Head",
+        "system": "Engine"
+      },
+      {
+        "slug": "block",
+        "name": "Engine Block",
+        "system": "Engine"
+      },
+      {
+        "slug": "intake-manifold",
+        "name": "Intake Manifold",
+        "system": "Engine"
+      },
+      {
+        "slug": "lubrication",
+        "name": "Lubrication / Oil System",
+        "system": "Engine"
+      },
+      {
+        "slug": "oil-pump",
+        "name": "Oil Pump",
+        "system": "Engine"
+      },
+      {
+        "slug": "pcv",
+        "name": "PCV / Crankcase Vent",
+        "system": "Engine"
+      },
+      {
+        "slug": "throttle-body",
+        "name": "Throttle Body",
+        "system": "Engine"
+      },
+      {
+        "slug": "timing",
+        "name": "Timing",
+        "system": "Engine"
+      },
+      {
+        "slug": "air-filter",
+        "name": "Air Filter / Intake",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "bypass-valve",
+        "name": "Bypass Valve",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "charge-piping",
+        "name": "Charge Piping",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "intercooler",
+        "name": "Intercooler",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "turbocharger",
+        "name": "Turbocharger",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "wastegate",
+        "name": "Wastegate",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "fuel-rail",
+        "name": "Fuel Rail",
+        "system": "Fuel"
+      },
+      {
+        "slug": "hpfp",
+        "name": "High-Pressure Fuel Pump",
+        "system": "Fuel"
+      },
+      {
+        "slug": "injectors",
+        "name": "Injectors",
+        "system": "Fuel"
+      },
+      {
+        "slug": "coils",
+        "name": "Ignition Coils",
+        "system": "Ignition"
+      },
+      {
+        "slug": "spark-plugs",
+        "name": "Spark Plugs",
+        "system": "Ignition"
+      }
+    ],
+    "claims": [
+      {
+        "subject_type": "variant",
+        "subject_key": "focus-st",
+        "prop": "lug_torque",
+        "value": "100",
+        "unit": "lb-ft",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "engine",
+        "subject_key": "r9da",
+        "prop": "firing_order",
+        "value": "1-3-4-2",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "lubrication",
+        "prop": "oil_capacity",
+        "value": "4.3",
+        "unit": "qt",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "spark-plugs",
+        "prop": "part_and_gap",
+        "value": "SP-537 \u00b7 0.028\u20130.031 in",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "intercooler",
+        "prop": "heat_soak_prone",
+        "value": "yes",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "radiator",
+        "prop": "condition",
+        "value": "through-hole crack (front-left)",
+        "unit": null,
+        "verification": "VEHICLE_VERIFIED"
+      },
+      {
+        "subject_type": "engine",
+        "subject_key": "r9da",
+        "prop": "rated_power",
+        "value": "252",
+        "unit": "hp",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "engine",
+        "subject_key": "r9da",
+        "prop": "rated_torque",
+        "value": "270",
+        "unit": "lb-ft",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "engine",
+        "subject_key": "r9da",
+        "prop": "compression_ratio",
+        "value": "9.3:1",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "spark-plugs",
+        "prop": "gap",
+        "value": "0.028-0.031",
+        "unit": "in",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "final_drive",
+        "value": "3.82",
+        "unit": ":1",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "ratio_1",
+        "value": "3.31",
+        "unit": ":1",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "ratio_2",
+        "value": "2.13",
+        "unit": ":1",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "ratio_3",
+        "value": "1.48",
+        "unit": ":1",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "ratio_4",
+        "value": "1.14",
+        "unit": ":1",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "ratio_5",
+        "value": "0.95",
+        "unit": ":1",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "ratio_6",
+        "value": "0.76",
+        "unit": ":1",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "focus-st",
+        "prop": "wheel_size",
+        "value": "18x8",
+        "unit": "in",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "focus-st",
+        "prop": "wheel_offset",
+        "value": "ET55",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "focus-st",
+        "prop": "bolt_pattern",
+        "value": "5x108",
+        "unit": "mm",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "focus-st",
+        "prop": "tire_size",
+        "value": "235/40R18",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "lubrication",
+        "prop": "oil_spec",
+        "value": "Motorcraft 5W-30 synthetic blend (SAE 5W-30, WSS-M2C946-B1)",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "transmission",
+        "subject_key": "mt82",
+        "prop": "fluid_spec",
+        "value": "Motorcraft MTF (WSS-M2C200-D2 spec, MMT6)",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "coolant",
+        "prop": "spec",
+        "value": "Motorcraft Orange (WSS-M97B44-D)",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "component",
+        "subject_key": "spark-plugs",
+        "prop": "install_torque",
+        "value": "13",
+        "unit": "lb-ft",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "engine-oil-filter",
+        "prop": "interval_miles",
+        "value": "5000",
+        "unit": "mi",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "engine-oil-filter",
+        "prop": "interval_months",
+        "value": "6",
+        "unit": "mo",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "tire-rotation",
+        "prop": "interval_miles",
+        "value": "5000",
+        "unit": "mi",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "tire-rotation",
+        "prop": "interval_months",
+        "value": "6",
+        "unit": "mo",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "cabin-air-filter",
+        "prop": "interval_miles",
+        "value": "20000",
+        "unit": "mi",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "cabin-air-filter",
+        "prop": "interval_months",
+        "value": "12",
+        "unit": "mo",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "engine-air-filter",
+        "prop": "interval_miles",
+        "value": "30000",
+        "unit": "mi",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "mmt6-transmission-fluid",
+        "prop": "interval_miles",
+        "value": "60000",
+        "unit": "mi",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "spark-plugs",
+        "prop": "interval_miles",
+        "value": "60000",
+        "unit": "mi",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "brake-fluid",
+        "prop": "interval_months",
+        "value": "24",
+        "unit": "mo",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "coolant",
+        "prop": "interval_miles",
+        "value": "100000",
+        "unit": "mi",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "coolant",
+        "prop": "interval_months",
+        "value": "60",
+        "unit": "mo",
+        "verification": "OEM_VERIFIED"
+      },
+      {
+        "subject_type": "maintenance",
+        "subject_key": "clutch-fluid-shares-brake-reservoir",
+        "prop": "interval_months",
+        "value": "24",
+        "unit": "mo",
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "issue",
+        "subject_key": "radiator-cracked-through-hole-front-left-of-core",
+        "prop": "known_issue",
+        "value": "Radiator cracked \u2192 through-hole (front-left of core)",
+        "unit": null,
+        "verification": "VEHICLE_VERIFIED"
+      },
+      {
+        "subject_type": "issue",
+        "subject_key": "possible-oil-leak-after-aggressive-driving",
+        "prop": "known_issue",
+        "value": "Possible oil leak after aggressive driving",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "issue",
+        "subject_key": "floating-uncapped-vacuum-line-evap-no-codes",
+        "prop": "known_issue",
+        "value": "Floating / uncapped vacuum line (EVAP), no codes",
+        "unit": null,
+        "verification": "VEHICLE_VERIFIED"
+      },
+      {
+        "subject_type": "issue",
+        "subject_key": "0-admin-keys-3-mykeys-ex-auction",
+        "prop": "known_issue",
+        "value": "0 admin keys / 3 MyKeys (ex-auction)",
+        "unit": null,
+        "verification": "VEHICLE_VERIFIED"
+      },
+      {
+        "subject_type": "issue",
+        "subject_key": "evap-purge-valve-campaign-18s32-26s40-verify-status-for-this",
+        "prop": "known_issue",
+        "value": "EVAP purge valve campaign (18S32 / 26S40) \u2014 verify status for this VIN",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "issue",
+        "subject_key": "p04db-crankcase-ventilation-sensitivity-inspect-pcv-plumbing",
+        "prop": "known_issue",
+        "value": "P04DB crankcase-ventilation sensitivity \u2014 inspect PCV plumbing before parts",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "recall",
+        "subject_key": "18S32",
+        "prop": "campaign",
+        "value": "Fuel system \u2014 EVAP purge valve",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "recall",
+        "subject_key": "26S40",
+        "prop": "campaign",
+        "value": "Fuel system \u2014 EVAP purge (follow-up)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "recall",
+        "subject_key": "ST-HATCH-LATCH",
+        "prop": "campaign",
+        "value": "Latches \u2014 hatch/liftgate",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "recall",
+        "subject_key": "ST-SEATBACK",
+        "prop": "campaign",
+        "value": "Seats \u2014 seatback frame",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "recall",
+        "subject_key": "NHTSA-TEST-99",
+        "prop": "campaign",
+        "value": "Test system",
+        "unit": null,
+        "verification": "OEM_VERIFIED"
+      }
+    ]
   }
 }

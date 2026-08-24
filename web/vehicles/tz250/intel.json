@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:08:30.464373+00:00",
+  "generated_at": "2026-08-24T08:25:07.630382+00:00",
   "variant": "tz250",
   "vehicle": {
     "vin": "YAM-TZ250-1986",
@@ -137,5 +137,175 @@
   ],
   "telemetry": {
     "channels": 11
+  },
+  "search_index": {
+    "components": [
+      {
+        "slug": "radiator",
+        "name": "Radiator",
+        "system": "Cooling"
+      },
+      {
+        "slug": "water-pump",
+        "name": "Water Pump",
+        "system": "Cooling"
+      },
+      {
+        "slug": "chain",
+        "name": "Drive Chain",
+        "system": "Driveline"
+      },
+      {
+        "slug": "sprockets",
+        "name": "Sprockets (per circuit)",
+        "system": "Driveline"
+      },
+      {
+        "slug": "crankshaft",
+        "name": "Crankshaft",
+        "system": "Engine (2-stroke race)"
+      },
+      {
+        "slug": "cylinders",
+        "name": "Cylinders / Barrels",
+        "system": "Engine (2-stroke race)"
+      },
+      {
+        "slug": "dry-clutch",
+        "name": "Dry Clutch",
+        "system": "Engine (2-stroke race)"
+      },
+      {
+        "slug": "pistons",
+        "name": "Pistons & Rings",
+        "system": "Engine (2-stroke race)"
+      },
+      {
+        "slug": "reed-valves",
+        "name": "Reed Valves",
+        "system": "Engine (2-stroke race)"
+      },
+      {
+        "slug": "carburetors",
+        "name": "Carburetors (2\u00d7 Mikuni flat-slide powerjet)",
+        "system": "Fuel / Carburetion"
+      },
+      {
+        "slug": "cdi",
+        "name": "CDI / Ignition",
+        "system": "Ignition"
+      },
+      {
+        "slug": "spark-plugs",
+        "name": "Spark Plugs",
+        "system": "Ignition"
+      }
+    ],
+    "claims": [
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "engine",
+        "value": "249 cc liquid-cooled 2-stroke parallel twin (mid-'80s) \u00b7 reed",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "bore_stroke",
+        "value": "56 \u00d7 50.7 mm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "power",
+        "value": "~51 hp @ 10,500 (early A) rising to ~76 hp (1990) \u2014 mid-'80s ~55\u201360",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "fuel_oil",
+        "value": "Premix \u2014 no oil injection \u00b7 race 2-stroke oil in fuel",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "carburetion",
+        "value": "2\u00d7 Mikuni flat-slide (powerjet) \u2014 size by year",
+        "unit": null,
+        "verification": "UNVERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "ignition",
+        "value": "CDI \u2014 total-loss or minimal charge (by year)",
+        "unit": null,
+        "verification": "UNVERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "transmission",
+        "value": "6-speed close-ratio \u00b7 chain",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "front_brake",
+        "value": "Dual 280 mm discs \u00b7 race calipers",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "rear_brake",
+        "value": "Single 210 mm disc",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "dry_weight",
+        "value": "98\u2013108 kg (216\u2013238 lb)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "start",
+        "value": "Push / roller start \u2014 no electric starter",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "exhaust",
+        "value": "Twin expansion chambers (define the powerband)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "tz250",
+        "prop": "frame",
+        "value": "Aluminium twin-spar \u00b7 full race suspension",
+        "unit": null,
+        "verification": "CORROBORATED"
+      }
+    ]
   }
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:08:30.432572+00:00",
+  "generated_at": "2026-08-24T08:25:07.591378+00:00",
   "variant": "rz350",
   "vehicle": {
     "vin": "YAM-RZ350-1985",
@@ -173,5 +173,208 @@
   ],
   "telemetry": {
     "channels": 11
+  },
+  "search_index": {
+    "components": [
+      {
+        "slug": "radiator",
+        "name": "Radiator",
+        "system": "Cooling"
+      },
+      {
+        "slug": "water-pump",
+        "name": "Water Pump",
+        "system": "Cooling"
+      },
+      {
+        "slug": "chain",
+        "name": "Drive Chain",
+        "system": "Driveline"
+      },
+      {
+        "slug": "battery",
+        "name": "Battery",
+        "system": "Electrical / Charging"
+      },
+      {
+        "slug": "regulator-rectifier",
+        "name": "Regulator/Rectifier",
+        "system": "Electrical / Charging"
+      },
+      {
+        "slug": "stator",
+        "name": "Stator",
+        "system": "Electrical / Charging"
+      },
+      {
+        "slug": "clutch",
+        "name": "Clutch",
+        "system": "Engine (2-stroke)"
+      },
+      {
+        "slug": "crank-seals",
+        "name": "Crank Seals",
+        "system": "Engine (2-stroke)"
+      },
+      {
+        "slug": "cylinders",
+        "name": "Cylinders / Barrels",
+        "system": "Engine (2-stroke)"
+      },
+      {
+        "slug": "pistons",
+        "name": "Pistons & Rings",
+        "system": "Engine (2-stroke)"
+      },
+      {
+        "slug": "reed-valves",
+        "name": "Reed Valves",
+        "system": "Engine (2-stroke)"
+      },
+      {
+        "slug": "ypvs-powervalve",
+        "name": "YPVS Power Valve",
+        "system": "Engine (2-stroke)"
+      },
+      {
+        "slug": "carburetors",
+        "name": "Carburetors (2\u00d7 Mikuni VM26)",
+        "system": "Fuel / Carburetion"
+      },
+      {
+        "slug": "cdi",
+        "name": "CDI",
+        "system": "Ignition"
+      },
+      {
+        "slug": "spark-plugs",
+        "name": "Spark Plugs (NGK B8ES/BR8ES)",
+        "system": "Ignition"
+      },
+      {
+        "slug": "autolube-pump",
+        "name": "Autolube Oil Pump",
+        "system": "Lubrication (Autolube)"
+      },
+      {
+        "slug": "oil-tank",
+        "name": "Injection Oil Tank",
+        "system": "Lubrication (Autolube)"
+      }
+    ],
+    "claims": [
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "engine",
+        "value": "347 cc liquid-cooled 2-stroke parallel twin \u00b7 reed valve \u00b7 YPVS",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "bore_stroke",
+        "value": "64 \u00d7 54 mm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "power",
+        "value": "~59 hp @ 9,000 (uncatted/RR) \u00b7 ~46 hp US catted",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "torque",
+        "value": "~40 Nm (~30 lb-ft) @ 8,000 rpm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "carburetion",
+        "value": "2\u00d7 Mikuni VM26 (26 mm slide-valve)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "lubrication",
+        "value": "Autolube oil injection (tank under seat) \u00b7 gearbox separate",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "ignition",
+        "value": "CDI \u00b7 NGK B8ES / BR8ES",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "transmission",
+        "value": "6-speed \u00b7 wet clutch \u00b7 chain",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "front_brake",
+        "value": "Single disc",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "rear_brake",
+        "value": "Disc (some earlier drum \u2014 verify this bike)",
+        "unit": null,
+        "verification": "UNVERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "tires",
+        "value": "90/90-18 front \u00b7 110/80-18 rear (18\")",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "fuel_capacity",
+        "value": "5.2 US gal (~19.7 L)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "weight",
+        "value": "~371 lb (half tank)",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "rz350",
+        "prop": "frame",
+        "value": "Steel \u00b7 Monocross single-shock rear",
+        "unit": null,
+        "verification": "CORROBORATED"
+      }
+    ]
   }
 }
