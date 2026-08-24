@@ -152,13 +152,13 @@ endpoints mirroring the MCP V2 tools, reusing refservice / intel / trends / fitm
 - **Acceptance:** each endpoint returns the same dict the CLI/MCP does; a `TestClient`
   smoke test covers them; no new mutation surface.
 
-### CI2 — Full DB-backed CI
-`ci.yml` runs `pytest tests/ -q` with **no database**, so only the ~72 pure tests execute
-on a PR; the ~89 DB-backed tests (the bulk of the V2 engines) are verified locally only.
-Add a Postgres **service** to the `digital-garage tests` job, point `DG_DB_*` at it, and run
-the full 161-test suite in CI.
+### CI2 — Full DB-backed CI *(done)*
+`ci.yml`'s `digital-garage tests` job now runs a **Postgres 16 service** (mapped
+`5433:5432`, `DG_DB_*` = garage/garage/garage), applies the schema chain via `cli init`,
+and runs the whole suite — so the ~89 DB-backed tests execute on every PR, not just the
+~72 pure ones.
 - **Acceptance:** the workflow spins up Postgres, `cli init` applies the schema chain, and
-  the full suite runs green on every PR.
+  the full 161-test suite runs green on every PR. ✓
 
 ### TEL — Datalog → Observation ingestion (feed trends from real logs)
 Trends and the twin only light up from real measurement history; today the only series is
