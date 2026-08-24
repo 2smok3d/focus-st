@@ -9,6 +9,29 @@ jobs:
   digital-garage:
     name: digital-garage tests
     runs-on: ubuntu-latest
+    # Postgres service so the full suite runs on every PR — the DB-backed tests
+    # (the bulk of the V2 engines) skip themselves when no database is reachable, so
+    # without this only the pure tests would execute.
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: garage
+          POSTGRES_PASSWORD: garage
+          POSTGRES_DB: garage
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U garage"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DG_DB_HOST: localhost
+      DG_DB_PORT: "5433"
+      DG_DB_NAME: garage
+      DG_DB_USER: garage
+      DG_DB_PASSWORD: garage
     steps:
       - uses: actions/checkout@v4
 
@@ -21,6 +44,10 @@ jobs:
       - name: Install dependencies
         working-directory: digital-garage
         run: pip install -r requirements.txt
+
+      - name: Initialize the schema chain
+        working-directory: digital-garage
+        run: python -m app.cli init
 
       - name: Run tests
         working-directory: digital-garage

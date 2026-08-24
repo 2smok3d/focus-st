@@ -131,12 +131,13 @@ def test_build_intel_is_fleet_wide_and_variant_scoped():
     assert z["knowledge"]["total_claims"] < f["knowledge"]["total_claims"]
 
 
-def test_write_intel_all_covers_every_commissioned_machine():
+def test_write_intel_all_covers_every_commissioned_machine(tmp_path):
     from app.commission import commission_all
     from app.intel import write_intel_all
     with session_scope() as s:
         commission_all(s)                          # idempotent
-        paths = write_intel_all(s)
+        # write under a scratch tree — never clobber the repo's published intel.json
+        paths = write_intel_all(s, out_dir=tmp_path)
     slugs = {p.parent.name for p in paths}
     assert {"focus-st", "zzr600", "rz350", "tz250", "toyota-pickup"} <= slugs
     for p in paths:
