@@ -60,6 +60,45 @@ def _match(pid: str) -> str | None:
     return None
 
 
+# Recognized datalog role → (component slug, human metric name, operating condition).
+# Each role targets a distinct component, so the per-session peak of each becomes its own
+# durable observation series that `trends.component_trends` can fit over time. Distinct
+# components mean the (component, metric, condition) series never collide.
+ROLE_OBSERVATION = {
+    "boost_actual": ("turbocharger", "peak boost", "wot"),
+    "iat": ("intercooler", "peak charge-air temp", "wot"),
+    "coolant": ("radiator", "peak coolant temp", "load"),
+    "rail_actual": ("hpfp", "peak rail pressure", "wot"),
+    "knock": ("block", "peak knock retard", "wot"),
+}
+
+
+def peak_observations(measurements: list[dict]) -> list[dict]:
+    """Per-session peaks for recognized channels, as observation specs
+    ({subject_slug, method, operating_condition, value, unit}). Pure — the caller
+    persists them so a series builds across dated sessions."""
+    by_pid: dict[str, list[float]] = {}
+    units: dict[str, str | None] = {}
+    for m in measurements:
+        v = m.get("value")
+        if v is None:
+            continue
+        by_pid.setdefault(m["pid"], []).append(float(v))
+        units.setdefault(m["pid"], m.get("unit"))
+    role_peak: dict[str, tuple[float, str | None]] = {}
+    for pid, vals in by_pid.items():
+        role = _match(pid)
+        if role and role not in role_peak and vals:
+            role_peak[role] = (max(vals), units.get(pid))
+    out = []
+    for role, (comp, metric, cond) in ROLE_OBSERVATION.items():
+        if role in role_peak:
+            peak, unit = role_peak[role]
+            out.append({"subject_slug": comp, "method": metric,
+                        "operating_condition": cond, "value": round(peak, 3), "unit": unit})
+    return out
+
+
 def summarize_measurements(measurements: list[dict], *, dtc_count: int = 0,
                            can_count: int = 0) -> dict:
     """measurements: [{pid, value, unit, t_offset_s}]. Returns stats + findings."""
