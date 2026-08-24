@@ -294,9 +294,13 @@ before the previous one is complete and tested.**
   `research_tasks.variant`) so a Focus ST gap never surfaces on the ZZR600's page —
   `NULL` = fleet-wide.
 
-- **Phase 5 — UI V2.** Modularize the frontend into app/components/views (Overview,
-  Diagnose, Maintain, Build, Parts, Systems, Data, Knowledge); interactive engine
-  bay as a system navigator; universal search over claims + components + codes.
+- **Phase 5 — UI V2.** *(views + search done)* `web/tools/intel.html` is now a **tabbed,
+  modular dashboard** — Overview / Knowledge / Diagnose / Maintain / Parts / Systems, each
+  panel tagged with its view — plus a **universal search** over the machine's claims +
+  reference components + DTC codes. `intel.json` carries a compact `search_index`
+  (components + claims); the client loads the shared code database and renders typed result
+  cards (claim / part / code, codes deep-linking to the code tool). Remaining: an
+  interactive engine-bay system navigator over the graph overlays.
 
 - **Phase 6 — Intelligence.** *(done)* Evidence-grounded MCP V2 (`app/mcp_server.py`):
   read tools `get_variant`, `get_systems`, `get_component`, `get_claim` (evidence + a

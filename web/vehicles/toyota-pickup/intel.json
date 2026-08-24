@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T23:08:30.500719+00:00",
+  "generated_at": "2026-08-24T08:25:07.669519+00:00",
   "variant": "toyota-pickup",
   "vehicle": {
     "vin": "TOY-22RE-1986",
@@ -168,5 +168,203 @@
   ],
   "telemetry": {
     "channels": 11
+  },
+  "search_index": {
+    "components": [
+      {
+        "slug": "bed",
+        "name": "Bed",
+        "system": "Body"
+      },
+      {
+        "slug": "cab",
+        "name": "Cab",
+        "system": "Body"
+      },
+      {
+        "slug": "radiator",
+        "name": "Radiator",
+        "system": "Cooling"
+      },
+      {
+        "slug": "thermostat",
+        "name": "Thermostat",
+        "system": "Cooling"
+      },
+      {
+        "slug": "clutch",
+        "name": "Clutch",
+        "system": "Driveline"
+      },
+      {
+        "slug": "rear-diff",
+        "name": "Rear Differential",
+        "system": "Driveline"
+      },
+      {
+        "slug": "transmission",
+        "name": "W56 Transmission",
+        "system": "Driveline"
+      },
+      {
+        "slug": "alternator",
+        "name": "Alternator",
+        "system": "Electrical"
+      },
+      {
+        "slug": "battery",
+        "name": "Battery",
+        "system": "Electrical"
+      },
+      {
+        "slug": "harness",
+        "name": "Wiring Harness",
+        "system": "Electrical"
+      },
+      {
+        "slug": "cylinder-head",
+        "name": "Cylinder Head",
+        "system": "Engine (22RE)"
+      },
+      {
+        "slug": "block",
+        "name": "Engine Block (22RE)",
+        "system": "Engine (22RE)"
+      },
+      {
+        "slug": "timing-chain",
+        "name": "Timing Chain",
+        "system": "Engine (22RE)"
+      },
+      {
+        "slug": "valvetrain",
+        "name": "Valvetrain (adjustable)",
+        "system": "Engine (22RE)"
+      },
+      {
+        "slug": "water-pump",
+        "name": "Water Pump",
+        "system": "Engine (22RE)"
+      },
+      {
+        "slug": "efi",
+        "name": "EFI System",
+        "system": "Fuel (EFI)"
+      },
+      {
+        "slug": "fuel-pump",
+        "name": "Fuel Pump",
+        "system": "Fuel (EFI)"
+      },
+      {
+        "slug": "injectors",
+        "name": "Injectors",
+        "system": "Fuel (EFI)"
+      },
+      {
+        "slug": "distributor",
+        "name": "Distributor",
+        "system": "Ignition"
+      },
+      {
+        "slug": "coil",
+        "name": "Ignition Coil",
+        "system": "Ignition"
+      },
+      {
+        "slug": "spark-plugs",
+        "name": "Spark Plugs (NGK BPR5EY)",
+        "system": "Ignition"
+      },
+      {
+        "slug": "dash",
+        "name": "Dash",
+        "system": "Interior"
+      },
+      {
+        "slug": "interior-trim",
+        "name": "Interior Trim",
+        "system": "Interior"
+      },
+      {
+        "slug": "seats",
+        "name": "Seats",
+        "system": "Interior"
+      }
+    ],
+    "claims": [
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "type",
+        "value": "2.4L (2,366 cc) SOHC 8-valve EFI inline-4 \u00b7 cast-iron block, alloy head",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "bore_stroke",
+        "value": "92.0 \u00d7 89.0 mm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "compression",
+        "value": "9.0:1",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "power",
+        "value": "105\u2013113 hp @ 4,800 rpm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "torque",
+        "value": "136\u2013140 lb-ft @ 2,800\u20133,600 rpm",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "firing_order",
+        "value": "1-3-4-2",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "transmission",
+        "value": "W56 5-speed manual \u00b7 RWD",
+        "unit": null,
+        "verification": "CORROBORATED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "front_susp",
+        "value": "IFS (1986 2WD) \u2014 verify vs 4WD solid axle",
+        "unit": null,
+        "verification": "UNVERIFIED"
+      },
+      {
+        "subject_type": "variant",
+        "subject_key": "toyota-pickup",
+        "prop": "brakes",
+        "value": "Front disc \u00b7 rear drum \u00b7 DOT 3",
+        "unit": null,
+        "verification": "CORROBORATED"
+      }
+    ]
   }
 }
