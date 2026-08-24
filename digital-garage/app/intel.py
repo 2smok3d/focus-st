@@ -57,6 +57,10 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     from . import anomaly as anomaly_mod
     anomaly_rows = anomaly_mod.component_anomalies(session, vehicle.id) if vehicle else []
 
+    # remaining-useful-life — usage-rate projection of maintenance due-by dates (RUL)
+    from . import rul as rul_mod
+    rul_block = rul_mod.maintenance_rul(session, vehicle.id) if vehicle else None
+
     # parts fitment — catalog slots resolved against the reference component graph
     from . import fitment as fitment_mod
     fit = fitment_mod.catalog_fitment(session, variant_slug) if variant else None
@@ -95,6 +99,7 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
         "anomalies": {"series": anomaly_rows,
                       "flagged": sum(a["count"] for a in anomaly_rows),
                       "series_affected": len(anomaly_rows)},
+        "rul": rul_block,
         "parts": {"slots": fit["slots"], "matched": fit["matched"], "confident": fit["confident"],
                   "unmatched": fit["unmatched"], "coverage_pct": fit["coverage_pct"],
                   "unmatched_slots": fit["unmatched_slots"][:12]} if fit else None,

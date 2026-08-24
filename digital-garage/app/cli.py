@@ -185,6 +185,27 @@ def cmd_anomalies(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_rul(args: argparse.Namespace) -> int:
+    from . import rul, service
+    with session_scope() as s:
+        veh = service.get_vehicle(s, args.vin) if args.vin else service.get_vehicle(s)
+        r = rul.maintenance_rul(s, veh.id)
+    u = r["usage"]
+    if u["known"]:
+        print(f"Usage: ~{u['miles_per_day']} mi/day (~{u['miles_per_year']} mi/yr) "
+              f"from {u['readings']} readings over {u['span_days']:.0f}d.")
+    else:
+        print(f"Usage rate unknown ({u['readings']} odometer readings — need ≥3). "
+              f"Mileage-based items can't be dated.")
+    if not r["projected"]:
+        print("Nothing to project (no logged intervals with a mileage or time limit).")
+        return 0
+    for p in r["projected"]:
+        when = "OVERDUE" if p["days_remaining"] < 0 else f"~{p['days_remaining']}d"
+        print(f"  ▸ {p['item']:<28} projected {p['projected_date']} ({when}, by {p['basis']})")
+    return 0
+
+
 def cmd_fitment(args: argparse.Namespace) -> int:
     from . import fitment
     icon = {"fits": "✅", "likely": "≈", "unmapped": "⚠️"}
@@ -1207,6 +1228,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("anomalies", help="flag robust outliers in the observation history")
     sp.add_argument("--vin", default=None)
     sp.set_defaults(fn=cmd_anomalies)
+
+    sp = sub.add_parser("rul", help="project maintenance due-by dates from the usage rate")
+    sp.add_argument("--vin", default=None)
+    sp.set_defaults(fn=cmd_rul)
 
     sp = sub.add_parser("fitment", help="resolve PARTS.md catalog slots → reference components")
     sp.add_argument("--variant", default="focus-st")

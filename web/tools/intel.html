@@ -161,6 +161,7 @@ function render(d) {
     ['claims', k.total_claims ?? '—'], ['conflicts', k.conflicts ?? 0], ['twin deviations', tw.count ?? 0],
     ['maintenance due', mt.attention ?? 0], ['drift alerts', (d.trends||{}).drifting ?? 0],
     ['anomalies', (d.anomalies||{}).flagged ?? 0],
+    ['forecast ≤90d', (d.rul||{}).coming_up ?? 0],
     ['parts mapped', (d.parts||{}).matched ?? 0], ['open cases', (dg.open_cases||[]).length],
     ['open work orders', ws.open ?? 0], ['telemetry channels', (d.telemetry||{}).channels ?? 0],
   ];
@@ -249,6 +250,27 @@ function render(d) {
     tp.appendChild(el('div','tag', esc(t.summary)));
   });
   add('maintain', tp);
+
+  // Predictive maintenance — usage-rate due-by projection (RUL)
+  const rl = d.rul || null;
+  const fp = el('div','panel'); fp.appendChild(el('h2', null, 'Maintenance Forecast'));
+  if (!rl) fp.appendChild(el('p','tag','No forecast — this machine has no maintenance intervals yet.'));
+  else {
+    const u = rl.usage || {};
+    fp.appendChild(el('div','row', `<span class="tag">usage rate</span>`
+      + `<span class="mono">${u.known ? esc(u.miles_per_year)+' mi/yr' : 'unknown'}</span>`));
+    const proj = rl.projected || [];
+    if (!proj.length) fp.appendChild(el('p','tag','Nothing to project yet — log a service so an interval has a starting point.'));
+    proj.slice(0,8).forEach(p => {
+      const cls = p.days_remaining < 0 ? 'crit' : (p.days_remaining <= (rl.horizon_days||90) ? 'warn' : '');
+      const when = p.days_remaining < 0 ? 'overdue' : '~'+p.days_remaining+'d';
+      fp.appendChild(el('div','row', `<span>${esc(p.item)}</span>`
+        + `<span class="chip ${cls}">${esc(p.projected_date)} · ${esc(when)}</span>`));
+      fp.appendChild(el('div','tag', `projected by ${esc(p.basis)}`));
+    });
+    fp.appendChild(el('div','tag','Projections from the usage rate — estimates, not fact.'));
+  }
+  add('maintain', fp);
 
   // Anomalies — robust point-outliers in the observation history (ANOM)
   const ap = el('div','panel'); ap.appendChild(el('h2', null, 'Anomalies'));

@@ -293,8 +293,16 @@ out-of-scope **with the reason**, not silently dropped.
    ambient-spread flag). *Acceptance (met):* an injected outlier is flagged with its baseline
    and z-score; a clean series and a truly constant series flag nothing; headless render
    clean; `test_anomaly` (6 pure + 1 DB) + `test_intel_carries_anomaly_block` guard it.
-2. **RUL — remaining-useful-life / predictive maintenance.** Odometer-trend + interval and
-   DI-trend projections → per-item "projected due by <date/miles>", graded. Extends MAINT5.
+2. **RUL — remaining-useful-life / predictive maintenance.** *(done)* `app/rul.py` — fits the
+   machine's usage rate (miles/day) from its odometer history (pure `usage_rate`, reusing DI's
+   OLS) and projects each interval's due-by *date* (`project_due`), comparing the mileage and
+   time limits on one axis (soonest wins). Service `maintenance_rul` extends MAINT5; `intel.json`
+   `rul` block (usage + per-item projections + a coming-up-≤90d rollup); a Maintenance Forecast
+   panel + `forecast ≤90d` KPI; `cli rul`; `/v2/rul`; MCP `maintenance_forecast`. Projections are
+   labelled estimates, never asserted; too-thin odometer history honestly reads "usage rate
+   unknown". *Acceptance (met):* a logged interval gets a dated projection from a fitted rate;
+   the soonest of mileage/time drives it; unknown rate → no mileage date; `test_rul` (6 pure +
+   1 DB) + `test_intel_carries_rul_forecast`; headless render clean.
 3. **INTEG — datalog integrity at ingest.** Plausibility checks → machine events; surfaced
    in intel.
 4. **CORR — corroboration suggester.** Propose evidence links for `UNVERIFIED` claims through
