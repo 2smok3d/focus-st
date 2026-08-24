@@ -135,10 +135,14 @@ def write_intel(session: Session, variant_slug: str = "focus-st", *, out: Path |
     return out
 
 
-def write_intel_all(session: Session) -> list[Path]:
-    """Write intel.json for every commissioned machine (a linked vehicle_variant)."""
+def write_intel_all(session: Session, *, out_dir: Path | None = None) -> list[Path]:
+    """Write intel.json for every commissioned machine (a linked vehicle_variant). Pass
+    `out_dir` to write under a scratch tree (`<out_dir>/<slug>/intel.json`) instead of the
+    repo — tests use it so running the suite never clobbers the published projections."""
     from .models import Vehicle
     from .refmodels import VehicleVariant
     linked = {v.variant_id for v in session.scalars(select(Vehicle)) if v.variant_id}
     slugs = [vv.slug for vv in session.scalars(select(VehicleVariant)) if vv.id in linked]
-    return [write_intel(session, slug) for slug in slugs]
+    return [write_intel(session, slug,
+                        out=(out_dir / slug / "intel.json") if out_dir else None)
+            for slug in slugs]
