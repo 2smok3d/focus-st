@@ -106,19 +106,45 @@ Everything below is on `master`. PR numbers in brackets.
 - **UI V2 — modular dashboard + universal search.** `intel.html` tabbed views + one search
   box over claims + components + DTC codes (`intel.json` `search_index`). [#25]
 
+### Deferred backlog — now fully built
+The §4 backlog was revised into concrete, sequenced units [#26] and then all six were
+built, each as its own green PR:
+- **CI2 — full DB-backed CI.** The PR test job stands up a Postgres 16 service and runs
+  `cli init` before pytest, so the whole DB-backed suite (not just the pure engines) runs
+  on every PR. [#27]
+- **MAINT5 — five-/six-state maintenance.** `due` split from `overdue`; the vocabulary is
+  `overdue · due · due_soon · needs_log · unknown · ok`, `attention` = overdue+due+due_soon,
+  and `needs_log` is never reported as a false `overdue`. [#28]
+- **API2 — REST API V2.** Read-only `/v2/*` endpoints (variant, systems, component, claim,
+  claims, conflicts, knowledge, trends, fitment, intel) at parity with the MCP read surface,
+  reusing the same services. [#29]
+- **TEL — durable observations from datalogs.** `parsers.ingest` records `electronic`
+  observations for the peak of each mapped channel (boost→turbo, IAT→intercooler,
+  coolant→radiator, rail→HPFP, knock→block), best-effort and idempotent. [#30]
+- **FEED — fleet `garage.json` + `MODS.md`.** `app/fleetfeed.py` projects each commissioned
+  fleet machine's twin deviations into `web/vehicles/<slug>/garage.json` and
+  `data/vehicles/<slug>/MODS.md`; `cli fleet-feed [--all]`; `fleet.json` `feed` paths wired. [#31]
+- **NAV — interactive engine-bay navigator.** `intel.json` gains a `graph` block
+  (`ComponentRelationship` edges tagged by overlay domain + their node set); `intel.html`
+  gains a Navigator view that draws the map, isolates one overlay at a time, and opens a
+  component's claims on selection. [#32]
+
 **Fleet depth today:** Focus ST is fully populated (claims, feed, MODS, twin). The other
-four now carry **normalized reference claims** (F1a) and **live cockpits** (F1b) over a
-commissioned twin — real per-machine knowledge, not zeros. Still flagship-only: a
-`garage.json` feed and a generated `MODS.md` (deferred as unit **FEED** in §4, low value
-until a fleet machine logs mods/service).
+four carry **normalized reference claims** (F1a), **live cockpits** (F1b) over a
+commissioned twin, and now a **twin-projected `garage.json` feed + `MODS.md`** (FEED) —
+real per-machine knowledge, not zeros. What stays flagship-only is genuinely-logged mod and
+service history (the fleet machines have none yet); their feeds honestly show the twin's
+deviations-from-stock instead. Overlay graphs are seeded for the Focus ST only, so the
+fleet's Navigator honestly reads "No graph overlays recorded yet."
 
 ---
 
-## 4. Plan status — delivered, then the deferred backlog
+## 4. Plan status — everything delivered
 
-Everything the original roadmap sequenced is built. Below the divider is the **revised
-deferred backlog** — the work that remained once the roadmap was done. Each is one PR unit
-with acceptance criteria; none blocks the others, so order is by value, not dependency.
+Everything the original roadmap sequenced **and** the revised deferred backlog is built and
+merged — the §3 ledger is the complete record. The unit write-ups below are kept as the
+design/acceptance notes for each deferred unit (all now marked *(done)*); they are history,
+not a to-do list. Each was one PR with its own acceptance criteria; none blocked the others.
 
 **Delivered since this plan was written** — all merged, green (one line each; details are
 in the §3 ledger and the PRs):
