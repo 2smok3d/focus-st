@@ -42,6 +42,22 @@
   .result .b { font-family:var(--mono); font-size:9px; letter-spacing:.06em; text-transform:uppercase; padding:2px 6px;
                border:1px solid var(--line2,#2a2a30); border-radius:5px; color:var(--muted,#8a8a92); flex:none; width:52px; text-align:center; }
   .result .t { flex:1; font-size:13px; } .result .t .s { font-family:var(--mono); font-size:11px; color:var(--muted,#8a8a92); margin-top:2px; }
+  .nav-panel { grid-column: 1 / -1; }
+  .nav-legend { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .nav-legend .chip { cursor:pointer; user-select:none; display:inline-flex; align-items:center; gap:6px; }
+  .nav-legend .chip[aria-pressed="false"] { opacity:.4; }
+  .nav-legend .chip i { width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .nav-grid { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+  .nav-map { flex:2 1 340px; min-width:280px; }
+  .nav-map svg { width:100%; height:auto; display:block; }
+  .nav-side { flex:1 1 220px; min-width:200px; }
+  .nav-node circle { cursor:pointer; transition:opacity .1s; }
+  .nav-node text { font-family:var(--mono); font-size:9px; fill:var(--ink,#e8e8ea); pointer-events:none; }
+  .nav-node.dim { opacity:.25; }
+  .nav-node.sel circle { stroke:var(--red,#e8000d); stroke-width:2.5; }
+  .nav-edge { transition:opacity .1s; }
+  .nav-edge.off { opacity:.06; }
+  .nav-detail .row .tag.v { padding:1px 6px; border:1px solid var(--line); border-radius:5px; }
 </style>
 </head>
 <body class="hud">
@@ -82,7 +98,9 @@ const slug = (new URLSearchParams(location.search).get('v') || 'focus-st');
 
 // The modular views. Each panel is tagged with one; Overview shows them all.
 const VIEWS = [['overview','Overview'],['knowledge','Knowledge'],['diagnose','Diagnose'],
-               ['maintain','Maintain'],['parts','Parts'],['systems','Systems']];
+               ['maintain','Maintain'],['parts','Parts'],['systems','Systems'],['navigator','Navigator']];
+const DOMAIN_COLOR = {airflow:'#4f9dff', coolant:'#00bcd4', lubrication:'#e8a33d',
+                      function:'#a06cd5', electrical:'#e8000d', mechanical:'#8a8a92'};
 let activeView = 'overview';
 let codesCache = null;
 
@@ -246,6 +264,9 @@ function render(d) {
   }
   add('parts', pp);
 
+  // Engine-bay navigator — interactive graph over the overlays
+  add('navigator', buildNavigator(d));
+
   // Systems + overlays
   const sp = el('div','panel'); sp.appendChild(el('h2', null, 'Systems & Graph Overlays'));
   (d.systems||[]).forEach(s => sp.appendChild(el('div','row', `<span>${esc(s.name)}</span><span class="mono">${esc(s.components)} components</span>`)));
@@ -265,6 +286,125 @@ function render(d) {
 
   tabBar();
   showView('overview');
+}
+
+// ---- engine-bay navigator: interactive graph over the overlays ------------
+const NAV = { select: null };
+
+function buildNavigator(d) {
+  const g = d.graph || {domains:[], nodes:[], edges:[]};
+  const panel = el('div','panel nav-panel');
+  panel.appendChild(el('h2', null, 'Engine-Bay Navigator'));
+  panel.appendChild(el('p','tag','Component map across the graph overlays — pick an overlay to isolate its flow, tap a component for its claims.'));
+
+  const nodes = (g.nodes || []).slice().sort((a,b) =>
+    String(a.system||'').localeCompare(String(b.system||'')) || String(a.name).localeCompare(String(b.name)));
+  const edges = g.edges || [];
+  if (!nodes.length) {
+    panel.appendChild(el('p','tag','No graph overlays recorded for this machine yet.'));
+    return panel;
+  }
+
+  // domain legend — radio-style: "All" or one overlay at a time
+  const domains = g.domains && g.domains.length ? g.domains
+    : Array.from(new Set(edges.map(e => e.domain))).sort();
+  let activeDomain = 'all';
+  const legend = el('div','nav-legend');
+  const chips = [];
+  [['all','all']].concat(domains.map(x => [x, x])).forEach(([id, label]) => {
+    const c = el('span','chip');
+    const col = id === 'all' ? 'var(--muted,#8a8a92)' : (DOMAIN_COLOR[id] || '#8a8a92');
+    c.innerHTML = `<i style="background:${col}"></i>${esc(label)}`;
+    c.setAttribute('role','button'); c.setAttribute('aria-pressed', id === 'all' ? 'true' : 'false');
+    c.onclick = () => { activeDomain = id; applyDomain(); };
+    legend.appendChild(c); chips.push([id, c]);
+  });
+  panel.appendChild(legend);
+
+  // circular layout, grouped by system order
+  const N = nodes.length, cx = 280, cy = 280, R = 205;
+  const pos = {};
+  nodes.forEach((n, i) => {
+    const a = (i / N) * 2 * Math.PI - Math.PI / 2;
+    pos[n.slug] = {x: cx + R * Math.cos(a), y: cy + R * Math.sin(a), a};
+  });
+
+  const parts = [`<svg viewBox="0 0 560 560" role="img" aria-label="Component graph">`];
+  edges.forEach((e, i) => {
+    const a = pos[e.from], b = pos[e.to];
+    if (!a || !b) return;
+    const col = DOMAIN_COLOR[e.domain] || '#8a8a92';
+    parts.push(`<line class="nav-edge" data-domain="${esc(e.domain)}" data-from="${esc(e.from)}" data-to="${esc(e.to)}" `
+      + `x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" `
+      + `stroke="${col}" stroke-width="1.6" opacity="0.85"><title>${esc(e.from)} → ${esc(e.to)} (${esc(e.domain)} · ${esc(e.medium||e.relation||'')})</title></line>`);
+  });
+  nodes.forEach(n => {
+    const p = pos[n.slug];
+    const right = Math.cos(p.a) >= 0;
+    const lx = p.x + (right ? 13 : -13);
+    parts.push(`<g class="nav-node" data-node="${esc(n.slug)}" tabindex="0">`
+      + `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="8" fill="var(--panel,#161619)" stroke="var(--line,#2a2a30)" stroke-width="1.5"></circle>`
+      + `<text x="${lx.toFixed(1)}" y="${(p.y+3).toFixed(1)}" text-anchor="${right?'start':'end'}">${esc(n.name)}</text>`
+      + `<title>${esc(n.name)} · ${esc(n.system||'')}</title></g>`);
+  });
+  parts.push('</svg>');
+
+  const grid = el('div','nav-grid');
+  const map = el('div','nav-map', parts.join(''));
+  const side = el('div','nav-side');
+  const detail = el('div','panel nav-detail');
+  detail.appendChild(el('h2', null, 'Component'));
+  const hint = el('p','tag','Select a component on the map to see its claims and connections.');
+  detail.appendChild(hint);
+  side.appendChild(detail);
+  grid.appendChild(map); grid.appendChild(side);
+  panel.appendChild(grid);
+
+  const svg = map.querySelector('svg');
+  function applyDomain() {
+    chips.forEach(([id, c]) => c.setAttribute('aria-pressed', id === activeDomain ? 'true' : 'false'));
+    svg.querySelectorAll('.nav-edge').forEach(ln =>
+      ln.classList.toggle('off', activeDomain !== 'all' && ln.dataset.domain !== activeDomain));
+  }
+
+  const claimsFor = slug => (d.search_index && d.search_index.claims || [])
+    .filter(c => c.subject_key === slug);
+
+  function select(slug) {
+    svg.querySelectorAll('.nav-node').forEach(g2 => g2.classList.toggle('sel', g2.dataset.node === slug));
+    svg.querySelectorAll('.nav-edge').forEach(ln =>
+      ln.setAttribute('stroke-width', (ln.dataset.from === slug || ln.dataset.to === slug) ? '2.6' : '1.6'));
+    const node = nodes.find(n => n.slug === slug);
+    if (!node) return;
+    detail.innerHTML = '';
+    detail.appendChild(el('h2', null, esc(node.name)));
+    detail.appendChild(el('div','tag', esc(node.system || '—') + ' · ' + esc(slug)));
+    const cons = edges.filter(e => e.from === slug || e.to === slug);
+    if (cons.length) {
+      const ch = el('div', null); ch.style.margin = '8px 0';
+      cons.forEach(e => {
+        const other = e.from === slug ? e.to : e.from, dir = e.from === slug ? '→' : '←';
+        const col = DOMAIN_COLOR[e.domain] || '#8a8a92';
+        ch.appendChild(el('div','row', `<span>${dir} ${esc(other)}</span>`
+          + `<span class="chip" style="border-color:${col};color:${col}">${esc(e.domain)}</span>`));
+      });
+      detail.appendChild(ch);
+    }
+    const cl = claimsFor(slug);
+    detail.appendChild(el('div','tag', cl.length ? `${cl.length} claim${cl.length>1?'s':''}` : 'No graded claims on this component yet.'));
+    cl.forEach(c => detail.appendChild(el('div','row',
+      `<span>${esc(c.prop)}</span><span class="mono" style="color:${gradeColor(c.verification)}">`
+      + `${esc(c.value!=null?c.value:'')}${c.unit?' '+esc(c.unit):''}</span>`)));
+  }
+
+  svg.querySelectorAll('.nav-node').forEach(gn => {
+    const act = () => select(gn.dataset.node);
+    gn.addEventListener('click', act);
+    gn.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); act(); } });
+  });
+  applyDomain();
+  NAV.select = slug => { showView('navigator'); select(slug); };
+  return panel;
 }
 
 // ---- universal search over claims + components + DTC codes ----------------
@@ -298,7 +438,8 @@ function wireSearch(d) {
     });
     (idx.components||[]).forEach(c => {
       const hay = `${c.slug} ${c.name} ${c.system}`.toLowerCase();
-      if (hay.includes(q)) out.push({b:'part', t:esc(c.name), s:`${c.system||''} · ${c.slug}`, act:()=>showView('systems')});
+      if (hay.includes(q)) out.push({b:'part', t:esc(c.name), s:`${c.system||''} · ${c.slug}`,
+        act:()=> (NAV.select ? NAV.select(c.slug) : showView('systems'))});
     });
     (codes||[]).forEach(c => {
       const hay = `${c.code} ${c.title} ${c.system} ${(c.tags||[]).join(' ')}`.toLowerCase();

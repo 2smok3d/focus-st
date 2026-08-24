@@ -131,18 +131,23 @@ in the §3 ledger and the PRs):
 
 ---
 
-### NAV — Interactive engine-bay navigator  *(the last UI piece)*
+### NAV — Interactive engine-bay navigator  *(the last UI piece)* *(done)*
 An interactive system/component map over the graph overlays (airflow / coolant /
 lubrication) that already exist in the reference graph and in `intel.json` (`overlays`).
-- **Data:** extend the `intel.json` search index (or a new `graph` block) with the
-  component adjacency — `ComponentRelationship` edges tagged by domain — so the client
-  draws the map offline.
-- **Render:** inline SVG/HTML in a new Systems sub-view; an overlay toggle
-  (airflow/coolant/lube) that shows only that domain's edges; selecting a component opens
-  its claims (reuse the search-result → view jump). Self-contained, CSP-safe, legible in
-  light + dark.
-- **Acceptance:** an overlay toggle shows only that domain's edges; clicking a component
-  opens its claims; renders headless with zero errors.
+- **Data:** `intel.py` now emits a `graph` block — `_graph_block` walks every overlay's
+  `ComponentRelationship` edges (via `graphs.overlay_edges`), tags each by domain, and
+  carries the node set (slug + name + system) they connect, so the client draws and
+  filters the map entirely offline.
+- **Render:** a new **Navigator** view in `web/tools/intel.html` draws an inline-SVG
+  circular map (nodes grouped by system); a radio-style overlay legend isolates one
+  domain's edges (`All` restores every overlay); selecting a component highlights its
+  incident edges and opens its claims + connections in the side panel; a component search
+  hit jumps into the Navigator and selects it. Self-contained, CSP-safe, theme-aware.
+- **Acceptance (met):** isolating the airflow overlay shows exactly its 6 edges and no
+  others; clicking a component opens its claims; the page renders headless with zero
+  console/page errors (17 nodes / 19 edges for the Focus ST). `test_intel_carries_navigator_graph`
+  guards the projection. Fleet machines have no seeded overlay edges yet, so their
+  Navigator honestly reads "No graph overlays recorded for this machine yet."
 
 ### API2 — REST API V2 (parity with the MCP read surface) *(done)*
 `app/main.py` gained read-only V2 endpoints mirroring the MCP tools, reusing refservice /

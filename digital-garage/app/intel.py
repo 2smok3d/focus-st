@@ -68,6 +68,10 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     # universal-search index — components + this machine's claims, flat and self-contained
     search_index = _search_index(session, variant_slug, tree) if variant else {"components": [], "claims": []}
 
+    # engine-bay navigator — component adjacency across the overlays (airflow/coolant/lube),
+    # so the cockpit can draw the interactive system map offline
+    graph = _graph_block(session, variant_slug, overlays, tree) if variant else {"domains": [], "nodes": [], "edges": []}
+
     return {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "variant": variant_slug,
@@ -92,6 +96,7 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
         "research_tasks": research,
         "telemetry": {"channels": n_channels},
         "search_index": search_index,
+        "graph": graph,
     }
 
 
@@ -112,6 +117,34 @@ def _search_index(session: Session, variant_slug: str, tree: list[dict]) -> dict
                        "prop": c.prop, "value": c.value, "unit": c.unit,
                        "verification": c.verification})
     return {"components": components, "claims": claims}
+
+
+def _graph_block(session: Session, variant_slug: str, overlays: list[str],
+                 tree: list[dict]) -> dict:
+    """The component-adjacency graph for the engine-bay navigator: every overlay's edges
+    tagged by domain, plus the node set they connect (slug + name + system). The client
+    draws the map and filters by domain entirely offline — no per-domain fetch."""
+    from . import graphs
+
+    # each component's system name, from the reference tree
+    comps: list[dict] = []
+    for node in tree:
+        _collect_components(node, node.get("name", ""), comps)
+    sys_of = {c["slug"]: c["system"] for c in comps if c.get("slug")}
+
+    edges: list[dict] = []
+    node_meta: dict[str, dict] = {}
+    for domain in overlays:
+        for e in graphs.overlay_edges(session, variant_slug, domain):
+            edges.append({"from": e["from"], "to": e["to"], "domain": domain,
+                          "relation": e["relation"], "medium": e["medium"],
+                          "direction": e["direction"]})
+            node_meta.setdefault(e["from"], {"slug": e["from"], "name": e["from_name"]})
+            node_meta.setdefault(e["to"], {"slug": e["to"], "name": e["to_name"]})
+
+    nodes = [{"slug": n["slug"], "name": n["name"], "system": sys_of.get(n["slug"])}
+             for n in node_meta.values()]
+    return {"domains": overlays, "nodes": nodes, "edges": edges}
 
 
 def _collect_components(node: dict, system_name: str, out: list[dict]) -> None:
