@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-08-24T09:33:24.036033+00:00",
+  "variant": "toyota-pickup",
+  "reference": {
+    "slug": "toyota-pickup",
+    "name": "Pickup 22RE",
+    "trim": "Single cab, RWD",
+    "market": "US",
+    "years": "1986",
+    "manufacturer": "Toyota",
+    "platform": "Pickup (N50, single cab)",
+    "platform_code": "N50",
+    "engine": {
+      "code": "22RE",
+      "displacement_cc": 2366,
+      "config": "SOHC 8v EFI I4 \u00b7 iron block, alloy head",
+      "aspiration": "naturally aspirated (EFI)",
+      "power": "~105 hp",
+      "torque": "136\u2013140 lb-ft @ 2,800\u20133,600"
+    },
+    "transmission": {
+      "code": "W56",
+      "type": "5-speed manual",
+      "gears": 5
+    }
+  },
+  "changes_from_stock": [
+    {
+      "slug": "block",
+      "condition": "removed",
+      "installed_part": null,
+      "knowledge_state": "DIRECTLY_OBSERVED"
+    },
+    {
+      "slug": "dash",
+      "condition": "removed",
+      "installed_part": null,
+      "knowledge_state": "DIRECTLY_OBSERVED"
+    },
+    {
+      "slug": "interior-trim",
+      "condition": "removed",
+      "installed_part": null,
+      "knowledge_state": "DIRECTLY_OBSERVED"
+    },
+    {
+      "slug": "seats",
+      "condition": "removed",
+      "installed_part": null,
+      "knowledge_state": "DIRECTLY_OBSERVED"
+    }
+  ],
+  "source": "digital-garage twin projection",
+  "full_intelligence": "intel.json"
+}
