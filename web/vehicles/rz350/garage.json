@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-08-24T09:33:24.012222+00:00",
+  "variant": "rz350",
+  "reference": {
+    "slug": "rz350",
+    "name": "RZ350 Kenny Roberts",
+    "trim": "31K (final US year, catalyzed)",
+    "market": "US",
+    "years": "1985",
+    "manufacturer": "Yamaha",
+    "platform": "RZ350 / RD350 YPVS",
+    "platform_code": "31K",
+    "engine": {
+      "code": "RZ350 2T twin",
+      "displacement_cc": 347,
+      "config": "2-stroke reed-valve parallel twin \u00b7 YPVS",
+      "aspiration": "carbureted (2\u00d7 Mikuni VM26)",
+      "power": "~46 hp (US catted) / ~59 hp (RD)",
+      "torque": "~30 lb-ft @ 8,000"
+    },
+    "transmission": {
+      "code": "6-speed",
+      "type": "6-speed manual",
+      "gears": 6
+    }
+  },
+  "changes_from_stock": [
+    {
+      "slug": "crank-seals",
+      "condition": "suspect",
+      "installed_part": null,
+      "knowledge_state": "INFERRED"
+    },
+    {
+      "slug": "ypvs-powervalve",
+      "condition": "suspect",
+      "installed_part": null,
+      "knowledge_state": "INFERRED"
+    }
+  ],
+  "source": "digital-garage twin projection",
+  "full_intelligence": "intel.json"
+}

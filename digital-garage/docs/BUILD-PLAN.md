@@ -174,12 +174,15 @@ sample.
   a series of declining logs yields a fitted, drift-flagged `component_trends` result ✓;
   the pure peak extractor is DB-free tested ✓.
 
-### FEED — Fleet `garage.json` feeds + `MODS.md`  *(optional)*
-Deferred in F1b because a V1-style feed is near-empty for the fleet. If a fleet machine
-accumulates mods/service, project a V2 `garage.json` (twin + reference summary) + `MODS.md`
-from canon and wire the `fleet.json` `feed` paths.
-- **Acceptance:** a fleet machine with recorded mods projects a non-empty feed its cockpit
-  reads; regenerated from the DB, never hand-authored.
+### FEED — Fleet `garage.json` feeds + `MODS.md`  *(done)*
+`app/fleetfeed.py` (`cli fleet-feed [--all]`) projects, for each of the four fleet
+machines, a **`MODS.md`** and a compact **`garage.json`** feed from the digital twin's
+reference-vs-actual **deviations** — the honest "changes / unknowns vs stock" for machines
+with no logged V1 mods (zzr600/rz350 2 each, toyota 4, tz250 0). This fills the
+`fleet.json` `mods` paths that were dangling and adds a `feed` path per machine. `intel.json`
+stays the full projection; this is the lightweight sibling.
+- **Acceptance:** each fleet machine gets a MODS.md + garage.json regenerated from canon
+  (never hand-authored); `fleet.json` feeds are wired; pure renderer + DB build tested. ✓
 
 ### MAINT5 — Five-state maintenance vocabulary  *(done)*
 `maintenance_summary` now splits **DUE** (only just past the interval — within

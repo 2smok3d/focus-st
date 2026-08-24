@@ -1,0 +1,30 @@
+{
+  "generated_at": "2026-08-24T09:33:24.023490+00:00",
+  "variant": "tz250",
+  "reference": {
+    "slug": "tz250",
+    "name": "TZ250",
+    "trim": "Over-the-counter GP racer (premix)",
+    "market": "JDM/race",
+    "years": "1986",
+    "manufacturer": "Yamaha",
+    "platform": "TZ250 (production racer)",
+    "platform_code": "TZ250",
+    "engine": {
+      "code": "TZ250 2T twin",
+      "displacement_cc": 249,
+      "config": "2-stroke reed-valve parallel twin \u00b7 liquid-cooled",
+      "aspiration": "carbureted (2\u00d7 Mikuni flat-slide, powerjet)",
+      "power": "~55\u201365 hp",
+      "torque": "\u2014"
+    },
+    "transmission": {
+      "code": "6-speed close-ratio",
+      "type": "6-speed manual (dry clutch)",
+      "gears": 6
+    }
+  },
+  "changes_from_stock": [],
+  "source": "digital-garage twin projection",
+  "full_intelligence": "intel.json"
+}

@@ -142,6 +142,18 @@ def cmd_seed_fleet_knowledge(_: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_fleet_feed(args: argparse.Namespace) -> int:
+    from . import fleetfeed
+    with session_scope() as s:
+        if args.all:
+            for r in fleetfeed.write_fleet_feed_all(s):
+                print(f"Wrote {r['mods_md']} + {r['garage_json']} ({r['changes']} change(s))")
+        else:
+            r = fleetfeed.write_fleet_feed(s, args.slug)
+            print(f"Wrote {r['mods_md']} + {r['garage_json']} ({r['changes']} change(s))")
+    return 0
+
+
 def cmd_trends(args: argparse.Namespace) -> int:
     from . import service, trends
     icon = {"rising": "↗", "falling": "↘", "flat": "→"}
@@ -1179,6 +1191,11 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("fitment", help="resolve PARTS.md catalog slots → reference components")
     sp.add_argument("--variant", default="focus-st")
     sp.set_defaults(fn=cmd_fitment)
+
+    sp = sub.add_parser("fleet-feed", help="write per-machine garage.json + MODS.md for the fleet")
+    sp.add_argument("slug", nargs="?", default="zzr600")
+    sp.add_argument("--all", action="store_true", help="write for every commissioned fleet machine")
+    sp.set_defaults(fn=cmd_fleet_feed)
 
     sp = sub.add_parser("seed-graph", help="seed typed graph overlays (airflow/coolant/lubrication)")
     sp.add_argument("--variant", default="focus-st")

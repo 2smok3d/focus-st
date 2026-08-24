@@ -1,0 +1,43 @@
+{
+  "generated_at": "2026-08-24T09:33:23.998223+00:00",
+  "variant": "zzr600",
+  "reference": {
+    "slug": "zzr600",
+    "name": "ZZR600",
+    "trim": "ZX600-D (1st gen, ram-air)",
+    "market": "US",
+    "years": "1991",
+    "manufacturer": "Kawasaki",
+    "platform": "ZZR600 (ZX600-D)",
+    "platform_code": "ZX600-D",
+    "engine": {
+      "code": "ZX600D I4",
+      "displacement_cc": 599,
+      "config": "I4 DOHC 16v liquid-cooled",
+      "aspiration": "carbureted (ram-air)",
+      "power": "~98 hp (crank)",
+      "torque": "~46 lb-ft @ 9,500"
+    },
+    "transmission": {
+      "code": "6-speed",
+      "type": "6-speed manual",
+      "gears": 6
+    }
+  },
+  "changes_from_stock": [
+    {
+      "slug": "carburetors",
+      "condition": "suspect",
+      "installed_part": null,
+      "knowledge_state": "INFERRED"
+    },
+    {
+      "slug": "regulator-rectifier",
+      "condition": "suspect",
+      "installed_part": null,
+      "knowledge_state": "INFERRED"
+    }
+  ],
+  "source": "digital-garage twin projection",
+  "full_intelligence": "intel.json"
+}
