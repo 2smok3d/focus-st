@@ -252,8 +252,11 @@ before the previous one is complete and tested.**
   claims — web-verified → `CORROBORATED`, `⚠️ verify` → `UNVERIFIED` — so every machine's
   quality dashboard and research queue carry real, honestly-graded knowledge, not zeros.
 
-  **Remaining later:** per-machine `garage.json` feeds + `MODS.md`, parts intelligence +
-  fitment, machine baselines + degradation trends, and the modular UI V2.
+  **Remaining later:** the deferred backlog is tracked in `BUILD-PLAN.md` §4 — the
+  interactive engine-bay navigator (NAV), a REST API V2 mirroring the MCP read surface
+  (API2), full DB-backed CI (CI2), datalog→observation ingestion so trends fit real logs
+  (TEL), and optional fleet `garage.json` feeds + `MODS.md` (FEED). Parts fitment,
+  degradation trends, and the modular UI V2 + universal search are now **done** (above).
 
 - **Maintenance status in the intelligence layer.** *(done)* `service.maintenance_summary`
   projects the maintenance-due engine (`domain.maintenance_due`) into status buckets for

@@ -92,72 +92,93 @@ Everything below is on `master`. PR numbers in brackets.
 - **The agent answers with provenance.** MCP read tools over the reference/provenance
   model (`get_variant`/`get_systems`/`get_component`/`get_claim`/`list_claims`/
   `list_conflicts`/`knowledge_quality`) + `propose_claim` through the approval boundary
-  (verdict computed from evidence on approval; corroboration is monotonic).
+  (verdict computed from evidence on approval; corroboration is monotonic). [#20]
+
+### Post-roadmap units (fleet depth + data intelligence + UI V2)
+- **F1a — fleet reference knowledge.** `seed_fleet_knowledge` normalizes the four fleet
+  manuals' spec tables into graded per-variant claims. [#21]
+- **F1b — live fleet cockpits.** Each fleet cockpit hydrates a Live Intelligence section
+  from its own `intel.json`. [#22]
+- **DI — degradation trends.** `app/trends.py` fits the observation history (drift
+  detection, confounder-aware); `intel.json` `trends` block + dashboard panel. [#23]
+- **PF — parts intelligence + fitment.** `app/fitment.py` resolves `PARTS.md` slots to
+  reference components with a tiered fitment verdict. [#24]
+- **UI V2 — modular dashboard + universal search.** `intel.html` tabbed views + one search
+  box over claims + components + DTC codes (`intel.json` `search_index`). [#25]
 
 **Fleet depth today:** Focus ST is fully populated (claims, feed, MODS, twin). The other
-four are **scaffolded** — cockpit + manual + PARTS + `intel.json` + a commissioned twin,
-but no normalized claims, no `garage.json` feed, no `MODS.md`. That gap is unit F1 below.
+four now carry **normalized reference claims** (F1a) and **live cockpits** (F1b) over a
+commissioned twin — real per-machine knowledge, not zeros. Still flagship-only: a
+`garage.json` feed and a generated `MODS.md` (deferred as unit **FEED** in §4, low value
+until a fleet machine logs mods/service).
 
 ---
 
-## 4. Remaining plan — sequenced
+## 4. Plan status — delivered, then the deferred backlog
 
-Each item is one PR unit with explicit acceptance criteria. Order is default; it can be
-re-prioritized on request.
+Everything the original roadmap sequenced is built. Below the divider is the **revised
+deferred backlog** — the work that remained once the roadmap was done. Each is one PR unit
+with acceptance criteria; none blocks the others, so order is by value, not dependency.
 
-### F1 — Populate the fleet to flagship depth
-Bring zzr600 / rz350 / tz250 / toyota-pickup from scaffold to fully-modeled.
-- **F1a — reference knowledge.** *(done)* `seed_fleet_knowledge` normalizes each machine's
-  manual spec table into graded, per-variant **claims** (`cli seed-fleet-knowledge`).
-  Honest grading: web-verified → `CORROBORATED`, `⚠️ verify` → `UNVERIFIED` (feeding that
-  machine's own research queue). Each machine's `intel.json` now shows real claim counts
-  (zzr600 18 · rz350 14 · tz250 13 · toyota 9).
-- **F1b — live fleet cockpits.** *(done)* Each fleet cockpit
-  (`web/vehicles/<slug>/index.html`) gained a **Live Intelligence** section that fetches
-  its `intel.json` and renders the machine's live V2 state — knowledge-quality bars,
-  digital-twin deviations, open cases, and its research queue — with a `● LIVE` badge,
-  themed by the page's accent, degrading silently if no feed is present. (The fleet's
-  richest data lives in the V2 layer, already projected to `intel.json`; a V1-style
-  `garage.json` would be near-empty, so the cockpits read the V2 projection directly.)
-- **Acceptance:** claim counts populated (F1a ✓); cockpits present live per-machine state (F1b ✓).
+**Delivered since this plan was written** — all merged, green (one line each; details are
+in the §3 ledger and the PRs):
+- **F1a** — fleet reference knowledge: manual specs → graded per-variant claims. [#21]
+- **F1b** — live fleet cockpits: each hydrates from its own `intel.json`. [#22]
+- **DI** — degradation trends over the observation history. [#23]
+- **PF** — parts intelligence + fitment (catalog slots → components). [#24]
+- **UI V2 (views + search)** — modular tabbed dashboard + universal search. [#25]
+- (**Phase 6** — evidence-grounded MCP V2 [#20] — is in the §3 ledger.)
 
-### DI — Data intelligence: degradation trends + baselines *(done)*
-Turn the observation history into **trend** intelligence.
-- `app/trends.py`: a pure `fit_trend` (OLS → slope/R²/direction/drift classification, metric-
-  agnostic) + `component_trends` grouping a machine's observations into per-(component,
-  metric, condition) series. Confounder-aware — a series spanning a wide ambient-°C range is
-  flagged. `cli trends` prints them; `intel.json` carries a `trends` block; the dashboard
-  shows a Degradation Trends panel + a "drift alerts" KPI. The example `obs-seed` now lays
-  down a short warm-compression series so the engine has something to fit.
-- **Acceptance:** the seeded declining series is detected and drift-flagged (RZ350 cylinders
-  ↘ 7% over 90d, R²=0.99 ✓); flat/noisy data yields no drift ✓; pure trend math is DB-free
-  tested ✓.
+---
 
-### PF — Parts intelligence + fitment *(done)*
-Connect the PARTS catalog to reference components and known fitment.
-- `app/fitment.py`: a pure `PARTS.md` slot parser + a transparent token matcher (generic
-  words demoted so a match rests on a distinctive token, not on sharing "valve"/"oil");
-  `catalog_fitment` resolves every slot to a component and tiers the verdict by confidence
-  — **fits** (strong overlap), **likely** (weak, confirm), **unmapped** (warn). A mapped
-  slot's fitment is scoped to the variant's years/market from the reference header.
-- Surfaced via `cli fitment`, the `part_fitment` MCP tool, an `intel.json` `parts` block,
-  and a dashboard Parts Fitment panel + a "parts mapped" KPI.
-- **Acceptance:** slots resolve to components with a fitment verdict (Spark Plugs →
-  spark-plugs, Intercooler → intercooler ✓); generic false positives rejected (Oil Filter,
-  Engine Oil → unmapped ✓); mismatches warn ✓.
+### NAV — Interactive engine-bay navigator  *(the last UI piece)*
+An interactive system/component map over the graph overlays (airflow / coolant /
+lubrication) that already exist in the reference graph and in `intel.json` (`overlays`).
+- **Data:** extend the `intel.json` search index (or a new `graph` block) with the
+  component adjacency — `ComponentRelationship` edges tagged by domain — so the client
+  draws the map offline.
+- **Render:** inline SVG/HTML in a new Systems sub-view; an overlay toggle
+  (airflow/coolant/lube) that shows only that domain's edges; selecting a component opens
+  its claims (reuse the search-result → view jump). Self-contained, CSP-safe, legible in
+  light + dark.
+- **Acceptance:** an overlay toggle shows only that domain's edges; clicking a component
+  opens its claims; renders headless with zero errors.
 
-### UI — Modular UI V2 *(1+3 done)*
-- **Modular views.** *(done)* `web/tools/intel.html` is now a tabbed app — Overview /
-  Knowledge / Diagnose / Maintain / Parts / Systems — each panel tagged with its view and
-  filtered by the tab bar (Overview shows all nine).
-- **Universal search.** *(done)* One search box over the machine's claims + reference
-  components + DTC codes: `intel.json` carries a compact `search_index` (components +
-  claims), the client loads the shared code database, and matches render as typed result
-  cards (claim / part / code) — codes deep-link to the code tool. Panels hide while
-  searching; clearing restores the active view.
-- **Engine-bay navigator** *(later)* — an interactive system map over the graph overlays.
-- **Acceptance:** views are independent (✓); search hits canon across claims/components/
-  codes (✓ — "torque" → claims, "intercooler" → part, "boost" → codes).
+### API2 — REST API V2 (parity with the MCP read surface)
+`app/main.py` (FastAPI) is still V1-only (`/vehicle`, `/specs`, `/mods`, …). Add read
+endpoints mirroring the MCP V2 tools, reusing refservice / intel / trends / fitment:
+`/v2/variant/{slug}`, `/systems`, `/component/{slug}`, `/claim`, `/conflicts`,
+`/intel/{slug}`, `/trends`, `/fitment`. Read-only — the only write stays the proposal queue.
+- **Acceptance:** each endpoint returns the same dict the CLI/MCP does; a `TestClient`
+  smoke test covers them; no new mutation surface.
+
+### CI2 — Full DB-backed CI
+`ci.yml` runs `pytest tests/ -q` with **no database**, so only the ~72 pure tests execute
+on a PR; the ~89 DB-backed tests (the bulk of the V2 engines) are verified locally only.
+Add a Postgres **service** to the `digital-garage tests` job, point `DG_DB_*` at it, and run
+the full 161-test suite in CI.
+- **Acceptance:** the workflow spins up Postgres, `cli init` applies the schema chain, and
+  the full suite runs green on every PR.
+
+### TEL — Datalog → Observation ingestion (feed trends from real logs)
+Trends and the twin only light up from real measurement history; today the only series is
+the `obs-seed` sample. Wire the existing datalog parser so ingesting a session also records
+durable `observations` (per-pull peak boost, oil temp, …) keyed by component + condition.
+- **Acceptance:** ingesting two dated logs of the same channel yields a fitted
+  `component_trends` result; the sample seed is no longer the only source.
+
+### FEED — Fleet `garage.json` feeds + `MODS.md`  *(optional)*
+Deferred in F1b because a V1-style feed is near-empty for the fleet. If a fleet machine
+accumulates mods/service, project a V2 `garage.json` (twin + reference summary) + `MODS.md`
+from canon and wire the `fleet.json` `feed` paths.
+- **Acceptance:** a fleet machine with recorded mods projects a non-empty feed its cockpit
+  reads; regenerated from the DB, never hand-authored.
+
+### MAINT5 — Five-state maintenance vocabulary  *(small)*
+The V4 vision named `UNKNOWN / CURRENT / DUE_SOON / DUE / OVERDUE`; the engine emits
+`ok / due_soon / needs_log / overdue / unknown`. Either split `DUE` (at/just past interval)
+from `OVERDUE` (well past) for parity, or record the divergence as intentional.
+- **Acceptance:** the mapping is implemented with tests, or the divergence is documented.
 
 ---
 
