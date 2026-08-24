@@ -244,6 +244,18 @@ def part_fitment(slug: str = "focus-st") -> dict:
 
 
 @mcp.tool
+def list_anomalies() -> list[dict]:
+    """Robust anomalies in the tracked vehicle's observation history. Each entry is one
+    (component, metric, operating-condition) series that carries a point deviating from its
+    own robust baseline (median/MAD modified z-score). Explainable by construction: every
+    flag reports the baseline, the offending value, and the z-score it crossed. A `confounded`
+    flag warns when ambient temperature varied widely — confirm before trusting."""
+    from . import anomaly
+    with session_scope() as s:
+        return anomaly.component_anomalies(s, service.get_vehicle(s).id)
+
+
+@mcp.tool
 def propose_claim(subject_type: str, subject_key: str, prop: str,
                   evidence_authority: int, value: str | None = None, unit: str | None = None,
                   evidence_stance: str = "supports", on_vehicle: bool = False,

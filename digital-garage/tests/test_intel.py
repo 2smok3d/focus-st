@@ -120,6 +120,23 @@ def test_intel_carries_navigator_graph():
                for e in g["edges"])
 
 
+def test_intel_carries_anomaly_block():
+    """The projection carries the ANOM block — robust point-outliers per observation series,
+    with a fleet-level rollup. Shape only (the seeded FST may or may not have anomalies);
+    the detector's behaviour is covered in test_anomaly."""
+    from app.intel import build_intel
+    with session_scope() as s:
+        d = build_intel(s, "focus-st")
+    a = d["anomalies"]
+    assert set(a) >= {"series", "flagged", "series_affected"}
+    assert a["flagged"] == sum(x["count"] for x in a["series"])
+    assert a["series_affected"] == len(a["series"])
+    # every reported series carries its baseline + the flagged points (explainable)
+    for series in a["series"]:
+        assert "baseline" in series and series["anomalies"]
+        assert all({"value", "score", "direction"} <= set(p) for p in series["anomalies"])
+
+
 def test_intel_carries_maintenance_status():
     """The projection surfaces the maintenance-due engine bucketed by status, and an
     interval with no service on record reads `needs_log` — never a false `overdue`."""

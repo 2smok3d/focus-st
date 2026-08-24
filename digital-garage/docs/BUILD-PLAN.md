@@ -240,3 +240,64 @@ Every unit in §4 is built the same way:
 5. **Ship**: commit → push → **draft PR** → poll CI → un-draft → merge → reset branch.
 
 Postgres for local runs: port 5433 (`garage`/`garage`/`garage`), data at `/tmp/pgdata_dg`.
+
+---
+
+## 6. V5 frontier — the research compendium, mapped to this platform's grain
+
+A five-part research compendium (*Ford Focus ST — Merged Research Compendium*, three
+reports readable) proposes a connected-vehicle platform: real-time MQTT/Kafka streaming,
+a TSDB + data lake, ML anomaly detection (autoencoders/LSTM), predictive maintenance,
+closed-loop adaptive tuning, CAN-bus intrusion detection, OTA tune CI/CD, automated
+evidence verification, and a community layer.
+
+Much of that assumes **always-on cloud infrastructure**, and one item — live closed-loop
+ECU tuning — is genuinely unsafe. This platform is deliberately the opposite: **offline-first,
+GitHub-is-the-database, evidence-graded, pure-Python engines projected into static JSON.**
+So the compendium is adopted *in this grain* — its high-value ideas rebuilt dependency-light,
+evidence-graded, and CI-fast — and its infra-heavy / unsafe items are recorded as
+out-of-scope **with the reason**, not silently dropped.
+
+### 6.1 Mapping — every compendium feature, graded honestly
+| Compendium feature | Verdict here | How / why |
+|---|---|---|
+| Real-time CAN/OBD streaming (MQTT+Kafka) | **Out of scope** | Needs always-on brokers; platform is offline-first. The batch equivalent — datalog upload → parse → **Observations** (TEL) — already exists and feeds every engine below. |
+| Time-series DB / data lake | **Out of scope (as infra)** | Postgres stays canonical; `Measurement`/`Observation` already are the time series. No second datastore. |
+| ML anomaly detection (autoencoder/LSTM, SHAP) | **Adapt in grain → ANOM** | A pure, transparent robust-statistics detector (median/MAD modified z-score) over the observation history — deterministic and *explainable by construction* (each flag cites the baseline it broke), no heavy ML dep, sub-second in CI. |
+| Predictive maintenance (MTTF/RUL) | **Adapt in grain → RUL** | Project **remaining life** from the odometer trend + interval and from DI degradation trends; graded `UNVERIFIED`, never asserted. Extends MAINT5. |
+| CAN-bus intrusion detection | **Adapt in grain (lite) → INTEG** | An ingest-time **datalog integrity** check: out-of-range, frozen-sensor, and physically-contradictory channels recorded as machine events. Honest signal-plausibility, not a DL IDS. |
+| Closed-loop adaptive tuning (live flash) | **Out of scope — safety** | Never auto-applies or flashes. The safe residue is **advisory-only** tuning notes gated behind the approval boundary — logged targets vs. actuals, human sign-off, no control path. |
+| Automated evidence verification | **Adapt in grain → CORR** | Extend the recalls/NHTSA checker into a **corroboration suggester**: propose evidence links for `UNVERIFIED` claims from the reference model + external OEM/reference sources, through the same approval boundary (verdict stays computed, never asserted). |
+| OTA tune CI/CD, Kubernetes, mobile app, federated learning, community forum | **Out of scope** | Belongs to an always-on product, not a GitHub-Pages + local-backend repo. Recorded here so the boundary is explicit. |
+
+### 6.2 My enhancements (beyond the compendium)
+- **Evidence-grounding as the differentiator.** The compendium treats ML output as truth.
+  Here every analytic output — an anomaly, an RUL estimate — is a *graded* observation or
+  claim with a confidence and a verdict computed from evidence, never asserted. Analytics
+  never silently promote a claim past the verification ladder.
+- **Explainability by construction, not post-hoc.** Instead of SHAP over a black box, the
+  detectors are deterministic: every flag carries the exact points, the baseline, and the
+  threshold it crossed — reproducible offline in the cockpit.
+- **Confounder-awareness reused.** ANOM/RUL inherit DI's confounder flag (wide ambient
+  spread, config/env change at the sample) so a flagged anomaly explained by a known change
+  is demoted, not shouted.
+- **One projection, many machines.** Every engine lands in `intel.json` behind the existing
+  fleet-wide, variant-scoped projection and the offline cockpit — no new surface, no CDN.
+
+### 6.3 Sequenced buildable units (each one PR, §5 workflow)
+1. **ANOM — anomaly detection.** *(done)* `app/anomaly.py` — a pure robust detector
+   (median/MAD modified z-score, with an Iglewicz–Hoaglin MeanAD fallback so a spike on a
+   near-constant baseline is still caught) + `component_anomalies` service; `intel.json`
+   `anomalies` block (per-series flags + a fleet rollup); a Diagnose panel + `anomalies` KPI;
+   `cli anomalies`; `/v2/anomalies`; MCP `list_anomalies`. Confounder-aware (inherits DI's
+   ambient-spread flag). *Acceptance (met):* an injected outlier is flagged with its baseline
+   and z-score; a clean series and a truly constant series flag nothing; headless render
+   clean; `test_anomaly` (6 pure + 1 DB) + `test_intel_carries_anomaly_block` guard it.
+2. **RUL — remaining-useful-life / predictive maintenance.** Odometer-trend + interval and
+   DI-trend projections → per-item "projected due by <date/miles>", graded. Extends MAINT5.
+3. **INTEG — datalog integrity at ingest.** Plausibility checks → machine events; surfaced
+   in intel.
+4. **CORR — corroboration suggester.** Propose evidence links for `UNVERIFIED` claims through
+   the approval boundary.
+
+Building starts at **ANOM** (the honest, in-grain core of the compendium's #1 ML ask).

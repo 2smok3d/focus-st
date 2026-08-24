@@ -53,6 +53,10 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     from . import trends as trends_mod
     trend_rows = trends_mod.component_trends(session, vehicle.id) if vehicle else []
 
+    # anomalies — robust point-outliers in the observation history (ANOM)
+    from . import anomaly as anomaly_mod
+    anomaly_rows = anomaly_mod.component_anomalies(session, vehicle.id) if vehicle else []
+
     # parts fitment — catalog slots resolved against the reference component graph
     from . import fitment as fitment_mod
     fit = fitment_mod.catalog_fitment(session, variant_slug) if variant else None
@@ -88,6 +92,9 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
                      "open": sum(1 for w in work_orders if w["status"] not in ("closed", "abandoned"))},
         "maintenance": maintenance,
         "trends": {"series": trend_rows, "drifting": sum(1 for t in trend_rows if t["drift"])},
+        "anomalies": {"series": anomaly_rows,
+                      "flagged": sum(a["count"] for a in anomaly_rows),
+                      "series_affected": len(anomaly_rows)},
         "parts": {"slots": fit["slots"], "matched": fit["matched"], "confident": fit["confident"],
                   "unmatched": fit["unmatched"], "coverage_pct": fit["coverage_pct"],
                   "unmatched_slots": fit["unmatched_slots"][:12]} if fit else None,

@@ -329,6 +329,12 @@ def v2_trends(s: Session = Depends(get_session)):
     return trends.component_trends(s, service.get_vehicle(s).id)
 
 
+@app.get("/v2/anomalies")
+def v2_anomalies(s: Session = Depends(get_session)):
+    from . import anomaly
+    return anomaly.component_anomalies(s, service.get_vehicle(s).id)
+
+
 @app.get("/v2/fitment/{slug}")
 def v2_fitment(slug: str, s: Session = Depends(get_session)):
     from . import fitment
