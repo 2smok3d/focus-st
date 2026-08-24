@@ -174,11 +174,16 @@ from canon and wire the `fleet.json` `feed` paths.
 - **Acceptance:** a fleet machine with recorded mods projects a non-empty feed its cockpit
   reads; regenerated from the DB, never hand-authored.
 
-### MAINT5 — Five-state maintenance vocabulary  *(small)*
-The V4 vision named `UNKNOWN / CURRENT / DUE_SOON / DUE / OVERDUE`; the engine emits
-`ok / due_soon / needs_log / overdue / unknown`. Either split `DUE` (at/just past interval)
-from `OVERDUE` (well past) for parity, or record the divergence as intentional.
-- **Acceptance:** the mapping is implemented with tests, or the divergence is documented.
+### MAINT5 — Five-state maintenance vocabulary  *(done)*
+`maintenance_summary` now splits **DUE** (only just past the interval — within
+`DUE_MARGIN_MILES` / `DUE_MARGIN_MONTHS`) from **OVERDUE** (well past), via the pure
+`_past_due_state` helper (the worst dimension drives). States are now
+`overdue / due / due_soon / needs_log / unknown / ok` — the V4 vocabulary, with `needs_log`
+kept honest for items lacking history and `ok` = CURRENT. `attention` counts overdue + due
++ due_soon; the dashboard renders the DUE chip. `latest_odometer` gained an `id` tiebreak
+so the newest reading is deterministic.
+- **Acceptance:** a just-past item buckets `due`, a well-past item `overdue`, the worst
+  dimension drives the split, both count toward `attention` — pure + DB tests ✓.
 
 ---
 
