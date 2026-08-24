@@ -265,3 +265,78 @@ def reject(proposal_id: int, body: RejectIn, s: Session = Depends(get_session)):
         raise HTTPException(422, str(e))
     _commit(s)
     return res
+
+
+# ---------------------------------------------------------------------------
+# V2 reference / intelligence — read-only endpoints mirroring the MCP tools.
+# The only write surface stays the /proposals queue above; nothing here mutates.
+# ---------------------------------------------------------------------------
+@app.get("/v2/variant/{slug}")
+def v2_variant(slug: str, s: Session = Depends(get_session)):
+    from . import refservice
+    header = refservice.variant_header(s, slug)
+    if header is None:
+        raise HTTPException(404, f"No reference variant '{slug}'.")
+    return header
+
+
+@app.get("/v2/systems/{slug}")
+def v2_systems(slug: str, s: Session = Depends(get_session)):
+    from . import refservice
+    return refservice.system_tree(s, slug)
+
+
+@app.get("/v2/component/{slug}/{comp_slug}")
+def v2_component(slug: str, comp_slug: str, s: Session = Depends(get_session)):
+    from . import refservice
+    comp = refservice.get_component(s, slug, comp_slug)
+    if comp is None:
+        raise HTTPException(404, f"No component '{comp_slug}' on '{slug}'.")
+    return comp
+
+
+@app.get("/v2/claim")
+def v2_claim(subject_key: str, prop: str, s: Session = Depends(get_session)):
+    """A single claim with its evidence and a freshly re-resolved verdict."""
+    from . import refservice
+    claim = refservice.get_claim(s, subject_key, prop)
+    if claim is None:
+        raise HTTPException(404, f"No claim {subject_key}:{prop}.")
+    return claim
+
+
+@app.get("/v2/claims")
+def v2_claims(subject_type: str, subject_key: str, s: Session = Depends(get_session)):
+    from . import refservice
+    return refservice.claims_for(s, subject_type, subject_key)
+
+
+@app.get("/v2/conflicts")
+def v2_conflicts(s: Session = Depends(get_session)):
+    from . import refservice
+    return refservice.list_conflicts(s)
+
+
+@app.get("/v2/knowledge/{slug}")
+def v2_knowledge(slug: str, s: Session = Depends(get_session)):
+    from . import knowledge
+    return knowledge.quality_report(s, slug)
+
+
+@app.get("/v2/trends")
+def v2_trends(s: Session = Depends(get_session)):
+    from . import trends
+    return trends.component_trends(s, service.get_vehicle(s).id)
+
+
+@app.get("/v2/fitment/{slug}")
+def v2_fitment(slug: str, s: Session = Depends(get_session)):
+    from . import fitment
+    return fitment.catalog_fitment(s, slug)
+
+
+@app.get("/v2/intel/{slug}")
+def v2_intel(slug: str, s: Session = Depends(get_session)):
+    """The full intelligence projection for a machine (same dict `cli intel` writes)."""
+    from . import intel
+    return intel.build_intel(s, slug)
