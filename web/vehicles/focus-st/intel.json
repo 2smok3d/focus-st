@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T08:25:07.493487+00:00",
+  "generated_at": "2026-08-24T15:28:37.157506+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -87,6 +87,7 @@
     "current_miles": 86390,
     "counts": {
       "overdue": 0,
+      "due": 0,
       "due_soon": 0,
       "needs_log": 9,
       "unknown": 0,
@@ -746,6 +747,255 @@
         "value": "Test system",
         "unit": null,
         "verification": "OEM_VERIFIED"
+      }
+    ]
+  },
+  "graph": {
+    "domains": [
+      "airflow",
+      "coolant",
+      "function",
+      "lubrication"
+    ],
+    "nodes": [
+      {
+        "slug": "turbocharger",
+        "name": "Turbocharger",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "intercooler",
+        "name": "Intercooler",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "charge-piping",
+        "name": "Charge Piping",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "throttle-body",
+        "name": "Throttle Body",
+        "system": "Engine"
+      },
+      {
+        "slug": "intake-manifold",
+        "name": "Intake Manifold",
+        "system": "Engine"
+      },
+      {
+        "slug": "head",
+        "name": "Cylinder Head",
+        "system": "Engine"
+      },
+      {
+        "slug": "air-filter",
+        "name": "Air Filter / Intake",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "coolant",
+        "name": "Coolant",
+        "system": "Cooling"
+      },
+      {
+        "slug": "water-pump",
+        "name": "Water Pump",
+        "system": "Cooling"
+      },
+      {
+        "slug": "block",
+        "name": "Engine Block",
+        "system": "Engine"
+      },
+      {
+        "slug": "thermostat",
+        "name": "Thermostat",
+        "system": "Cooling"
+      },
+      {
+        "slug": "radiator",
+        "name": "Radiator",
+        "system": "Cooling"
+      },
+      {
+        "slug": "lubrication",
+        "name": "Lubrication / Oil System",
+        "system": "Engine"
+      },
+      {
+        "slug": "wastegate",
+        "name": "Wastegate",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "pcv",
+        "name": "PCV / Crankcase Vent",
+        "system": "Engine"
+      },
+      {
+        "slug": "bypass-valve",
+        "name": "Bypass Valve",
+        "system": "Forced Induction"
+      },
+      {
+        "slug": "oil-pump",
+        "name": "Oil Pump",
+        "system": "Engine"
+      }
+    ],
+    "edges": [
+      {
+        "from": "turbocharger",
+        "to": "intercooler",
+        "domain": "airflow",
+        "relation": "outputs_to",
+        "medium": "air",
+        "direction": "forward"
+      },
+      {
+        "from": "intercooler",
+        "to": "charge-piping",
+        "domain": "airflow",
+        "relation": "outputs_to",
+        "medium": "air",
+        "direction": "forward"
+      },
+      {
+        "from": "charge-piping",
+        "to": "throttle-body",
+        "domain": "airflow",
+        "relation": "feeds",
+        "medium": "air",
+        "direction": "forward"
+      },
+      {
+        "from": "throttle-body",
+        "to": "intake-manifold",
+        "domain": "airflow",
+        "relation": "feeds",
+        "medium": "air",
+        "direction": "forward"
+      },
+      {
+        "from": "intake-manifold",
+        "to": "head",
+        "domain": "airflow",
+        "relation": "feeds",
+        "medium": "air",
+        "direction": "forward"
+      },
+      {
+        "from": "air-filter",
+        "to": "turbocharger",
+        "domain": "airflow",
+        "relation": "feeds",
+        "medium": "air",
+        "direction": "forward"
+      },
+      {
+        "from": "turbocharger",
+        "to": "coolant",
+        "domain": "coolant",
+        "relation": "cooled_by",
+        "medium": "coolant",
+        "direction": "bidirectional"
+      },
+      {
+        "from": "water-pump",
+        "to": "block",
+        "domain": "coolant",
+        "relation": "feeds",
+        "medium": "coolant",
+        "direction": "forward"
+      },
+      {
+        "from": "block",
+        "to": "head",
+        "domain": "coolant",
+        "relation": "feeds",
+        "medium": "coolant",
+        "direction": "forward"
+      },
+      {
+        "from": "head",
+        "to": "thermostat",
+        "domain": "coolant",
+        "relation": "feeds",
+        "medium": "coolant",
+        "direction": "forward"
+      },
+      {
+        "from": "thermostat",
+        "to": "radiator",
+        "domain": "coolant",
+        "relation": "feeds",
+        "medium": "coolant",
+        "direction": "forward"
+      },
+      {
+        "from": "radiator",
+        "to": "water-pump",
+        "domain": "coolant",
+        "relation": "returns_to",
+        "medium": "coolant",
+        "direction": "forward"
+      },
+      {
+        "from": "turbocharger",
+        "to": "lubrication",
+        "domain": "function",
+        "relation": "lubricated_by",
+        "medium": null,
+        "direction": "forward"
+      },
+      {
+        "from": "turbocharger",
+        "to": "wastegate",
+        "domain": "function",
+        "relation": "controlled_by",
+        "medium": null,
+        "direction": "forward"
+      },
+      {
+        "from": "pcv",
+        "to": "turbocharger",
+        "domain": "function",
+        "relation": "affects",
+        "medium": null,
+        "direction": "forward"
+      },
+      {
+        "from": "bypass-valve",
+        "to": "turbocharger",
+        "domain": "function",
+        "relation": "associated_with",
+        "medium": null,
+        "direction": "forward"
+      },
+      {
+        "from": "oil-pump",
+        "to": "lubrication",
+        "domain": "lubrication",
+        "relation": "feeds",
+        "medium": "oil",
+        "direction": "forward"
+      },
+      {
+        "from": "lubrication",
+        "to": "turbocharger",
+        "domain": "lubrication",
+        "relation": "lubricates",
+        "medium": "oil",
+        "direction": "forward"
+      },
+      {
+        "from": "turbocharger",
+        "to": "lubrication",
+        "domain": "lubrication",
+        "relation": "returns_to",
+        "medium": "oil",
+        "direction": "forward"
       }
     ]
   }

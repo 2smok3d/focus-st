@@ -95,6 +95,31 @@ def test_intel_carries_search_index():
     assert any(cl["prop"] == "lug_torque" for cl in si["claims"])
 
 
+def test_intel_carries_navigator_graph():
+    """The projection carries the engine-bay navigator's graph: component-adjacency edges
+    tagged by overlay domain, plus the node set they connect (slug + name + system). The
+    client draws and filters the map offline from this block alone."""
+    from app.intel import build_intel
+    with session_scope() as s:
+        d = build_intel(s, "focus-st")
+    g = d["graph"]
+    assert g["domains"] and g["nodes"] and g["edges"]
+    # every edge names endpoints, an overlay domain, and the flow medium
+    assert all({"from", "to", "domain", "relation", "medium", "direction"} <= set(e) for e in g["edges"])
+    # each domain in the block actually has edges → an overlay toggle can isolate it
+    edge_domains = {e["domain"] for e in g["edges"]}
+    assert edge_domains <= set(g["domains"])
+    assert {"airflow", "coolant"} <= edge_domains
+    # nodes carry display metadata and cover every edge endpoint
+    node_slugs = {n["slug"] for n in g["nodes"]}
+    assert all({"slug", "name", "system"} <= set(n) for n in g["nodes"])
+    endpoints = {e["from"] for e in g["edges"]} | {e["to"] for e in g["edges"]}
+    assert endpoints <= node_slugs
+    # the airflow overlay connects the turbo → intercooler path (a known seeded edge)
+    assert any(e["from"] == "turbocharger" and e["to"] == "intercooler" and e["domain"] == "airflow"
+               for e in g["edges"])
+
+
 def test_intel_carries_maintenance_status():
     """The projection surfaces the maintenance-due engine bucketed by status, and an
     interval with no service on record reads `needs_log` — never a false `overdue`."""
