@@ -103,10 +103,10 @@ def test_intel_carries_maintenance_status():
         d = build_intel(s, "focus-st")
     m = d["maintenance"]
     assert m and m["tracked"] >= 1
-    assert set(m["counts"]) == {"overdue", "due_soon", "needs_log", "unknown", "ok"}
+    assert set(m["counts"]) == {"overdue", "due", "due_soon", "needs_log", "unknown", "ok"}
     # seeded FST has intervals but no service events → all needs_log, nothing to act on
     assert m["counts"]["needs_log"] >= 1
-    assert m["attention"] == m["counts"]["overdue"] + m["counts"]["due_soon"]
+    assert m["attention"] == m["counts"]["overdue"] + m["counts"]["due"] + m["counts"]["due_soon"]
     # an item lacking history must not be reported as overdue
     for it in m["items"]:
         if it["last_miles"] is None and it["last_date"] is None:

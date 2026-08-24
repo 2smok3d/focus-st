@@ -96,16 +96,34 @@ def latest_odometer(session: Session, vehicle_id: int) -> int | None:
     row = session.scalar(
         select(OdometerReading)
         .where(OdometerReading.vehicle_id == vehicle_id)
-        .order_by(OdometerReading.recorded_at.desc())
+        .order_by(OdometerReading.recorded_at.desc(), OdometerReading.id.desc())
     )
     return row.miles if row else None
 
 
-# The five maintenance states the intelligence layer speaks. `needs_log` is kept
-# distinct from `overdue`: an item with a defined interval but no service on record
-# isn't *known* to be past due — we simply have no history for it, and saying
-# OVERDUE would be a claim we can't back.
-MAINT_STATES = ("overdue", "due_soon", "needs_log", "unknown", "ok")
+# The maintenance states the intelligence layer speaks. Two refinements over the raw
+# due-engine:
+#   • `needs_log` — a defined interval with no service on record isn't *known* to be past
+#     due (we have no history), so calling it OVERDUE would be a claim we can't back.
+#   • `due` vs `overdue` — an item only just past its interval is DUE (do it soon); one
+#     well past (beyond the margin below) is OVERDUE (act now). Matches the V4 vocabulary
+#     UNKNOWN / CURRENT(=ok) / DUE_SOON / DUE / OVERDUE.
+MAINT_STATES = ("overdue", "due", "due_soon", "needs_log", "unknown", "ok")
+
+# How far past the interval still counts as merely DUE rather than OVERDUE.
+DUE_MARGIN_MILES = 500
+DUE_MARGIN_MONTHS = 1.0
+
+
+def _past_due_state(miles_remaining: int | None, months_remaining: float | None) -> str:
+    """For a logged item the engine flagged overdue: DUE if only just past, else OVERDUE.
+    'Well past' means the worst dimension is beyond one full margin past zero."""
+    worst = 0.0  # most-negative normalized overrun across the dimensions that are past
+    if miles_remaining is not None and miles_remaining < 0:
+        worst = min(worst, miles_remaining / DUE_MARGIN_MILES)
+    if months_remaining is not None and months_remaining < 0:
+        worst = min(worst, months_remaining / DUE_MARGIN_MONTHS)
+    return "overdue" if worst < -1.0 else "due"
 
 
 def maintenance_summary(session: Session, vehicle_id: int,
@@ -118,8 +136,9 @@ def maintenance_summary(session: Session, vehicle_id: int,
     for r in due_list(session, vehicle_id, current_miles=current_miles, today=today):
         logged = r["last_miles"] is not None or r["last_date"] is not None
         state = r["status"].replace("-", "_")            # "due-soon" → "due_soon"
-        if state == "overdue" and not logged:
-            state = "needs_log"
+        if state == "overdue":
+            state = _past_due_state(r["miles_remaining"], r["months_remaining"]) if logged \
+                else "needs_log"
         counts[state] = counts.get(state, 0) + 1
         items.append({"item": r["item"], "status": state, "detail": r["detail"],
                       "miles_remaining": r["miles_remaining"],
@@ -130,7 +149,8 @@ def maintenance_summary(session: Session, vehicle_id: int,
     return {
         "current_miles": current_miles,
         "counts": counts,
-        "attention": counts["overdue"] + counts["due_soon"],  # what a human should act on now
+        # what a human should act on now: past-due (overdue + due) and coming up (due_soon)
+        "attention": counts["overdue"] + counts["due"] + counts["due_soon"],
         "tracked": len(items),
         "items": items,
     }

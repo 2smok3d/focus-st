@@ -203,12 +203,12 @@ function render(d) {
   const mp = el('div','panel');
   const miles = mt.current_miles != null ? ` — @ ${Number(mt.current_miles).toLocaleString()} mi` : '';
   mp.appendChild(el('h2', null, 'Maintenance' + esc(miles)));
-  const mstate = {overdue:'crit', due_soon:'warn', needs_log:'', unknown:'', ok:'ok'};
-  const mlabel = {overdue:'OVERDUE', due_soon:'DUE SOON', needs_log:'NO LOG', unknown:'UNKNOWN', ok:'OK'};
+  const mstate = {overdue:'crit', due:'warn', due_soon:'warn', needs_log:'', unknown:'', ok:'ok'};
+  const mlabel = {overdue:'OVERDUE', due:'DUE', due_soon:'DUE SOON', needs_log:'NO LOG', unknown:'UNKNOWN', ok:'OK'};
   const mc = mt.counts || {};
   const chipRow = el('div','row');
   chipRow.appendChild(el('span','tag', 'status'));
-  chipRow.appendChild(el('span', null, ['overdue','due_soon','needs_log','ok'].filter(s=>mc[s])
+  chipRow.appendChild(el('span', null, ['overdue','due','due_soon','needs_log','ok'].filter(s=>mc[s])
     .map(s=>`<span class="chip ${mstate[s]}">${mc[s]} ${esc(mlabel[s])}</span>`).join(' ') || '<span class="tag">no intervals tracked</span>'));
   mp.appendChild(chipRow);
   (mt.items||[]).slice(0,8).forEach(it => {
