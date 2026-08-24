@@ -259,5 +259,52 @@ def ingest(
         session.add(CanFrame(session_id=ds.id, **f))
     session.flush()
 
-    return {"status": "ingested", "session_id": ds.id, "sha256": sha,
-            "raw_path": str(raw_path), "counts": result.counts}
+    # Durable observations from the log's peaks, so degradation trends fit real data
+    # over time (not just the sample seed). A side benefit — never fail an ingest on it.
+    obs_recorded = _record_session_observations(session, vehicle_id, ds, result.measurements)
+
+    out = {"status": "ingested", "session_id": ds.id, "sha256": sha,
+           "raw_path": str(raw_path), "counts": result.counts}
+    if obs_recorded:
+        out["observations_recorded"] = obs_recorded
+    return out
+
+
+def _record_session_observations(session: Session, vehicle_id: int,
+                                 ds: DiagnosticSession, measurements: list[dict]) -> int:
+    """Record per-channel peaks from a session as durable observations, timestamped at the
+    log's capture time so they form a series across sessions. Best-effort and isolated:
+    a bad unit or a missing vehicle skips that observation, never the ingest."""
+    if not measurements:
+        return 0
+    try:
+        from . import analysis, observations as ob
+        from .models import Vehicle
+        vehicle = session.get(Vehicle, vehicle_id)
+        if vehicle is None:
+            return 0
+        when = ds.captured_at or ds.ingested_at or dt.datetime.now(dt.timezone.utc)
+        recorded = 0
+        for spec in analysis.peak_observations(measurements):
+            try:
+                ob.record_observation(
+                    session, vehicle, subject_slug=spec["subject_slug"], obs_type="electronic",
+                    method=spec["method"], value=spec["value"], unit=spec["unit"],
+                    operating_condition=spec["operating_condition"], observed_at=when,
+                    note=f"datalog session #{ds.id}")
+                recorded += 1
+            except Exception:
+                # unknown unit (fails quantity validation) or similar — retry unitless so
+                # the value still forms a trend series; if that also fails, skip this one.
+                try:
+                    ob.record_observation(
+                        session, vehicle, subject_slug=spec["subject_slug"], obs_type="electronic",
+                        method=spec["method"], value=spec["value"], unit=None,
+                        operating_condition=spec["operating_condition"], observed_at=when,
+                        note=f"datalog session #{ds.id} (unit '{spec['unit']}' not normalized)")
+                    recorded += 1
+                except Exception:
+                    continue
+        return recorded
+    except Exception:
+        return 0

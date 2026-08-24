@@ -162,12 +162,17 @@ and runs the whole suite — so the ~89 DB-backed tests execute on every PR, not
 - **Acceptance:** the workflow spins up Postgres, `cli init` applies the schema chain, and
   the full 161-test suite runs green on every PR. ✓
 
-### TEL — Datalog → Observation ingestion (feed trends from real logs)
-Trends and the twin only light up from real measurement history; today the only series is
-the `obs-seed` sample. Wire the existing datalog parser so ingesting a session also records
-durable `observations` (per-pull peak boost, oil temp, …) keyed by component + condition.
-- **Acceptance:** ingesting two dated logs of the same channel yields a fitted
-  `component_trends` result; the sample seed is no longer the only source.
+### TEL — Datalog → Observation ingestion (feed trends from real logs) *(done)*
+`parsers.ingest` now records durable `observations` from each datalog's per-channel peaks
+(via the pure `analysis.peak_observations`): boost → turbocharger, charge-air temp →
+intercooler, coolant → radiator, rail pressure → hpfp, knock → block — each a distinct
+component so the series never collide, timestamped at the log's capture time, `electronic`
+obs_type. Best-effort and isolated (a bad unit retries unitless, then skips — never fails
+the ingest). So `component_trends` now fits real logged history, not just the `obs-seed`
+sample.
+- **Acceptance:** ingesting datalogs records observations keyed by component/condition, and
+  a series of declining logs yields a fitted, drift-flagged `component_trends` result ✓;
+  the pure peak extractor is DB-free tested ✓.
 
 ### FEED — Fleet `garage.json` feeds + `MODS.md`  *(optional)*
 Deferred in F1b because a V1-style feed is near-empty for the fleet. If a fleet machine
