@@ -162,6 +162,7 @@ function render(d) {
     ['maintenance due', mt.attention ?? 0], ['drift alerts', (d.trends||{}).drifting ?? 0],
     ['anomalies', (d.anomalies||{}).flagged ?? 0],
     ['forecast ≤90d', (d.rul||{}).coming_up ?? 0],
+    ['log flags', (d.integrity||{}).findings ?? 0],
     ['parts mapped', (d.parts||{}).matched ?? 0], ['open cases', (dg.open_cases||[]).length],
     ['open work orders', ws.open ?? 0], ['telemetry channels', (d.telemetry||{}).channels ?? 0],
   ];
@@ -282,6 +283,23 @@ function render(d) {
     ap.appendChild(el('div','tag', esc(a.summary)));
   });
   add('diagnose', ap);
+
+  // Datalog integrity — signal-plausibility checks over recent sessions (INTEG)
+  const ig = d.integrity || null;
+  const gp = el('div','panel'); gp.appendChild(el('h2', null, 'Datalog Integrity'));
+  if (!ig || !ig.sessions_checked) gp.appendChild(el('p','tag','No datalogs to check yet.'));
+  else if (!ig.reports.length) gp.appendChild(el('p','tag',`All ${esc(ig.sessions_checked)} recent datalog(s) look plausible.`));
+  else {
+    const sevcls = {error:'crit', warn:'warn', info:''};
+    ig.reports.slice(0,6).forEach(rep => {
+      gp.appendChild(el('div','row', `<span>session ${esc(rep.label)}</span>`
+        + `<span class="chip warn">${esc(rep.findings.length)} finding${rep.findings.length>1?'s':''}</span>`));
+      rep.findings.slice(0,4).forEach(f => gp.appendChild(
+        el('div','tag', `<span class="${sevcls[f.severity]||''}">[${esc(f.kind)}]</span> ${esc(f.detail)}`)));
+    });
+    gp.appendChild(el('div','tag','Plausibility of the log, not a claim about the car.'));
+  }
+  add('diagnose', gp);
 
   // Parts fitment
   const pp = el('div','panel'); pp.appendChild(el('h2', null, 'Parts Fitment'));

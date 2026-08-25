@@ -155,6 +155,21 @@ def test_intel_carries_rul_forecast():
                                  if 0 <= p["days_remaining"] <= r["horizon_days"])
 
 
+def test_intel_carries_integrity_block():
+    """The projection carries the INTEG block — datalog plausibility over recent sessions,
+    with a rollup. Shape + honesty (findings count matches the per-report totals)."""
+    from app.intel import build_intel
+    with session_scope() as s:
+        d = build_intel(s, "focus-st")
+    ig = d["integrity"]
+    assert ig is not None
+    assert set(ig) >= {"sessions_checked", "sessions_flagged", "findings", "by_kind", "reports"}
+    assert ig["sessions_flagged"] == len(ig["reports"])
+    assert ig["findings"] == sum(len(r["findings"]) for r in ig["reports"])
+    for r in ig["reports"]:
+        assert all({"kind", "severity", "detail"} <= set(f) for f in r["findings"])
+
+
 def test_intel_carries_maintenance_status():
     """The projection surfaces the maintenance-due engine bucketed by status, and an
     interval with no service on record reads `needs_log` — never a false `overdue`."""

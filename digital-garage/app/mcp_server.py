@@ -268,6 +268,18 @@ def maintenance_forecast() -> dict:
 
 
 @mcp.tool
+def list_integrity_findings() -> dict:
+    """Datalog signal-plausibility checks for the tracked vehicle (INTEG). Scans the most
+    recent datalog sessions for frozen (stuck) sensors, non-finite samples, values outside a
+    generous physical band, and out-of-order timestamps — the soundness of the *log* before
+    you diagnose from it. These flag the capture, not the car; they are never asserted as
+    vehicle facts."""
+    from . import integrity
+    with session_scope() as s:
+        return integrity.vehicle_integrity(s, service.get_vehicle(s).id)
+
+
+@mcp.tool
 def propose_claim(subject_type: str, subject_key: str, prop: str,
                   evidence_authority: int, value: str | None = None, unit: str | None = None,
                   evidence_stance: str = "supports", on_vehicle: bool = False,

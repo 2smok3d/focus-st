@@ -341,6 +341,12 @@ def v2_rul(s: Session = Depends(get_session)):
     return rul.maintenance_rul(s, service.get_vehicle(s).id)
 
 
+@app.get("/v2/integrity")
+def v2_integrity(s: Session = Depends(get_session)):
+    from . import integrity
+    return integrity.vehicle_integrity(s, service.get_vehicle(s).id)
+
+
 @app.get("/v2/fitment/{slug}")
 def v2_fitment(slug: str, s: Session = Depends(get_session)):
     from . import fitment
