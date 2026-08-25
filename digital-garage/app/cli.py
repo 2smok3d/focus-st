@@ -206,6 +206,24 @@ def cmd_rul(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_integrity(args: argparse.Namespace) -> int:
+    from . import integrity, service
+    sev = {"error": "🔴", "warn": "🟠", "info": "·"}
+    with session_scope() as s:
+        veh = service.get_vehicle(s, args.vin) if args.vin else service.get_vehicle(s)
+        r = integrity.vehicle_integrity(s, veh.id)
+    print(f"Datalog integrity: {r['sessions_flagged']}/{r['sessions_checked']} recent session(s) "
+          f"flagged, {r['findings']} finding(s).")
+    if not r["reports"]:
+        print("  All recent datalogs look plausible.")
+        return 0
+    for rep in r["reports"]:
+        print(f"  · session {rep['label']} (#{rep['session_id']}):")
+        for f in rep["findings"]:
+            print(f"      {sev.get(f['severity'], '·')} [{f['kind']}] {f['detail']}")
+    return 0
+
+
 def cmd_fitment(args: argparse.Namespace) -> int:
     from . import fitment
     icon = {"fits": "✅", "likely": "≈", "unmapped": "⚠️"}
@@ -1232,6 +1250,10 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("rul", help="project maintenance due-by dates from the usage rate")
     sp.add_argument("--vin", default=None)
     sp.set_defaults(fn=cmd_rul)
+
+    sp = sub.add_parser("integrity", help="signal-plausibility checks over recent datalogs")
+    sp.add_argument("--vin", default=None)
+    sp.set_defaults(fn=cmd_integrity)
 
     sp = sub.add_parser("fitment", help="resolve PARTS.md catalog slots → reference components")
     sp.add_argument("--variant", default="focus-st")

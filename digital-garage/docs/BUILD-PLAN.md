@@ -303,8 +303,18 @@ out-of-scope **with the reason**, not silently dropped.
    unknown". *Acceptance (met):* a logged interval gets a dated projection from a fitted rate;
    the soonest of mileage/time drives it; unknown rate → no mileage date; `test_rul` (6 pure +
    1 DB) + `test_intel_carries_rul_forecast`; headless render clean.
-3. **INTEG — datalog integrity at ingest.** Plausibility checks → machine events; surfaced
-   in intel.
+3. **INTEG — datalog integrity / plausibility.** *(done)* `app/integrity.py` — pure
+   `check_measurements` runs four unit-tolerant checks over a parsed datalog: **frozen** (a
+   recognized dynamic channel stuck for a whole session), **nonfinite** (NaN/inf), **out_of_range**
+   (values outside a *generous* physical band — catches garbage like 999/−273, never tuning
+   extremes), and **time_disorder** (timestamps going backwards). `session_integrity` /
+   `vehicle_integrity` scan stored sessions; `intel.json` `integrity` block; a Datalog Integrity
+   panel (Diagnose) + `log flags` KPI; `cli integrity`; `/v2/integrity`; MCP `list_integrity_findings`.
+   Findings flag the *log*, never asserted as vehicle facts. Built as a read-time analyzer;
+   writing findings into the durable machine-event ledger at ingest is a deliberate later step.
+   *Acceptance (met):* a stuck sensor and an out-of-range spike are flagged, a clean/aggressive-
+   but-plausible log is not; `test_integrity` (6 pure + 1 DB) + `test_intel_carries_integrity_block`;
+   headless render clean.
 4. **CORR — corroboration suggester.** Propose evidence links for `UNVERIFIED` claims through
    the approval boundary.
 
