@@ -16,6 +16,7 @@ import csv
 import datetime as dt
 import hashlib
 import io
+import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,6 +26,8 @@ from sqlalchemy.orm import Session
 
 from .config import settings
 from .models import CanFrame, DiagnosticSession, Dtc, Measurement
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -238,6 +241,8 @@ def ingest(
     sha = hashlib.sha256(content).hexdigest()
     existing = session.scalar(select(DiagnosticSession).where(DiagnosticSession.sha256 == sha))
     if existing is not None:
+        logger.info("ingest: duplicate kind=%s sha256=%s vehicle_id=%s session_id=%s",
+                    kind, sha, vehicle_id, existing.id)
         return {"status": "duplicate", "session_id": existing.id, "sha256": sha,
                 "message": "Identical artifact already ingested."}
 
@@ -267,6 +272,9 @@ def ingest(
            "raw_path": str(raw_path), "counts": result.counts}
     if obs_recorded:
         out["observations_recorded"] = obs_recorded
+    logger.info("ingest: ingested kind=%s sha256=%s vehicle_id=%s session_id=%s counts=%s "
+                "observations_recorded=%s", kind, sha, vehicle_id, ds.id, result.counts,
+                obs_recorded)
     return out
 
 
@@ -293,9 +301,11 @@ def _record_session_observations(session: Session, vehicle_id: int,
                     operating_condition=spec["operating_condition"], observed_at=when,
                     note=f"datalog session #{ds.id}")
                 recorded += 1
-            except Exception:
+            except Exception as exc:
                 # unknown unit (fails quantity validation) or similar — retry unitless so
                 # the value still forms a trend series; if that also fails, skip this one.
+                logger.debug("ingest: observation retry unitless subject=%s session_id=%s: %s",
+                             spec.get("subject_slug"), ds.id, exc)
                 try:
                     ob.record_observation(
                         session, vehicle, subject_slug=spec["subject_slug"], obs_type="electronic",
@@ -303,8 +313,12 @@ def _record_session_observations(session: Session, vehicle_id: int,
                         operating_condition=spec["operating_condition"], observed_at=when,
                         note=f"datalog session #{ds.id} (unit '{spec['unit']}' not normalized)")
                     recorded += 1
-                except Exception:
+                except Exception as exc2:
+                    logger.warning("ingest: observation skipped subject=%s session_id=%s: %s",
+                                   spec.get("subject_slug"), ds.id, exc2)
                     continue
         return recorded
-    except Exception:
+    except Exception as exc:
+        logger.warning("ingest: observation recording failed entirely for session_id=%s: %s",
+                       ds.id, exc)
         return 0
