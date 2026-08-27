@@ -334,3 +334,64 @@ out-of-scope **with the reason**, not silently dropped.
 **The revised deferred backlog and the V5 frontier are now fully built.**
 
 Building starts at **ANOM** (the honest, in-grain core of the compendium's #1 ML ask).
+
+
+## 7. External audit findings — 2026-08-25
+
+An independent Phase 0 orientation pass (outside this repo's own sessions)
+inspected the repository against the project's `CLAUDE.md` /
+`DIGITAL-GARAGE-FINAL-FINAL-CLAUDE-PROMPT.md`. Findings below.
+
+### 7.1 Corrected finding — the research compendium is not an open gap
+
+The audit's first pass mischaracterized §6 of this document as an unaddressed
+conflict, on the theory that a `Ford_Focus_ST_Merged_Research_Compendium.docx`
+circulating in the requesting project's own knowledge base proposed
+Kafka/MQTT/cloud-ML/closed-loop-tuning that this repo doesn't implement. On
+rereading §6 in full, that framing was wrong: this document already evaluated
+the compendium feature-by-feature and recorded, with reasons, what was
+rebuilt in-grain versus explicitly out-of-scope. No action needed — recorded
+so a future pass doesn't re-litigate it from the same wrong premise.
+
+### 7.2 CORR — already shipped
+
+At the time this audit began, `§6.3` item 4 (`CORR` — corroboration
+suggester) was the one unbuilt V5-frontier unit. By the time this appendix
+was ready to merge, `app/corroborate.py` had already been built, tested, and
+marked `*(done)*` in `§6.3` above — independent of this audit pass. No
+follow-up needed.
+
+### 7.3 Findings register
+
+| ID | Severity | Location | Finding | Impact | Recommendation | Test |
+|---|---|---|---|---|---|---|
+| AUD-002 | MEDIUM | `origin/openai/digital-garage`, `origin/claude/claude-md-docs-58eozc`, `origin/claude/car-project-docs-system-lhlhp6` | Three stale/merged branches. Content-level comparison (not just staleness) shows the openai branch's `v2/docs/*.md` knowledge content (recall register, engine encyclopedia, community-evidence notes) is superseded by what's already in `docs/knowledge-base/` — e.g. its recall coverage lacks the 2026 follow-up campaign (26S40/26V369) this repo already tracks. Its `garage_v2/` code is a fully isolated parallel reimplementation with zero file overlap with the live `digital-garage/` backend. `car-project-docs-system-lhlhp6` has zero divergence from master (identical tip). | None beyond branch clutter — no unique or unreconciled content confirmed. | Delete all three branches. | Verified by direct content diff, not merge. |
+| AUD-003 | MEDIUM | `app/cli.py` (1,491 LOC) | Single module is 3x the size of the next-largest (`service.py`, 484 LOC), mixing many operational concerns. | Harder to review safely in the small-PR discipline this document itself requires (§2 rule 7, "one unit, one PR"). | Full line-by-line read, then a decomposition plan into subcommand modules, executed as its own reviewed unit under the §5 workflow. | Full read + reviewed decomposition plan before refactor. |
+| AUD-004 | MEDIUM | `digital-garage/.env.example` (`DG_VEHICLE_VIN`, singular) vs. `data/fleet.json` (5 vehicles) | Unconfirmed whether the four non-Focus-ST vehicles have their own running `digital-garage` truth-store instances, or whether their `MODS.md`/feeds are produced some other way. | If the latter, those four vehicles' "generated" files may not carry the same provenance/evidence grading the Focus ST's do. | Read `fleetfeed.py` + `db/schema_v3.sql` (twin commissioning) directly to confirm whether one shared schema already covers this (§3's FEED entry suggests it does). | Direct source read. |
+| AUD-005 | LOW | `web/vehicles/focus-st/garage.json` | Carries `generated_at` but no explicit "generated, do not hand-edit" marker inside the JSON (unlike `MODS.md`, which has one). | Minor generated-file-policy gap — a hand-edit wouldn't be visually flagged. | Add a `"_generated_by"`/`"_do_not_edit"` field; extend `.github/scripts/validate_garage_json.py` to require it. | Extend the existing validator script. |
+| AUD-007 | INFORMATIONAL | `.github/workflows/ci.yml` | Runs pytest (Postgres-backed) and the `garage.json` schema validator on every PR/push. No lint, type-check, or dependency/secret scan. | Correctness is tested; code quality and supply-chain risk are not automated. | Add `ruff`/`mypy` and `pip-audit` (or similar) as additive CI jobs. | New CI job, green before merge. |
+| AUD-009 | INFORMATIONAL | Working-tree secret scan (regex, not full-history) | No hardcoded credentials found. `.env.example` contains only local docker-compose defaults. | Low immediate risk; scan was shallow (tree only, not git history, not an obfuscation-aware tool). | Run `gitleaks detect` (or equivalent) across full history as part of the AUD-007 CI additions. | `gitleaks detect --source=.` |
+| AUD-010 | INFORMATIONAL | Test execution | Not run in the auditing environment (no reachable Postgres/Docker there). Pass/fail counts and coverage are therefore unverified from that pass. | No blocker — this repo's own CI already runs the full suite correctly on every PR. | None needed beyond continuing to rely on CI's existing Postgres-backed job for verified baselines. | N/A — already covered by CI2. |
+
+### 7.4 Positive findings (no action needed)
+
+- `data/vehicles/focus-st/MODS.md` carries the correct generated-file banner.
+- `docs/FOST-COMPLETE.md` correctly documents itself as auto-built from the
+  Obsidian vault via `docs/automation/build_compendium.py`, with a "do not
+  hand-edit" instruction.
+- No copyrighted service-manual bulk text found in `data/vehicles/*/manual.md`
+  in this pass (spot-check only, not exhaustive) — consistent with this
+  document's own §2 rule 6.
+- No ECU write/flash/closed-loop-tuning code path exists anywhere in the repo;
+  the proposal→approval boundary this document states as an invariant has no
+  contradicting code path found in this pass.
+
+### 7.5 Actioned during the audit
+
+Branch cleanup per AUD-002:
+
+```bash
+git push origin --delete claude/car-project-docs-system-lhlhp6
+git push origin --delete claude/claude-md-docs-58eozc
+git push origin --delete openai/digital-garage
+```
