@@ -1380,7 +1380,7 @@ def build_parser() -> argparse.ArgumentParser:
     sp.add_argument("symptom")
     sp.set_defaults(fn=cmd_dx_open)
 
-    sub.add_parser("wo-seed", help="seed an example work order (water pump, READY 80%)").set_defaults(fn=cmd_wo_seed)
+    sub.add_parser("wo-seed", help="seed an example work order (water pump, READY 80%%)").set_defaults(fn=cmd_wo_seed)
     sub.add_parser("work-orders", help="list work orders").set_defaults(fn=cmd_work_orders)
 
     sp = sub.add_parser("wo", help="show a work order (readiness + tasks + verification)")
