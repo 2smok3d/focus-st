@@ -280,6 +280,33 @@ def list_integrity_findings() -> dict:
 
 
 @mcp.tool
+def list_corroboration_candidates(slug: str = "focus-st") -> dict:
+    """UNVERIFIED claims for a machine that a sibling claim already in the knowledge base
+    agrees with, backed by better or independent evidence (CORR). Linking that evidence would
+    corroborate the weak claim; each candidate shows the *projected* verdict, computed with the
+    same engine the approval path uses. Read-only — filing the link is `propose_corroboration`."""
+    from . import corroborate
+    with session_scope() as s:
+        return corroborate.corroboration_candidates(s, slug)
+
+
+@mcp.tool
+def propose_corroboration(claim_id: int, authority: int, source_label: str,
+                          on_vehicle: bool = False) -> dict:
+    """Propose corroborating an UNVERIFIED claim for HUMAN APPROVAL by linking a REAL source you
+    found — its `authority` (1 OEM/best .. 6 unknown), a `source_label`, and `on_vehicle=True` if
+    it's an observation of THIS car. This does NOT change the verdict: it files a pending proposal
+    a person approves via `cli approve`, and the verdict is recomputed from the merged evidence on
+    approval (monotonic — a weaker source never demotes a stronger one). You MUST name a genuine
+    source; never invent evidence to force a promotion."""
+    from . import corroborate
+    with session_scope() as s:
+        return corroborate.propose_corroboration(s, service.get_vehicle(s).id, claim_id,
+                                                 authority=authority, source_label=source_label,
+                                                 on_vehicle=on_vehicle)
+
+
+@mcp.tool
 def propose_claim(subject_type: str, subject_key: str, prop: str,
                   evidence_authority: int, value: str | None = None, unit: str | None = None,
                   evidence_stance: str = "supports", on_vehicle: bool = False,

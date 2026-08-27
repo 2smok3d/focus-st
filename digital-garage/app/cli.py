@@ -224,6 +224,33 @@ def cmd_integrity(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_corroborate(args: argparse.Namespace) -> int:
+    from . import corroborate, service
+    with session_scope() as s:
+        if args.propose is not None:
+            veh = service.get_vehicle(s)
+            if not args.source:
+                print("Provide the source you found: --source \"<label>\" [--authority N].")
+                return 1
+            try:
+                r = corroborate.propose_corroboration(s, veh.id, args.propose,
+                                                      authority=args.authority, source_label=args.source)
+            except ValueError as e:
+                print(f"Cannot propose: {e}")
+                return 1
+            print(f"Filed proposal #{r['proposal_id']} (pending approval) — "
+                  f"`python -m app.cli approve {r['proposal_id']}` to corroborate.")
+            return 0
+        r = corroborate.corroboration_candidates(s, args.variant)
+    print(f"Corroboration · {r['variant']}: {r['promotable']}/{r['unverified']} unverified "
+          f"claim(s) a single source would promote.")
+    for c in r["candidates"]:
+        tail = f"→ {c['projected_with_trade_source']} w/ a trade source" if c["promotable"] else "(can't promote yet)"
+        print(f"  · #{c['claim_id']} {c['subject_key']}·{c['prop']} [{c['current_verification']}] "
+              f"needs {c['min_source'] or '—'} {tail}")
+    return 0
+
+
 def cmd_fitment(args: argparse.Namespace) -> int:
     from . import fitment
     icon = {"fits": "✅", "likely": "≈", "unmapped": "⚠️"}
@@ -1254,6 +1281,14 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("integrity", help="signal-plausibility checks over recent datalogs")
     sp.add_argument("--vin", default=None)
     sp.set_defaults(fn=cmd_integrity)
+
+    sp = sub.add_parser("corroborate", help="UNVERIFIED claims one source would promote")
+    sp.add_argument("--variant", default="focus-st")
+    sp.add_argument("--propose", type=int, default=None, metavar="CLAIM_ID",
+                    help="file a pending corroboration proposal for this claim")
+    sp.add_argument("--source", default=None, help="the source you found (required with --propose)")
+    sp.add_argument("--authority", type=int, default=3, help="source authority 1 (OEM) .. 6 (unknown)")
+    sp.set_defaults(fn=cmd_corroborate)
 
     sp = sub.add_parser("fitment", help="resolve PARTS.md catalog slots → reference components")
     sp.add_argument("--variant", default="focus-st")

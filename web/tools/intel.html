@@ -163,6 +163,7 @@ function render(d) {
     ['anomalies', (d.anomalies||{}).flagged ?? 0],
     ['forecast ≤90d', (d.rul||{}).coming_up ?? 0],
     ['log flags', (d.integrity||{}).findings ?? 0],
+    ['corroboratable', (d.corroboration||{}).promotable ?? 0],
     ['parts mapped', (d.parts||{}).matched ?? 0], ['open cases', (dg.open_cases||[]).length],
     ['open work orders', ws.open ?? 0], ['telemetry channels', (d.telemetry||{}).channels ?? 0],
   ];
@@ -186,6 +187,22 @@ function render(d) {
   });
   kp.appendChild(el('div','row', `<span class="tag">open gaps</span><span class="mono ${k.gaps? 'warn':'ok'}">${esc(k.gaps ?? 0)}</span>`));
   add('knowledge', kp);
+
+  // Corroboration suggestions — UNVERIFIED claims a sibling could promote (CORR)
+  const co = d.corroboration || null;
+  const cp = el('div','panel'); cp.appendChild(el('h2', null, 'Corroboration Suggestions'));
+  if (!co || !co.unverified) cp.appendChild(el('p','tag','No unverified claims — knowledge is fully graded.'));
+  else {
+    cp.appendChild(el('div','row', `<span class="tag">one source would promote</span>`
+      + `<span class="mono ok">${esc(co.promotable)}/${esc(co.unverified)} unverified</span>`));
+    co.candidates.slice(0,8).forEach(c => {
+      cp.appendChild(el('div','row', `<span>${esc(c.subject_key)} · ${esc(c.prop)}</span>`
+        + `<span class="chip ${c.promotable?'ok':''}">${c.promotable? esc(c.current_verification)+' → '+esc(c.projected_with_trade_source) : esc(c.current_verification)}</span>`));
+      cp.appendChild(el('div','tag', esc(c.suggestion)));
+    });
+    cp.appendChild(el('div','tag','Suggestions only — a found source is proposed, then a human approves.'));
+  }
+  add('knowledge', cp);
 
   // Diagnostics
   const dp = el('div','panel'); dp.appendChild(el('h2', null, 'Diagnostics'));

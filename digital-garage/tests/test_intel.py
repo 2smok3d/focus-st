@@ -170,6 +170,21 @@ def test_intel_carries_integrity_block():
         assert all({"kind", "severity", "detail"} <= set(f) for f in r["findings"])
 
 
+def test_intel_carries_corroboration_block():
+    """The projection carries the CORR block — UNVERIFIED claims and the verdict one more
+    source would earn. Shape + honesty (promotable count matches the candidates)."""
+    from app.intel import build_intel
+    with session_scope() as s:
+        d = build_intel(s, "focus-st")
+    co = d["corroboration"]
+    assert co is not None
+    assert set(co) >= {"variant", "unverified", "promotable", "candidates"}
+    assert co["promotable"] == sum(1 for c in co["candidates"] if c["promotable"])
+    for c in co["candidates"]:
+        assert {"claim_id", "current_verification", "projected_with_trade_source"} <= set(c)
+        assert c["current_verification"] == "UNVERIFIED"
+
+
 def test_intel_carries_maintenance_status():
     """The projection surfaces the maintenance-due engine bucketed by status, and an
     interval with no service on record reads `needs_log` — never a false `overdue`."""

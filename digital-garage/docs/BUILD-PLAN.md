@@ -315,7 +315,22 @@ out-of-scope **with the reason**, not silently dropped.
    *Acceptance (met):* a stuck sensor and an out-of-range spike are flagged, a clean/aggressive-
    but-plausible log is not; `test_integrity` (6 pure + 1 DB) + `test_intel_carries_integrity_block`;
    headless render clean.
-4. **CORR — corroboration suggester.** Propose evidence links for `UNVERIFIED` claims through
-   the approval boundary.
+4. **CORR — corroboration suggester.** *(done)* `app/corroborate.py`. Claims are uniquely keyed
+   by (subject, property), so corroboration here is *adding an independent source to an existing
+   `UNVERIFIED` claim*, which `_apply_claim_proposal` re-resolves monotonically — not matching a
+   duplicate. CORR (a) **suggests**: for each `UNVERIFIED` claim it computes — with the same
+   `resolve_verdict` the approval path uses — the verdict one more source would earn and the
+   **weakest authority that would actually promote it** ("a trade source suffices" vs "needs OEM"),
+   inventing no evidence; and (b) **proposes**: files the source a person actually found (authority
+   + label, required) as a pending proposal through the approval boundary — the verdict is
+   recomputed from the merged evidence on approval, never asserted. `intel.json` `corroboration`
+   block; a Corroboration Suggestions panel (Knowledge) + `corroboratable` KPI; `cli corroborate
+   [--propose ID --source … --authority N]`; `/v2/corroboration/{slug}`; MCP
+   `list_corroboration_candidates` + `propose_corroboration`. *Acceptance (met):* an UNVERIFIED
+   claim is flagged with the projected promotion; proposing changes nothing; on approval the
+   claim is promoted (monotonic); the agent must name a real source. `test_corroborate` (3 pure +
+   1 DB flow) + `test_intel_carries_corroboration_block`.
+
+**The revised deferred backlog and the V5 frontier are now fully built.**
 
 Building starts at **ANOM** (the honest, in-grain core of the compendium's #1 ML ask).
