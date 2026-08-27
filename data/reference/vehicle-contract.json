@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://digital-garage.local/schemas/vehicle-contract.json",
+  "title": "Digital Garage Vehicle Contract",
+  "description": "Common application-facing contract for every vehicle. Vehicle-specific systems and capabilities extend the common core rather than replacing it.",
+  "type": "object",
+  "required": ["slug", "identity", "capabilities", "domains"],
+  "properties": {
+    "slug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "identity": {
+      "type": "object",
+      "required": ["year", "make", "model", "vehicle_class"],
+      "properties": {
+        "year": {"type": ["integer", "string"]},
+        "make": {"type": "string"},
+        "model": {"type": "string"},
+        "trim": {"type": ["string", "null"]},
+        "market": {"type": ["string", "null"]},
+        "vehicle_class": {"type": "string"},
+        "identifiers": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      },
+      "additionalProperties": true
+    },
+    "capabilities": {
+      "type": "object",
+      "description": "Machine capabilities drive which tools, diagnostics, and UI features are offered.",
+      "additionalProperties": {"type": "boolean"}
+    },
+    "domains": {
+      "type": "object",
+      "description": "Every vehicle exposes these application domains. Each domain may be empty, populated, or extended with machine-specific fields.",
+      "required": [
+        "configuration",
+        "systems",
+        "components",
+        "parts",
+        "inventory",
+        "maintenance",
+        "repairs",
+        "modifications",
+        "projects",
+        "diagnostics",
+        "telemetry",
+        "documents",
+        "media",
+        "history"
+      ],
+      "properties": {
+        "configuration": {"type": "object"},
+        "systems": {"type": "array", "items": {"type": "object"}},
+        "components": {"type": "array", "items": {"type": "object"}},
+        "parts": {"type": "array", "items": {"type": "object"}},
+        "inventory": {"type": "array", "items": {"type": "object"}},
+        "maintenance": {"type": "array", "items": {"type": "object"}},
+        "repairs": {"type": "array", "items": {"type": "object"}},
+        "modifications": {"type": "array", "items": {"type": "object"}},
+        "projects": {"type": "array", "items": {"type": "object"}},
+        "diagnostics": {"type": "array", "items": {"type": "object"}},
+        "telemetry": {"type": "array", "items": {"type": "object"}},
+        "documents": {"type": "array", "items": {"type": "object"}},
+        "media": {"type": "array", "items": {"type": "object"}},
+        "history": {"type": "array", "items": {"type": "object"}}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
