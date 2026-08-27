@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T11:32:24.665205+00:00",
+  "generated_at": "2026-08-27T08:25:02.404239+00:00",
   "variant": "focus-st",
   "vehicle": {
     "vin": "1FADP3L94HL223134",
@@ -207,6 +207,12 @@
     "findings": 0,
     "by_kind": {},
     "reports": []
+  },
+  "corroboration": {
+    "variant": "focus-st",
+    "unverified": 0,
+    "promotable": 0,
+    "candidates": []
   },
   "parts": {
     "slots": 54,

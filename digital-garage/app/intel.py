@@ -65,6 +65,10 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
     from . import integrity as integrity_mod
     integrity_block = integrity_mod.vehicle_integrity(session, vehicle.id) if vehicle else None
 
+    # corroboration — UNVERIFIED claims a sibling could promote through approval (CORR)
+    from . import corroborate as corr_mod
+    corr_block = corr_mod.corroboration_candidates(session, variant_slug) if variant else None
+
     # parts fitment — catalog slots resolved against the reference component graph
     from . import fitment as fitment_mod
     fit = fitment_mod.catalog_fitment(session, variant_slug) if variant else None
@@ -105,6 +109,7 @@ def build_intel(session: Session, variant_slug: str = "focus-st") -> dict:
                       "series_affected": len(anomaly_rows)},
         "rul": rul_block,
         "integrity": integrity_block,
+        "corroboration": corr_block,
         "parts": {"slots": fit["slots"], "matched": fit["matched"], "confident": fit["confident"],
                   "unmatched": fit["unmatched"], "coverage_pct": fit["coverage_pct"],
                   "unmatched_slots": fit["unmatched_slots"][:12]} if fit else None,
